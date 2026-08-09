@@ -25,22 +25,14 @@ public class StumpLayer extends RenderLayer<AbstractClientPlayer, PlayerModel<Ab
     private static final ResourceLocation STUMP_4x4 = new ResourceLocation(CorrectDamaged.MODID, "textures/entity/stump_fresh_4x4.png");
     private static final ResourceLocation STUMP_4x3 = new ResourceLocation(CorrectDamaged.MODID, "textures/entity/stump_fresh_4x3.png");
 
-    private final ModelPart rightArmCap;
-    private final ModelPart rightArmSlimCap;
-    private final ModelPart leftArmCap;
-    private final ModelPart leftArmSlimCap;
-    private final ModelPart legCap;
+    private final ModelPart cap4x4;
+    private final ModelPart cap3x4;
 
     public StumpLayer(RenderLayerParent<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>> parent) {
         super(parent);
 
-        this.rightArmCap = createCap(-3.0F, -2.0F, 4.0F, 0, 0, 4, 4);
-        this.leftArmCap = createCap(-1.0F, -2.0F, 4.0F, 0, 0, 4, 4);
-
-        this.rightArmSlimCap = createCap(-2.0F, -2.0F, 3.0F, 2, 0, 3, 4);
-        this.leftArmSlimCap = createCap(-1.0F, -2.0F, 3.0F, 2, 0, 3, 4);
-
-        this.legCap = createCap(-2.0F, -2.0F, 4.0F, 0, 0, 4, 4);
+        this.cap4x4 = createCap(-2.0F, -2.0F, 4.0F, 0, 0, 4, 4);
+        this.cap3x4 = createCap(-1.5F, -2.0F, 3.0F, 2, 0, 3, 4);
     }
 
     private ModelPart createCap(float x, float z, float width, int texU, int texV, int texW, int texH) {
@@ -58,19 +50,27 @@ public class StumpLayer extends RenderLayer<AbstractClientPlayer, PlayerModel<Ab
         LimbManager.get(player).ifPresent(data -> {
             boolean isSlim = player.getModelName().equals("slim");
 
-            renderLimbCap(poseStack, buffer, packedLight, player, getParentModel().rightArm, data.getRightArm(),
-                    isSlim ? rightArmSlimCap : rightArmCap, isSlim ? STUMP_4x3 : STUMP_4x4, -2.0F,
-                    isSlim ? -0.5F : -1.0F, 0, isSlim);
+            int rightArmState = data.getRightArm();
+            int leftArmState = data.getLeftArm();
 
-            renderLimbCap(poseStack, buffer, packedLight, player, getParentModel().leftArm, data.getLeftArm(),
-                    isSlim ? leftArmSlimCap : leftArmCap, isSlim ? STUMP_4x3 : STUMP_4x4, -2.0F,
-                    isSlim ? 0.5F : 1.0F, 1, isSlim);
+            boolean rightArmSlim = isSlim && rightArmState != 0;
+            boolean leftArmSlim = isSlim && leftArmState != 0;
+
+            renderLimbCap(poseStack, buffer, packedLight, player, getParentModel().rightArm, rightArmState,
+                    rightArmSlim ? cap3x4 : cap4x4,
+                    rightArmSlim ? STUMP_4x3 : STUMP_4x4,
+                    -2.0F, rightArmSlim ? -0.5F : -1.0F, 0, rightArmSlim);
+
+            renderLimbCap(poseStack, buffer, packedLight, player, getParentModel().leftArm, leftArmState,
+                    leftArmSlim ? cap3x4 : cap4x4,
+                    leftArmSlim ? STUMP_4x3 : STUMP_4x4,
+                    -2.0F, leftArmSlim ? 0.5F : 1.0F, 1, leftArmSlim);
 
             renderLimbCap(poseStack, buffer, packedLight, player, getParentModel().rightLeg, data.getRightLeg(),
-                    legCap, STUMP_4x4, 0.0F, 0.0F, 2, false);
+                    cap4x4, STUMP_4x4, 0.0F, 0.0F, 2, false);
 
             renderLimbCap(poseStack, buffer, packedLight, player, getParentModel().leftLeg, data.getLeftLeg(),
-                    legCap, STUMP_4x4, 0.0F, 0.0F, 3, false);
+                    cap4x4, STUMP_4x4, 0.0F, 0.0F, 3, false);
         });
     }
 
@@ -88,23 +88,34 @@ public class StumpLayer extends RenderLayer<AbstractClientPlayer, PlayerModel<Ab
             int limbId,
             boolean isSlim
     ) {
-        if (state == 3 || state == 0) return;
-
-        float cutHeight = (state == 2) ? 10.0F : 6.0F;
-        float yOffset = startY + cutHeight + 0.01F;
+        if (state == 3) return;
 
         poseStack.pushPose();
 
-        parentLimb.translateAndRotate(poseStack);
+        if (state == 0) {
+            getParentModel().body.translateAndRotate(poseStack);
 
-        poseStack.translate(centerX / 16.0D, yOffset / 16.0D, 0.0D);
+            if (limbId == 0 || limbId == 1) {
+                float armX = (limbId == 0) ? -4.01F : 4.01F;
+                poseStack.translate(armX / 16.0D, 2.0D / 16.0D, 0.0D);
+
+                poseStack.mulPose(Axis.ZP.rotationDegrees(limbId == 0 ? -90.0F : 90.0F));
+            } else {
+                float legX = (limbId == 2) ? -2.0F : 2.0F;
+                poseStack.translate(legX / 16.0D, 12.01D / 16.0D, 0.0D);
+            }
+        } else {
+            float cutHeight = (state == 2) ? 10.0F : 6.0F;
+            float yOffset = startY + cutHeight + 0.01F;
+
+            parentLimb.translateAndRotate(poseStack);
+            poseStack.translate(centerX / 16.0D, yOffset / 16.0D, 0.0D);
+        }
 
         float angle = getRotationAngle(player, limbId, isSlim);
         if (angle != 0.0F) {
             poseStack.mulPose(Axis.YP.rotationDegrees(angle));
         }
-
-        poseStack.translate(-centerX / 16.0D, 0.0D, 0.0D);
 
         VertexConsumer vertexConsumer = buffer.getBuffer(RenderType.entityCutoutNoCull(texture));
         capModel.render(poseStack, vertexConsumer, packedLight, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
@@ -117,11 +128,9 @@ public class StumpLayer extends RenderLayer<AbstractClientPlayer, PlayerModel<Ab
         int seed = Math.abs((int) (uuidHash ^ (limbId * 31L)));
 
         if (isSlim && (limbId == 0 || limbId == 1)) {
-            int step = seed % 2;
-            return step * 180.0F;
+            return (seed % 2) * 180.0F;
         } else {
-            int step = seed % 4;
-            return step * 90.0F;
+            return (seed % 4) * 90.0F;
         }
     }
 }
