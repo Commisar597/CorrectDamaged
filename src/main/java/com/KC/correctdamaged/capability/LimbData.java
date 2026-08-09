@@ -4,23 +4,10 @@ import net.minecraft.nbt.CompoundTag;
 
 public class LimbData {
 
-    /**
-     * Состояние конечности:
-     *
-     * 3 = конечность целиком
-     * 2 = осталось 2/3
-     * 1 = осталось 1/3
-     * 0 = конечность полностью отсутствует
-     */
-
     private int rightArm = 3;
     private int leftArm = 3;
     private int rightLeg = 3;
     private int leftLeg = 3;
-
-    // =========================
-    // GETTERS
-    // =========================
 
     public int getRightArm() {
         return rightArm;
@@ -38,10 +25,6 @@ public class LimbData {
         return leftLeg;
     }
 
-    // =========================
-    // SETTERS
-    // =========================
-
     public void setRightArm(int state) {
         this.rightArm = normalizeState(state);
     }
@@ -58,20 +41,12 @@ public class LimbData {
         this.leftLeg = normalizeState(state);
     }
 
-    // =========================
-    // COPY
-    // =========================
-
     public void copyFrom(LimbData source) {
         this.rightArm = source.rightArm;
         this.leftArm = source.leftArm;
         this.rightLeg = source.rightLeg;
         this.leftLeg = source.leftLeg;
     }
-
-    // =========================
-    // NBT
-    // =========================
 
     public CompoundTag serializeNBT() {
         CompoundTag tag = new CompoundTag();
@@ -101,10 +76,6 @@ public class LimbData {
             leftLeg = normalizeState(tag.getInt("left_leg"));
         }
     }
-
-    // =========================
-    // INTERNAL
-    // =========================
 
     private int normalizeState(int state) {
         return Math.max(0, Math.min(3, state));

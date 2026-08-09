@@ -3,7 +3,6 @@ package com.KC.correctdamaged.event;
 import com.KC.correctdamaged.CorrectDamaged;
 import com.KC.correctdamaged.capability.LimbCapability;
 import com.KC.correctdamaged.capability.LimbCapabilityProvider;
-import com.KC.correctdamaged.capability.LimbData;
 import com.KC.correctdamaged.command.SetLimbCommand;
 import com.KC.correctdamaged.network.PacketHandler;
 
@@ -26,10 +25,6 @@ import net.minecraft.server.level.ServerPlayer;
 )
 public class ModEvents {
 
-    // =========================================================
-    // ATTACH CAPABILITY
-    // =========================================================
-
     @SubscribeEvent
     public static void onAttachCapabilities(
             AttachCapabilitiesEvent<Entity> event
@@ -46,10 +41,6 @@ public class ModEvents {
             );
         }
     }
-
-    // =========================================================
-    // PLAYER CLONED
-    // =========================================================
 
     @SubscribeEvent
     public static void onPlayerCloned(
@@ -70,10 +61,6 @@ public class ModEvents {
                 });
     }
 
-    // =========================================================
-    // PLAYER LOGGED IN
-    // =========================================================
-
     @SubscribeEvent
     public static void onPlayerLoggedIn(
             PlayerEvent.PlayerLoggedInEvent event
@@ -85,10 +72,6 @@ public class ModEvents {
         }
     }
 
-    // =========================================================
-    // PLAYER RESPAWN
-    // =========================================================
-
     @SubscribeEvent
     public static void onPlayerRespawn(
             PlayerEvent.PlayerRespawnEvent event
@@ -99,10 +82,6 @@ public class ModEvents {
             PacketHandler.syncToPlayer(player);
         }
     }
-
-    // =========================================================
-    // START TRACKING
-    // =========================================================
 
     @SubscribeEvent
     public static void onStartTracking(
@@ -119,10 +98,6 @@ public class ModEvents {
 
         PacketHandler.sendTo(trackingPlayer, targetPlayer);
     }
-
-    // =========================================================
-    // COMMANDS
-    // =========================================================
 
     @SubscribeEvent
     public static void onRegisterCommands(

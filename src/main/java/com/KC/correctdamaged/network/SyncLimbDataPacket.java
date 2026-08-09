@@ -33,10 +33,6 @@ public class SyncLimbDataPacket {
         this.leftLeg = leftLeg;
     }
 
-    // =========================================================
-    // FACTORY: собрать пакет из капабилити игрока (на сервере)
-    // =========================================================
-
     public static SyncLimbDataPacket from(ServerPlayer player) {
 
         return player.getCapability(LimbCapability.INSTANCE)
@@ -53,10 +49,6 @@ public class SyncLimbDataPacket {
                 ));
     }
 
-    // =========================================================
-    // ENCODE
-    // =========================================================
-
     public static void encode(
             SyncLimbDataPacket packet,
             FriendlyByteBuf buffer
@@ -69,10 +61,6 @@ public class SyncLimbDataPacket {
         buffer.writeByte(packet.leftLeg);
     }
 
-    // =========================================================
-    // DECODE
-    // =========================================================
-
     public static SyncLimbDataPacket decode(
             FriendlyByteBuf buffer
     ) {
@@ -84,10 +72,6 @@ public class SyncLimbDataPacket {
                 buffer.readByte()
         );
     }
-
-    // =========================================================
-    // HANDLE
-    // =========================================================
 
     public static void handle(
             SyncLimbDataPacket packet,

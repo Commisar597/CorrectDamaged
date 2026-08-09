@@ -5,7 +5,10 @@
   "compatibilityLevel": "JAVA_17",
   "refmap": "correct_damaged.refmap.json",
   "mixins": [],
-  "client": [],
+  "client": [
+    "client.PlayerModelMixin",
+    "client.HumanoidModelMixin"
+  ],
   "injectors": {
     "defaultRequire": 1
   }

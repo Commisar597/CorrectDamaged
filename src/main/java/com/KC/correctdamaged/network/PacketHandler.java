@@ -22,10 +22,6 @@ public final class PacketHandler {
     private PacketHandler() {
     }
 
-    // =========================================================
-    // INITIALIZATION
-    // =========================================================
-
     public static void init() {
 
         CHANNEL = NetworkRegistry.newSimpleChannel(
@@ -48,10 +44,6 @@ public final class PacketHandler {
         );
     }
 
-    // =========================================================
-    // SYNC: игрок -> себе и всем, кто его трекает
-    // =========================================================
-
     public static void syncToTrackingAndSelf(
             ServerPlayer player
     ) {
@@ -67,10 +59,6 @@ public final class PacketHandler {
         );
     }
 
-    // =========================================================
-    // SYNC: только самому игроку (например, при логине/респавне)
-    // =========================================================
-
     public static void syncToPlayer(
             ServerPlayer player
     ) {
@@ -85,11 +73,6 @@ public final class PacketHandler {
                 packet
         );
     }
-
-    // =========================================================
-    // SYNC: данные конкретного игрока (dataOwner) отправить
-    // конкретному получателю (receiver) — нужно для StartTracking
-    // =========================================================
 
     public static void sendTo(
             ServerPlayer receiver,

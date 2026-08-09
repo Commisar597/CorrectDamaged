@@ -12,19 +12,11 @@ public final class LimbManager {
     private LimbManager() {
     }
 
-    // =========================================================
-    // GET CAPABILITY
-    // =========================================================
-
     public static Optional<LimbData> get(Player player) {
         return player
                 .getCapability(LimbCapability.INSTANCE)
                 .resolve();
     }
-
-    // =========================================================
-    // SET
-    // =========================================================
 
     public static boolean setRightArm(
             Player player,
@@ -102,10 +94,6 @@ public final class LimbManager {
         }).orElse(false);
     }
 
-    // =========================================================
-    // GET STATE
-    // =========================================================
-
     public static int getRightArm(Player player) {
         return get(player)
                 .map(LimbData::getRightArm)
@@ -129,10 +117,6 @@ public final class LimbManager {
                 .map(LimbData::getLeftLeg)
                 .orElse(3);
     }
-
-    // =========================================================
-    // DAMAGE
-    // =========================================================
 
     public static boolean damageRightArm(Player player) {
 
@@ -209,10 +193,6 @@ public final class LimbManager {
 
         }).orElse(false);
     }
-
-    // =========================================================
-    // SYNC
-    // =========================================================
 
     private static void sync(Player player) {
 

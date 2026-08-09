@@ -51,12 +51,14 @@ minecraft {
             property 'forge.enabledGameTestNamespaces', mod_id
             // 4. Подключаем конфиг при запуске клиента
             arg "-mixin.config=${mod_id}.mixins.json"
+
+            // Указываем имя игрока (Steve выдает обычный скин, Alex — slim)
+            args '--username', 'Alex'
         }
 
         server {
             property 'forge.enabledGameTestNamespaces', mod_id
             args '--nogui'
-            // Подключаем конфиг при запуске сервера
             arg "-mixin.config=${mod_id}.mixins.json"
         }
 
@@ -80,7 +82,6 @@ repositories {
 dependencies {
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
 
-    // 5. Добавляем процессор аннотаций, чтобы Миксины компилировались
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 }
 
@@ -109,7 +110,6 @@ tasks.named('jar', Jar).configure {
                 'Implementation-Version'  : project.jar.archiveVersion,
                 'Implementation-Vendor'   : mod_authors,
                 'Implementation-Timestamp': new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
-                // 6. Обязательно указываем Forge, что в собранном jar есть Миксины
                 'MixinConfigs'            : "${mod_id}.mixins.json"
         ])
     }
