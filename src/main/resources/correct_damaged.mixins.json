@@ -6,7 +6,6 @@
   "refmap": "correct_damaged.refmap.json",
   "mixins": [],
   "client": [
-    "client.PlayerModelMixin",
     "client.HumanoidModelMixin"
   ],
   "injectors": {
