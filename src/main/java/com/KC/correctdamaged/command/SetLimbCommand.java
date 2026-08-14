@@ -15,7 +15,6 @@ public class SetLimbCommand {
                 Commands.literal("limb")
                         .requires(source -> source.hasPermission(2))
 
-                        // Команды для рук и ног (состояния 0..3)
                         .then(Commands.literal("right_arm")
                                 .then(Commands.argument("state", IntegerArgumentType.integer(0, 3))
                                         .executes(ctx -> applyLimb(ctx.getSource(), "right_arm", IntegerArgumentType.getInteger(ctx, "state")))))
@@ -32,12 +31,10 @@ public class SetLimbCommand {
                                 .then(Commands.argument("state", IntegerArgumentType.integer(0, 3))
                                         .executes(ctx -> applyLimb(ctx.getSource(), "left_leg", IntegerArgumentType.getInteger(ctx, "state")))))
 
-                        // Команда для головы (состояния 0..5)
                         .then(Commands.literal("head")
                                 .then(Commands.argument("state", IntegerArgumentType.integer(0, 5))
                                         .executes(ctx -> applyLimb(ctx.getSource(), "head", IntegerArgumentType.getInteger(ctx, "state")))))
 
-                        // Команда для туловища (состояния 0..9)
                         .then(Commands.literal("body")
                                 .then(Commands.argument("state", IntegerArgumentType.integer(0, 9))
                                         .executes(ctx -> applyLimb(ctx.getSource(), "body", IntegerArgumentType.getInteger(ctx, "state")))))
