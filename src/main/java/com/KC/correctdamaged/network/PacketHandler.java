@@ -25,13 +25,8 @@ public final class PacketHandler {
     public static void init() {
 
         CHANNEL = NetworkRegistry.newSimpleChannel(
-                new ResourceLocation(
-                        CorrectDamaged.MODID,
-                        "main"
-                ),
-                () -> PROTOCOL_VERSION,
-                PROTOCOL_VERSION::equals,
-                PROTOCOL_VERSION::equals
+                new ResourceLocation(CorrectDamaged.MODID, "main"), () ->
+                        PROTOCOL_VERSION, PROTOCOL_VERSION::equals, PROTOCOL_VERSION::equals
         );
 
         CHANNEL.registerMessage(
@@ -44,49 +39,24 @@ public final class PacketHandler {
         );
     }
 
-    public static void syncToTrackingAndSelf(
-            ServerPlayer player
-    ) {
+    public static void syncToTrackingAndSelf(ServerPlayer player) {
 
-        SyncLimbDataPacket packet =
-                SyncLimbDataPacket.from(player);
+        SyncLimbDataPacket packet = SyncLimbDataPacket.from(player);
 
-        CHANNEL.send(
-                PacketDistributor.TRACKING_ENTITY_AND_SELF.with(
-                        () -> player
-                ),
-                packet
-        );
+        CHANNEL.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> player), packet);
     }
 
-    public static void syncToPlayer(
-            ServerPlayer player
-    ) {
+    public static void syncToPlayer(ServerPlayer player)
+    {
 
-        SyncLimbDataPacket packet =
-                SyncLimbDataPacket.from(player);
+        SyncLimbDataPacket packet = SyncLimbDataPacket.from(player);
 
-        CHANNEL.send(
-                PacketDistributor.PLAYER.with(
-                        () -> player
-                ),
-                packet
-        );
+        CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), packet);
     }
 
-    public static void sendTo(
-            ServerPlayer receiver,
-            ServerPlayer dataOwner
-    ) {
-
-        SyncLimbDataPacket packet =
-                SyncLimbDataPacket.from(dataOwner);
-
-        CHANNEL.send(
-                PacketDistributor.PLAYER.with(
-                        () -> receiver
-                ),
-                packet
-        );
+    public static void sendTo(ServerPlayer receiver, ServerPlayer dataOwner)
+    {
+        SyncLimbDataPacket packet = SyncLimbDataPacket.from(dataOwner);
+        CHANNEL.send(PacketDistributor.PLAYER.with(() -> receiver), packet);
     }
 }

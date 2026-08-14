@@ -17,9 +17,6 @@ public final class LimbDamageVariants {
         LEFT_PANTS
     }
 
-    /**
-     * Создаёт усечённую геометрию и точную явную UV-развёртку для конечностей.
-     */
     public static CustomCube createLimbStageCube(LimbType type, boolean slim, float height) {
         return switch (type) {
             case RIGHT_ARM    -> createArm(type, false, slim, height, 0.0F,  40F, 16F);
@@ -57,7 +54,6 @@ public final class LimbDamageVariants {
 
         FaceUV top = FaceUV.of(u0 + d, v0, u0 + d + width, v0 + d);
 
-        // Боковые грани
         FaceUV left  = FaceUV.of(u0, v0 + d, u0 + d, v0 + d + height);
         FaceUV front = FaceUV.of(u0 + d, v0 + d, u0 + d + width, v0 + d + height);
         FaceUV right = FaceUV.of(u0 + d + width, v0 + d, u0 + d + width + d, v0 + d + height);

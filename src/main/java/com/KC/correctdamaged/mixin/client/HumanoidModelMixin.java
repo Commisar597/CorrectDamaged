@@ -100,7 +100,6 @@ public abstract class HumanoidModelMixin<T extends LivingEntity> {
     }
 
     private static void correctDamaged$applyBodyState(ModelPart body, ModelPart jacket, int state) {
-        // 9: Цельное тело (стандартный ванильный рендер)
         if (state == 9) {
             body.visible = true;
             body.skipDraw = false;
@@ -109,14 +108,12 @@ public abstract class HumanoidModelMixin<T extends LivingEntity> {
             return;
         }
 
-        // 0: Тело отсутствует
         if (state == 0) {
             body.visible = false;
             jacket.visible = false;
             return;
         }
 
-        // 1..8: Вариации повреждения (скрываем стандартное тело, BodyDamageLayer отрендерит кастомное)
         body.visible = true;
         body.skipDraw = true;
         jacket.visible = true;
