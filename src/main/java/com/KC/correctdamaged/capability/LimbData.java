@@ -11,12 +11,32 @@ public class LimbData {
     private int headState = 5;
     private int bodyState = 9;
 
+    private int boneRightArm = 0;
+    private int boneLeftArm = 0;
+    private int boneRightLeg = 0;
+    private int boneLeftLeg = 0;
+
+    private int muscleRightArm = 0;
+    private int muscleLeftArm = 0;
+    private int muscleRightLeg = 0;
+    private int muscleLeftLeg = 0;
+
     public int getRightArm() { return rightArm; }
     public int getLeftArm() { return leftArm; }
     public int getRightLeg() { return rightLeg; }
     public int getLeftLeg() { return leftLeg; }
     public int getHeadState() { return headState; }
     public int getBodyState() { return bodyState; }
+
+    public int getBoneRightArm() { return boneRightArm; }
+    public int getBoneLeftArm() { return boneLeftArm; }
+    public int getBoneRightLeg() { return boneRightLeg; }
+    public int getBoneLeftLeg() { return boneLeftLeg; }
+
+    public int getMuscleRightArm() { return muscleRightArm; }
+    public int getMuscleLeftArm() { return muscleLeftArm; }
+    public int getMuscleRightLeg() { return muscleRightLeg; }
+    public int getMuscleLeftLeg() { return muscleLeftLeg; }
 
     public void setRightArm(int state) { this.rightArm = normalizeState(state, 0, 3); }
     public void setLeftArm(int state) { this.leftArm = normalizeState(state, 0, 3); }
@@ -25,6 +45,16 @@ public class LimbData {
     public void setHeadState(int state) { this.headState = normalizeState(state, 0, 5); }
     public void setBodyState(int state) { this.bodyState = normalizeState(state, 0, 9); }
 
+    public void setBoneRightArm(int state) { this.boneRightArm = normalizeState(state, 0, 6); }
+    public void setBoneLeftArm(int state) { this.boneLeftArm = normalizeState(state, 0, 6); }
+    public void setBoneRightLeg(int state) { this.boneRightLeg = normalizeState(state, 0, 6); }
+    public void setBoneLeftLeg(int state) { this.boneLeftLeg = normalizeState(state, 0, 6); }
+
+    public void setMuscleRightArm(int state) { this.muscleRightArm = normalizeState(state, 0, 3); }
+    public void setMuscleLeftArm(int state) { this.muscleLeftArm = normalizeState(state, 0, 3); }
+    public void setMuscleRightLeg(int state) { this.muscleRightLeg = normalizeState(state, 0, 3); }
+    public void setMuscleLeftLeg(int state) { this.muscleLeftLeg = normalizeState(state, 0, 3); }
+
     public void copyFrom(LimbData source) {
         this.rightArm = source.rightArm;
         this.leftArm = source.leftArm;
@@ -32,6 +62,16 @@ public class LimbData {
         this.leftLeg = source.leftLeg;
         this.headState = source.headState;
         this.bodyState = source.bodyState;
+
+        this.boneRightArm = source.boneRightArm;
+        this.boneLeftArm = source.boneLeftArm;
+        this.boneRightLeg = source.boneRightLeg;
+        this.boneLeftLeg = source.boneLeftLeg;
+
+        this.muscleRightArm = source.muscleRightArm;
+        this.muscleLeftArm = source.muscleLeftArm;
+        this.muscleRightLeg = source.muscleRightLeg;
+        this.muscleLeftLeg = source.muscleLeftLeg;
     }
 
     public CompoundTag serializeNBT() {
@@ -42,6 +82,16 @@ public class LimbData {
         tag.putInt("left_leg", leftLeg);
         tag.putInt("head_state", headState);
         tag.putInt("body_state", bodyState);
+
+        tag.putInt("bone_right_arm", boneRightArm);
+        tag.putInt("bone_left_arm", boneLeftArm);
+        tag.putInt("bone_right_leg", boneRightLeg);
+        tag.putInt("bone_left_leg", boneLeftLeg);
+
+        tag.putInt("muscle_right_arm", muscleRightArm);
+        tag.putInt("muscle_left_arm", muscleLeftArm);
+        tag.putInt("muscle_right_leg", muscleRightLeg);
+        tag.putInt("muscle_left_leg", muscleLeftLeg);
         return tag;
     }
 
@@ -52,6 +102,16 @@ public class LimbData {
         if (tag.contains("left_leg")) leftLeg = normalizeState(tag.getInt("left_leg"), 0, 3);
         if (tag.contains("head_state")) headState = normalizeState(tag.getInt("head_state"), 0, 5);
         if (tag.contains("body_state")) bodyState = normalizeState(tag.getInt("body_state"), 0, 9);
+
+        if (tag.contains("bone_right_arm")) boneRightArm = normalizeState(tag.getInt("bone_right_arm"), 0, 6);
+        if (tag.contains("bone_left_arm")) boneLeftArm = normalizeState(tag.getInt("bone_left_arm"), 0, 6);
+        if (tag.contains("bone_right_leg")) boneRightLeg = normalizeState(tag.getInt("bone_right_leg"), 0, 6);
+        if (tag.contains("bone_left_leg")) boneLeftLeg = normalizeState(tag.getInt("bone_left_leg"), 0, 6);
+
+        if (tag.contains("muscle_right_arm")) muscleRightArm = normalizeState(tag.getInt("muscle_right_arm"), 0, 3);
+        if (tag.contains("muscle_left_arm")) muscleLeftArm = normalizeState(tag.getInt("muscle_left_arm"), 0, 3);
+        if (tag.contains("muscle_right_leg")) muscleRightLeg = normalizeState(tag.getInt("muscle_right_leg"), 0, 3);
+        if (tag.contains("muscle_left_leg")) muscleLeftLeg = normalizeState(tag.getInt("muscle_left_leg"), 0, 3);
     }
 
     private int normalizeState(int state, int min, int max) {

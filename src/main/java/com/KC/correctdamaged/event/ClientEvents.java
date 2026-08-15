@@ -1,4 +1,4 @@
-package com.KC.correctdamaged.client.event;
+package com.KC.correctdamaged.event;
 
 import com.KC.correctdamaged.CorrectDamaged;
 import com.KC.correctdamaged.client.render.BodyDamageLayer;
@@ -22,7 +22,6 @@ public class ClientEvents {
         for (String skinName : event.getSkins()) {
             PlayerRenderer renderer = event.getSkin(skinName);
             if (renderer != null) {
-                renderer.addLayer(new BodyDamageLayer(renderer));
                 renderer.addLayer(new HeadDamageLayer(renderer));
                 renderer.addLayer(new LimbDamageLayer(renderer));
             }

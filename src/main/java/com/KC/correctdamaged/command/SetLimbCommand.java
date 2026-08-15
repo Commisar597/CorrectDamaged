@@ -55,14 +55,14 @@ public class SetLimbCommand {
             };
 
             if (!changed) {
-                source.sendFailure(Component.literal("Capability недоступна."));
+                source.sendFailure(Component.literal("Capability unavailable."));
                 return 0;
             }
 
-            source.sendSuccess(() -> Component.literal("Установлено состояние " + part + ": " + state), true);
+            source.sendSuccess(() -> Component.literal("The state has been established " + part + ": " + state), true);
             return 1;
         } catch (Exception e) {
-            source.sendFailure(Component.literal("Ошибка выполнения команды: " + e.getMessage()));
+            source.sendFailure(Component.literal("Command execution error: " + e.getMessage()));
             return 0;
         }
     }

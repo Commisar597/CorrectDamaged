@@ -71,7 +71,6 @@ public class StumpLayer extends RenderLayer<AbstractClientPlayer, PlayerModel<Ab
             boolean rightArmSlim = isSlim && rightArmState != 0;
             boolean leftArmSlim = isSlim && leftArmState != 0;
 
-            // --- РУКИ И НОГИ ---
             renderLimbCap(poseStack, buffer, packedLight, player, getParentModel().rightArm, rightArmState,
                     rightArmSlim ? cap3x4 : cap4x4,
                     rightArmSlim ? STUMP_4x3 : STUMP_4x4,
@@ -88,7 +87,6 @@ public class StumpLayer extends RenderLayer<AbstractClientPlayer, PlayerModel<Ab
             renderLimbCap(poseStack, buffer, packedLight, player, getParentModel().leftLeg, data.getLeftLeg(),
                     cap4x4, STUMP_4x4, 0.0F, 0.0F, 3, false);
 
-            // --- ГОЛОВА ---
             renderHeadCap(poseStack, buffer, packedLight, player, headState);
         });
     }
@@ -100,12 +98,11 @@ public class StumpLayer extends RenderLayer<AbstractClientPlayer, PlayerModel<Ab
             AbstractClientPlayer player,
             int state
     ) {
-        if (state == 5) return; // 5 = целая голова
+        if (state == 5) return;
 
         poseStack.pushPose();
 
         if (state == 0) {
-            // Обезглавливание: сдвигаем чуть вверх над шеей (+0.02 пикселя)
             getParentModel().body.translateAndRotate(poseStack);
             poseStack.translate(0.0D, -0.02D / 16.0D, 0.0D);
         } else {
@@ -113,25 +110,20 @@ public class StumpLayer extends RenderLayer<AbstractClientPlayer, PlayerModel<Ab
 
             switch (state) {
                 case 1 ->
-                    // Нижняя половина головы (срез сверху на Y = -4): сдвигаем заглушку чуть ВВЕРХ (-3.98)
                         poseStack.translate(0.0D, -3.98D / 16.0D, 0.0D);
                 case 2 ->
-                    // Верхняя половина головы (срез снизу на Y = -4): сдвигаем заглушку чуть ВНИЗ (-4.02)
                         poseStack.translate(0.0D, -4.02D / 16.0D, 0.0D);
                 case 3 -> {
-                    // Вертикальный распил (срез справа X = 0): выносим заглушку на +0.02 пикселя вправо
                     poseStack.translate(0.02D / 16.0D, -4.0D / 16.0D, 0.0D);
                     poseStack.mulPose(Axis.ZP.rotationDegrees(90.0F));
                 }
                 case 4 -> {
-                    // Вертикальный распил (срез слева X = 0): выносим заглушку на -0.02 пикселя влево
                     poseStack.translate(-0.02D / 16.0D, -4.0D / 16.0D, 0.0D);
                     poseStack.mulPose(Axis.ZP.rotationDegrees(90.0F));
                 }
             }
         }
 
-        // Случайный поворот текстуры среза (0°, 90°, 180°, 270°)
         float angle = getRotationAngle(player, 4, false);
         if (angle != 0.0F) {
             poseStack.mulPose(Axis.YP.rotationDegrees(angle));
