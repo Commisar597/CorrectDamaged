@@ -1,6 +1,5 @@
 package com.KC.correctdamaged.client.render;
 
-import com.KC.correctdamaged.CorrectDamaged;
 import com.KC.correctdamaged.capability.LimbManager;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -21,10 +20,6 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 
 public class StumpLayer extends RenderLayer<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>> {
-
-    private static final ResourceLocation STUMP_4x4 = new ResourceLocation(CorrectDamaged.MODID, "textures/entity/stump_fresh_4x4.png");
-    private static final ResourceLocation STUMP_4x3 = new ResourceLocation(CorrectDamaged.MODID, "textures/entity/stump_fresh_4x3.png");
-    private static final ResourceLocation HEAD_STUMP_8x8 = new ResourceLocation(CorrectDamaged.MODID, "textures/entity/head_stump_8x8.png");
 
     private final ModelPart cap4x4;
     private final ModelPart cap3x4;
@@ -73,19 +68,19 @@ public class StumpLayer extends RenderLayer<AbstractClientPlayer, PlayerModel<Ab
 
             renderLimbCap(poseStack, buffer, packedLight, player, getParentModel().rightArm, rightArmState,
                     rightArmSlim ? cap3x4 : cap4x4,
-                    rightArmSlim ? STUMP_4x3 : STUMP_4x4,
-                    -2.0F, rightArmSlim ? -0.5F : -1.0F, 0, rightArmSlim);
+                    rightArmSlim ? "stump_fresh_4x3" : "stump_fresh_4x4",
+                    -2.0F, rightArmSlim ? -0.5F : -1.0F, 0, rightArmSlim, StumpTextureResolver.LimbType.RIGHT_ARM);
 
             renderLimbCap(poseStack, buffer, packedLight, player, getParentModel().leftArm, leftArmState,
                     leftArmSlim ? cap3x4 : cap4x4,
-                    leftArmSlim ? STUMP_4x3 : STUMP_4x4,
-                    -2.0F, leftArmSlim ? 0.5F : 1.0F, 1, leftArmSlim);
+                    leftArmSlim ? "stump_fresh_4x3" : "stump_fresh_4x4",
+                    -2.0F, leftArmSlim ? 0.5F : 1.0F, 1, leftArmSlim, StumpTextureResolver.LimbType.LEFT_ARM);
 
             renderLimbCap(poseStack, buffer, packedLight, player, getParentModel().rightLeg, data.getRightLeg(),
-                    cap4x4, STUMP_4x4, 0.0F, 0.0F, 2, false);
+                    cap4x4, "stump_fresh_4x4", 0.0F, 0.0F, 2, false, StumpTextureResolver.LimbType.RIGHT_LEG);
 
             renderLimbCap(poseStack, buffer, packedLight, player, getParentModel().leftLeg, data.getLeftLeg(),
-                    cap4x4, STUMP_4x4, 0.0F, 0.0F, 3, false);
+                    cap4x4, "stump_fresh_4x4", 0.0F, 0.0F, 3, false, StumpTextureResolver.LimbType.LEFT_LEG);
 
             renderHeadCap(poseStack, buffer, packedLight, player, headState);
         });
@@ -129,7 +124,8 @@ public class StumpLayer extends RenderLayer<AbstractClientPlayer, PlayerModel<Ab
             poseStack.mulPose(Axis.YP.rotationDegrees(angle));
         }
 
-        VertexConsumer vertexConsumer = buffer.getBuffer(RenderType.entityCutoutNoCull(HEAD_STUMP_8x8));
+        ResourceLocation texture = StumpTextureResolver.getStumpTexture(player, "head_stump_8x8", StumpTextureResolver.LimbType.HEAD);
+        VertexConsumer vertexConsumer = buffer.getBuffer(RenderType.entityCutoutNoCull(texture));
         cap8x8.render(poseStack, vertexConsumer, packedLight, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
 
         poseStack.popPose();
@@ -143,11 +139,12 @@ public class StumpLayer extends RenderLayer<AbstractClientPlayer, PlayerModel<Ab
             ModelPart parentLimb,
             int state,
             ModelPart capModel,
-            ResourceLocation texture,
+            String baseTexName,
             float startY,
             float centerX,
             int limbId,
-            boolean isSlim
+            boolean isSlim,
+            StumpTextureResolver.LimbType limbType
     ) {
         if (state == 3) return;
 
@@ -177,6 +174,7 @@ public class StumpLayer extends RenderLayer<AbstractClientPlayer, PlayerModel<Ab
             poseStack.mulPose(Axis.YP.rotationDegrees(angle));
         }
 
+        ResourceLocation texture = StumpTextureResolver.getStumpTexture(player, baseTexName, limbType);
         VertexConsumer vertexConsumer = buffer.getBuffer(RenderType.entityCutoutNoCull(texture));
         capModel.render(poseStack, vertexConsumer, packedLight, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
 

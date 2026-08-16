@@ -17,21 +17,9 @@ import net.minecraft.resources.ResourceLocation;
 
 public class StumpBodyLayer extends RenderLayer<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>> {
 
-    private static final ResourceLocation DAMAGED_LEFT_2x4 = tex("damaged_left_2x4.png");
-    private static final ResourceLocation DAMAGED_RIGHT_2x4 = tex("damaged_right_2x4.png");
-
-    private static final ResourceLocation DAMAGED_1x4_1_P = tex("damaged_1x4_1_p.png");
-    private static final ResourceLocation DAMAGED_1x4_1_N = tex("damaged_1x4_1_n.png");
-
-    private static final ResourceLocation HOLE_DAMAGE_3x4 = tex("hole_3x4.png");
-    private static final ResourceLocation HOLE_4x4 = tex("hole_4x4.png");
-
-    private static final ResourceLocation BODY_STUMP_12x4_LEFT = tex("body_stump_12x4_left.png");
-    private static final ResourceLocation BODY_STUMP_12x4_RIGHT = tex("body_stump_12x4_right.png");
-
-    private static ResourceLocation tex(String name) {
-        return new ResourceLocation(CorrectDamaged.MODID, "textures/entity/" + name);
-    }
+    private static final ResourceLocation HOLE_4X4_TEXTURE = new ResourceLocation(
+            CorrectDamaged.MODID, "textures/entity/hole_4x4.png"
+    );
 
     public StumpBodyLayer(RenderLayerParent<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>> parent) {
         super(parent);
@@ -61,14 +49,14 @@ public class StumpBodyLayer extends RenderLayer<AbstractClientPlayer, PlayerMode
                 case 1 -> renderCavity(poseStack, buffer, packedLight, 2F, 6F);
                 case 2 -> renderCavity(poseStack, buffer, packedLight, 7F, 11F);
 
-                case 3 -> renderNotch(poseStack, buffer, packedLight, true, 6F, 7F, 10F, 11F, false);
-                case 4 -> renderNotch(poseStack, buffer, packedLight, false, 6F, 7F, 10F, 11F, false);
+                case 3 -> renderNotch(poseStack, buffer, packedLight, player, true, 6F, 7F, 10F, 11F, false);
+                case 4 -> renderNotch(poseStack, buffer, packedLight, player, false, 6F, 7F, 10F, 11F, false);
 
-                case 5 -> renderNotch(poseStack, buffer, packedLight, false, 3F, 4F, 8F, 9F, true);
-                case 6 -> renderNotch(poseStack, buffer, packedLight, true, 3F, 4F, 8F, 9F, true);
+                case 5 -> renderNotch(poseStack, buffer, packedLight, player, false, 3F, 4F, 8F, 9F, true);
+                case 6 -> renderNotch(poseStack, buffer, packedLight, player, true, 3F, 4F, 8F, 9F, true);
 
-                case 7 -> renderBodyHalfStump(poseStack, buffer, packedLight, BODY_STUMP_12x4_RIGHT, true);
-                case 8 -> renderBodyHalfStump(poseStack, buffer, packedLight, BODY_STUMP_12x4_LEFT, false);
+                case 7 -> renderBodyHalfStump(poseStack, buffer, packedLight, player, "body_stump_12x4_right", true);
+                case 8 -> renderBodyHalfStump(poseStack, buffer, packedLight, player, "body_stump_12x4_left", false);
             }
 
             poseStack.popPose();
@@ -76,43 +64,32 @@ public class StumpBodyLayer extends RenderLayer<AbstractClientPlayer, PlayerMode
     }
 
     private void renderNotch(
-            PoseStack poseStack, MultiBufferSource buffer, int packedLight, boolean isLeft,
+            PoseStack poseStack, MultiBufferSource buffer, int packedLight, AbstractClientPlayer player, boolean isLeft,
             float y0, float y1, float y2, float y3, boolean isBig
     ) {
         float xSign = isLeft ? 1F : -1F;
 
-        ResourceLocation tex = isLeft ? DAMAGED_RIGHT_2x4 : DAMAGED_LEFT_2x4;
+        ResourceLocation tex = StumpTextureResolver.getStumpTexture(player, isLeft ? "damaged_right_2x4" : "damaged_left_2x4", StumpTextureResolver.LimbType.BODY);
+        ResourceLocation tex_Vertical = StumpTextureResolver.getStumpTexture(player, "damaged_1x4_1_p", StumpTextureResolver.LimbType.BODY);
+        ResourceLocation tex_Ledge = StumpTextureResolver.getStumpTexture(player, "damaged_1x4_1_n", StumpTextureResolver.LimbType.BODY);
 
-        ResourceLocation tex_Vertical = DAMAGED_1x4_1_P;
-        ResourceLocation tex_Ledge = DAMAGED_1x4_1_N;
-
-        ResourceLocation tex4;
-        int texH;
-        if (isBig) {
-            tex4 = HOLE_4x4;
-            texH = 4;
-        } else {
-            tex4 = HOLE_DAMAGE_3x4;
-            texH = 3;
-        }
+        String holeBase = isBig ? "hole_4x4" : "hole_3x4";
+        ResourceLocation tex4 = StumpTextureResolver.getStumpTexture(player, holeBase, StumpTextureResolver.LimbType.BODY);
+        int texH = isBig ? 4 : 3;
 
         renderLedge(poseStack, buffer.getBuffer(RenderType.entityCutoutNoCull(tex)), packedLight, xSign, 2F, 4F, y0, false, 2, 4);
-
         renderLedge(poseStack, buffer.getBuffer(RenderType.entityCutoutNoCull(tex)), packedLight, xSign, 2F, 4F, y3, true, 2, 4);
 
         renderNotchWall(poseStack, buffer.getBuffer(RenderType.entityCutoutNoCull(tex_Vertical)), packedLight, xSign * 2F, y0, y1, isLeft, 1, 4);
-
         renderLedge(poseStack, buffer.getBuffer(RenderType.entityCutoutNoCull(tex_Ledge)), packedLight, xSign, 1F, 2F, y1, false, 1, 4);
-
         renderLedge(poseStack, buffer.getBuffer(RenderType.entityCutoutNoCull(tex_Ledge)), packedLight, xSign, 1F, 2F, y2, true, 1, 4);
-
         renderNotchWall(poseStack, buffer.getBuffer(RenderType.entityCutoutNoCull(tex_Vertical)), packedLight, xSign * 2F, y2, y3, isLeft, 1, 4);
 
         renderNotchWall(poseStack, buffer.getBuffer(RenderType.entityCutoutNoCull(tex4)), packedLight, xSign * 1F, y1, y2, isLeft, 4, texH);
     }
 
     private void renderCavity(PoseStack poseStack, MultiBufferSource buffer, int packedLight, float yTop, float yBottom) {
-        VertexConsumer buf = buffer.getBuffer(RenderType.entityCutoutNoCull(HOLE_4x4));
+        VertexConsumer buf = buffer.getBuffer(RenderType.entityCutoutNoCull(HOLE_4X4_TEXTURE));
         float h = yBottom - yTop;
         float d = 4F;
         int texW = 4;
@@ -214,13 +191,13 @@ public class StumpBodyLayer extends RenderLayer<AbstractClientPlayer, PlayerMode
 
     private void renderBodyHalfStump(
             PoseStack poseStack, MultiBufferSource buffer, int packedLight,
-            ResourceLocation texture, boolean isRight
+            AbstractClientPlayer player, String baseTexName, boolean isRight
     ) {
+        ResourceLocation texture = StumpTextureResolver.getStumpTexture(player, baseTexName, StumpTextureResolver.LimbType.BODY);
         VertexConsumer buf = buffer.getBuffer(RenderType.entityCutoutNoCull(texture));
         PoseStack.Pose pose = poseStack.last();
 
         FreeUVCubeRenderer.FaceUV uv = FreeUVCubeRenderer.FaceUV.of(0F, 0F, 4F, 12F);
-
         float xPos = isRight ? 2.0F : -2.0F;
 
         poseStack.pushPose();

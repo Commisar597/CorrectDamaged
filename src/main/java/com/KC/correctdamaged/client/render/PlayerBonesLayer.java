@@ -31,8 +31,10 @@ public class PlayerBonesLayer extends RenderLayer<AbstractClientPlayer, PlayerMo
         int boneLeftArm = LimbManager.getBoneLeftArm(player);
         int boneRightLeg = LimbManager.getBoneRightLeg(player);
         int boneLeftLeg = LimbManager.getBoneLeftLeg(player);
+        int showSkull = LimbManager.getShowSkull(player);
+        int showSkeleton = LimbManager.getShowSkeleton(player);
 
-        if (boneRightArm == 0 && boneLeftArm == 0 && boneRightLeg == 0 && boneLeftLeg == 0) return;
+        if (boneRightArm == 0 && boneLeftArm == 0 && boneRightLeg == 0 && boneLeftLeg == 0 && showSkull == 0 && showSkeleton == 0) return;
 
         PlayerModel<AbstractClientPlayer> parentModel = this.getParentModel();
         this.bonesModel.setupAnim(player, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);
@@ -41,6 +43,9 @@ public class PlayerBonesLayer extends RenderLayer<AbstractClientPlayer, PlayerMo
         renderLimb(poseStack, buffer, packedLight, boneLeftLeg, bonesModel.leftThighBone, bonesModel.leftCalfBone, bonesModel.leftFootBone, parentModel.leftLeg);
         renderLimb(poseStack, buffer, packedLight, boneRightArm, bonesModel.rightArmShoulderBone, bonesModel.rightArmForearmBone, bonesModel.rightArmWristBone, parentModel.rightArm);
         renderLimb(poseStack, buffer, packedLight, boneLeftArm, bonesModel.leftArmShoulderBone, bonesModel.leftArmForearmBone, bonesModel.leftArmWristBone, parentModel.leftArm);
+
+        renderSingleBone(poseStack, buffer, packedLight, showSkull, bonesModel.scull, parentModel.head);
+        renderSingleBone(poseStack, buffer, packedLight, showSkeleton, bonesModel.skeleton, parentModel.body);
     }
 
     private void renderLimb(
@@ -74,6 +79,24 @@ public class PlayerBonesLayer extends RenderLayer<AbstractClientPlayer, PlayerMo
             VertexConsumer consumer = buffer.getBuffer(RenderType.entityCutoutNoCull(wristTex));
             outerPart.render(poseStack, consumer, packedLight, OverlayTexture.NO_OVERLAY, 1.0f, 1.0f, 1.0f, 1.0f);
         }
+
+        poseStack.popPose();
+    }
+
+    private void renderSingleBone(
+            PoseStack poseStack, MultiBufferSource buffer, int packedLight, int state,
+            ModelPart bonePart, ModelPart parentBodyPart
+    ) {
+        if (state <= 0) return;
+
+        boolean burnt = state == 2;
+        ResourceLocation tex = burnt ? PlayerBonesModel.BURNT_BONE : PlayerBonesModel.BONE;
+
+        poseStack.pushPose();
+        parentBodyPart.translateAndRotate(poseStack);
+
+        VertexConsumer consumer = buffer.getBuffer(RenderType.entityCutoutNoCull(tex));
+        bonePart.render(poseStack, consumer, packedLight, OverlayTexture.NO_OVERLAY, 1.0f, 1.0f, 1.0f, 1.0f);
 
         poseStack.popPose();
     }

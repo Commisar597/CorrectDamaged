@@ -104,6 +104,24 @@ public final class LimbManager {
         }).orElse(false);
     }
 
+    public static boolean setShowSkull(Player player, int state) {
+        return get(player).map(data -> {
+            int oldState = data.getShowSkull();
+            data.setShowSkull(state);
+            if (oldState != data.getShowSkull()) sync(player);
+            return true;
+        }).orElse(false);
+    }
+
+    public static boolean setShowSkeleton(Player player, int state) {
+        return get(player).map(data -> {
+            int oldState = data.getShowSkeleton();
+            data.setShowSkeleton(state);
+            if (oldState != data.getShowSkeleton()) sync(player);
+            return true;
+        }).orElse(false);
+    }
+
     public static boolean setMuscleRightArm(Player player, int state) {
         return get(player).map(data -> {
             int oldState = data.getMuscleRightArm();
@@ -140,6 +158,24 @@ public final class LimbManager {
         }).orElse(false);
     }
 
+    public static boolean setMuscleHead(Player player, int state) {
+        return get(player).map(data -> {
+            int oldState = data.getMuscleHead();
+            data.setMuscleHead(state);
+            if (oldState != data.getMuscleHead()) sync(player);
+            return true;
+        }).orElse(false);
+    }
+
+    public static boolean setMuscleBody(Player player, int state) {
+        return get(player).map(data -> {
+            int oldState = data.getMuscleBody();
+            data.setMuscleBody(state);
+            if (oldState != data.getMuscleBody()) sync(player);
+            return true;
+        }).orElse(false);
+    }
+
     public static int getRightArm(Player player) { return get(player).map(LimbData::getRightArm).orElse(3); }
     public static int getLeftArm(Player player) { return get(player).map(LimbData::getLeftArm).orElse(3); }
     public static int getRightLeg(Player player) { return get(player).map(LimbData::getRightLeg).orElse(3); }
@@ -151,11 +187,15 @@ public final class LimbManager {
     public static int getBoneLeftArm(Player player) { return get(player).map(LimbData::getBoneLeftArm).orElse(0); }
     public static int getBoneRightLeg(Player player) { return get(player).map(LimbData::getBoneRightLeg).orElse(0); }
     public static int getBoneLeftLeg(Player player) { return get(player).map(LimbData::getBoneLeftLeg).orElse(0); }
+    public static int getShowSkull(Player player) { return get(player).map(LimbData::getShowSkull).orElse(0); }
+    public static int getShowSkeleton(Player player) { return get(player).map(LimbData::getShowSkeleton).orElse(0); }
 
     public static int getMuscleRightArm(Player player) { return get(player).map(LimbData::getMuscleRightArm).orElse(0); }
     public static int getMuscleLeftArm(Player player) { return get(player).map(LimbData::getMuscleLeftArm).orElse(0); }
     public static int getMuscleRightLeg(Player player) { return get(player).map(LimbData::getMuscleRightLeg).orElse(0); }
     public static int getMuscleLeftLeg(Player player) { return get(player).map(LimbData::getMuscleLeftLeg).orElse(0); }
+    public static int getMuscleHead(Player player) { return get(player).map(LimbData::getMuscleHead).orElse(0); }
+    public static int getMuscleBody(Player player) { return get(player).map(LimbData::getMuscleBody).orElse(0); }
 
     private static void sync(Player player) {
         if (player instanceof ServerPlayer serverPlayer) {

@@ -25,11 +25,15 @@ public class SyncLimbDataPacket {
     private final int boneLeftArm;
     private final int boneRightLeg;
     private final int boneLeftLeg;
+    private final int showSkull;
+    private final int showSkeleton;
 
     private final int muscleRightArm;
     private final int muscleLeftArm;
     private final int muscleRightLeg;
     private final int muscleLeftLeg;
+    private final int muscleHead;
+    private final int muscleBody;
 
     public SyncLimbDataPacket(
             UUID playerUUID,
@@ -43,10 +47,14 @@ public class SyncLimbDataPacket {
             int boneLeftArm,
             int boneRightLeg,
             int boneLeftLeg,
+            int showSkull,
+            int showSkeleton,
             int muscleRightArm,
             int muscleLeftArm,
             int muscleRightLeg,
-            int muscleLeftLeg
+            int muscleLeftLeg,
+            int muscleHead,
+            int muscleBody
     ) {
         this.playerUUID = playerUUID;
         this.rightArm = rightArm;
@@ -59,10 +67,14 @@ public class SyncLimbDataPacket {
         this.boneLeftArm = boneLeftArm;
         this.boneRightLeg = boneRightLeg;
         this.boneLeftLeg = boneLeftLeg;
+        this.showSkull = showSkull;
+        this.showSkeleton = showSkeleton;
         this.muscleRightArm = muscleRightArm;
         this.muscleLeftArm = muscleLeftArm;
         this.muscleRightLeg = muscleRightLeg;
         this.muscleLeftLeg = muscleLeftLeg;
+        this.muscleHead = muscleHead;
+        this.muscleBody = muscleBody;
     }
 
     public static SyncLimbDataPacket from(ServerPlayer player) {
@@ -79,16 +91,20 @@ public class SyncLimbDataPacket {
                         data.getBoneLeftArm(),
                         data.getBoneRightLeg(),
                         data.getBoneLeftLeg(),
+                        data.getShowSkull(),
+                        data.getShowSkeleton(),
                         data.getMuscleRightArm(),
                         data.getMuscleLeftArm(),
                         data.getMuscleRightLeg(),
-                        data.getMuscleLeftLeg()
+                        data.getMuscleLeftLeg(),
+                        data.getMuscleHead(),
+                        data.getMuscleBody()
                 ))
                 .orElse(new SyncLimbDataPacket(
                         player.getUUID(),
                         3, 3, 3, 3, 5, 9,
-                        0, 0, 0, 0,
-                        0, 0, 0, 0
+                        0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0, 0, 0
                 ));
     }
 
@@ -109,11 +125,15 @@ public class SyncLimbDataPacket {
         buffer.writeByte(packet.boneLeftArm);
         buffer.writeByte(packet.boneRightLeg);
         buffer.writeByte(packet.boneLeftLeg);
+        buffer.writeByte(packet.showSkull);
+        buffer.writeByte(packet.showSkeleton);
 
         buffer.writeByte(packet.muscleRightArm);
         buffer.writeByte(packet.muscleLeftArm);
         buffer.writeByte(packet.muscleRightLeg);
         buffer.writeByte(packet.muscleLeftLeg);
+        buffer.writeByte(packet.muscleHead);
+        buffer.writeByte(packet.muscleBody);
     }
 
     public static SyncLimbDataPacket decode(
@@ -121,6 +141,10 @@ public class SyncLimbDataPacket {
     ) {
         return new SyncLimbDataPacket(
                 buffer.readUUID(),
+                buffer.readByte(),
+                buffer.readByte(),
+                buffer.readByte(),
+                buffer.readByte(),
                 buffer.readByte(),
                 buffer.readByte(),
                 buffer.readByte(),
@@ -164,11 +188,15 @@ public class SyncLimbDataPacket {
                 data.setBoneLeftArm(packet.boneLeftArm);
                 data.setBoneRightLeg(packet.boneRightLeg);
                 data.setBoneLeftLeg(packet.boneLeftLeg);
+                data.setShowSkull(packet.showSkull);
+                data.setShowSkeleton(packet.showSkeleton);
 
                 data.setMuscleRightArm(packet.muscleRightArm);
                 data.setMuscleLeftArm(packet.muscleLeftArm);
                 data.setMuscleRightLeg(packet.muscleRightLeg);
                 data.setMuscleLeftLeg(packet.muscleLeftLeg);
+                data.setMuscleHead(packet.muscleHead);
+                data.setMuscleBody(packet.muscleBody);
             });
         });
 
