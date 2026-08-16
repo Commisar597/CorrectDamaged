@@ -1,6 +1,8 @@
 package com.KC.correctdamaged.client.render;
 
 import com.KC.correctdamaged.capability.LimbManager;
+import com.KC.correctdamaged.client.render.customRender.CustomCube;
+import com.KC.correctdamaged.client.render.customRender.FreeUVCubeRenderer;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.model.PlayerModel;

@@ -1,5 +1,6 @@
 package com.KC.correctdamaged.mixin.client;
 
+import com.KC.correctdamaged.capability.HeadData;
 import com.KC.correctdamaged.capability.LimbManager;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.PlayerModel;
@@ -42,7 +43,6 @@ public abstract class HumanoidModelMixin<T extends LivingEntity> {
             int leftArmState = data.getLeftArm();
             int rightLegState = data.getRightLeg();
             int leftLegState = data.getLeftLeg();
-            int headState = data.getHeadState();
             int bodyState = data.getBodyState();
 
             correctDamaged$applyState(rightArm, rightArmState);
@@ -56,7 +56,14 @@ public abstract class HumanoidModelMixin<T extends LivingEntity> {
                 correctDamaged$applyState(playerModel.rightPants, rightLegState);
                 correctDamaged$applyState(playerModel.leftPants, leftLegState);
 
-                correctDamaged$applyHeadState(playerModel.head, playerModel.hat, headState);
+                // Получаем маску кожи головы
+                byte headMask = data.getHead().getSkinMask();
+
+                // Если маска полная (255), возвращаем ванильную голову и шляпу
+                boolean isFullHead = (headMask & 0xFF) == 0xFF;
+                playerModel.head.visible = isFullHead;
+                playerModel.hat.visible = isFullHead;
+
                 correctDamaged$applyBodyState(playerModel.body, playerModel.jacket, bodyState);
             }
         });
@@ -78,29 +85,7 @@ public abstract class HumanoidModelMixin<T extends LivingEntity> {
         limb.skipDraw = true;
     }
 
-    private static void correctDamaged$applyHeadState(ModelPart head, ModelPart hat, int state) {
-        if (state == 5) {
-            head.visible = true;
-            head.skipDraw = false;
-            hat.visible = true;
-            hat.skipDraw = false;
-            return;
-        }
-
-        if (state == 0) {
-            head.visible = false;
-            hat.visible = false;
-            return;
-        }
-
-        head.visible = true;
-        head.skipDraw = true;
-        hat.visible = true;
-        hat.skipDraw = true;
-    }
-
     private static void correctDamaged$applyBodyState(ModelPart body, ModelPart jacket, int state) {
-        // 9: Цельное тело (стандартный ванильный рендер)
         if (state == 9) {
             body.visible = true;
             body.skipDraw = false;
@@ -109,14 +94,12 @@ public abstract class HumanoidModelMixin<T extends LivingEntity> {
             return;
         }
 
-        // 0: Тело отсутствует
         if (state == 0) {
             body.visible = false;
             jacket.visible = false;
             return;
         }
 
-        // 1..8: Вариации повреждения (скрываем стандартное тело, BodyDamageLayer отрендерит кастомное)
         body.visible = true;
         body.skipDraw = true;
         jacket.visible = true;

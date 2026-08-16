@@ -1,4 +1,4 @@
-package com.KC.correctdamaged.client.render;
+package com.KC.correctdamaged.client.render.customRender;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;

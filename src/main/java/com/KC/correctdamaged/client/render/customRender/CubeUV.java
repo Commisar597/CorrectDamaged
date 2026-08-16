@@ -1,6 +1,6 @@
-package com.KC.correctdamaged.client.render;
+package com.KC.correctdamaged.client.render.customRender;
 
-import com.KC.correctdamaged.client.render.FreeUVCubeRenderer.FaceUV;
+import com.KC.correctdamaged.client.render.customRender.FreeUVCubeRenderer.FaceUV;
 
 public record CubeUV(
         FaceUV front,

@@ -61,7 +61,7 @@ public class StumpLayer extends RenderLayer<AbstractClientPlayer, PlayerModel<Ab
 
             int rightArmState = data.getRightArm();
             int leftArmState = data.getLeftArm();
-            int headState = data.getHeadState();
+            //int headState = data.getHeadState();
 
             boolean rightArmSlim = isSlim && rightArmState != 0;
             boolean leftArmSlim = isSlim && leftArmState != 0;
@@ -81,54 +81,7 @@ public class StumpLayer extends RenderLayer<AbstractClientPlayer, PlayerModel<Ab
 
             renderLimbCap(poseStack, buffer, packedLight, player, getParentModel().leftLeg, data.getLeftLeg(),
                     cap4x4, "stump_fresh_4x4", 0.0F, 0.0F, 3, false, StumpTextureResolver.LimbType.LEFT_LEG);
-
-            renderHeadCap(poseStack, buffer, packedLight, player, headState);
         });
-    }
-
-    private void renderHeadCap(
-            PoseStack poseStack,
-            MultiBufferSource buffer,
-            int packedLight,
-            AbstractClientPlayer player,
-            int state
-    ) {
-        if (state == 5) return;
-
-        poseStack.pushPose();
-
-        if (state == 0) {
-            getParentModel().body.translateAndRotate(poseStack);
-            poseStack.translate(0.0D, -0.02D / 16.0D, 0.0D);
-        } else {
-            getParentModel().head.translateAndRotate(poseStack);
-
-            switch (state) {
-                case 1 ->
-                        poseStack.translate(0.0D, -3.98D / 16.0D, 0.0D);
-                case 2 ->
-                        poseStack.translate(0.0D, -4.02D / 16.0D, 0.0D);
-                case 3 -> {
-                    poseStack.translate(0.02D / 16.0D, -4.0D / 16.0D, 0.0D);
-                    poseStack.mulPose(Axis.ZP.rotationDegrees(90.0F));
-                }
-                case 4 -> {
-                    poseStack.translate(-0.02D / 16.0D, -4.0D / 16.0D, 0.0D);
-                    poseStack.mulPose(Axis.ZP.rotationDegrees(90.0F));
-                }
-            }
-        }
-
-        float angle = getRotationAngle(player, 4, false);
-        if (angle != 0.0F) {
-            poseStack.mulPose(Axis.YP.rotationDegrees(angle));
-        }
-
-        ResourceLocation texture = StumpTextureResolver.getStumpTexture(player, "head_stump_8x8", StumpTextureResolver.LimbType.HEAD);
-        VertexConsumer vertexConsumer = buffer.getBuffer(RenderType.entityCutoutNoCull(texture));
-        cap8x8.render(poseStack, vertexConsumer, packedLight, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
-
-        poseStack.popPose();
     }
 
     private void renderLimbCap(

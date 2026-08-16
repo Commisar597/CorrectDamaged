@@ -1,4 +1,4 @@
-package com.KC.correctdamaged.client.render;
+package com.KC.correctdamaged.client.render.customRender;
 
 public record CustomCube(
         String name,

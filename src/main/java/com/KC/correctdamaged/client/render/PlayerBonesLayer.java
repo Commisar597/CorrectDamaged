@@ -1,19 +1,19 @@
 package com.KC.correctdamaged.client.render;
 
-import com.KC.correctdamaged.client.ClientSetup;
 import com.KC.correctdamaged.capability.LimbManager;
+import com.KC.correctdamaged.event.ClientEvents;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.model.geom.EntityModelSet;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.resources.ResourceLocation;
 
 public class PlayerBonesLayer extends RenderLayer<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>> {
@@ -21,7 +21,7 @@ public class PlayerBonesLayer extends RenderLayer<AbstractClientPlayer, PlayerMo
 
     public PlayerBonesLayer(RenderLayerParent<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>> parent, EntityModelSet modelSet, boolean isSlim) {
         super(parent);
-        ModelLayerLocation layerLoc = isSlim ? ClientSetup.PLAYER_BONES_SLIM_LAYER : ClientSetup.PLAYER_BONES_LAYER;
+        ModelLayerLocation layerLoc = isSlim ? ClientEvents.PLAYER_BONES_SLIM_LAYER : ClientEvents.PLAYER_BONES_LAYER;
         this.bonesModel = new PlayerBonesModel(modelSet.bakeLayer(layerLoc));
     }
 
@@ -31,10 +31,9 @@ public class PlayerBonesLayer extends RenderLayer<AbstractClientPlayer, PlayerMo
         int boneLeftArm = LimbManager.getBoneLeftArm(player);
         int boneRightLeg = LimbManager.getBoneRightLeg(player);
         int boneLeftLeg = LimbManager.getBoneLeftLeg(player);
-        int showSkull = LimbManager.getShowSkull(player);
         int showSkeleton = LimbManager.getShowSkeleton(player);
 
-        if (boneRightArm == 0 && boneLeftArm == 0 && boneRightLeg == 0 && boneLeftLeg == 0 && showSkull == 0 && showSkeleton == 0) return;
+        if (boneRightArm == 0 && boneLeftArm == 0 && boneRightLeg == 0 && boneLeftLeg == 0 && showSkeleton == 0) return;
 
         PlayerModel<AbstractClientPlayer> parentModel = this.getParentModel();
         this.bonesModel.setupAnim(player, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);
@@ -44,7 +43,6 @@ public class PlayerBonesLayer extends RenderLayer<AbstractClientPlayer, PlayerMo
         renderLimb(poseStack, buffer, packedLight, boneRightArm, bonesModel.rightArmShoulderBone, bonesModel.rightArmForearmBone, bonesModel.rightArmWristBone, parentModel.rightArm);
         renderLimb(poseStack, buffer, packedLight, boneLeftArm, bonesModel.leftArmShoulderBone, bonesModel.leftArmForearmBone, bonesModel.leftArmWristBone, parentModel.leftArm);
 
-        renderSingleBone(poseStack, buffer, packedLight, showSkull, bonesModel.scull, parentModel.head);
         renderSingleBone(poseStack, buffer, packedLight, showSkeleton, bonesModel.skeleton, parentModel.body);
     }
 

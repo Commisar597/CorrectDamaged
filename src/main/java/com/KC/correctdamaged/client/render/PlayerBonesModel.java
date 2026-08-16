@@ -32,7 +32,6 @@ public class PlayerBonesModel extends PlayerModel<AbstractClientPlayer> {
     public final ModelPart leftArmForearmBone;
     public final ModelPart leftArmShoulderBone;
 
-    public final ModelPart scull;
     public final ModelPart skeleton;
 
     public PlayerBonesModel(ModelPart root) {
@@ -53,7 +52,6 @@ public class PlayerBonesModel extends PlayerModel<AbstractClientPlayer> {
         this.leftArmForearmBone = root.getChild("leftArmForearmBone");
         this.leftArmWristBone = root.getChild("leftArmWristBone");
 
-        this.scull = root.getChild("scull");
         this.skeleton = root.getChild("skeleton");
     }
 
@@ -89,8 +87,6 @@ public class PlayerBonesModel extends PlayerModel<AbstractClientPlayer> {
         partdefinition.addOrReplaceChild("leftArmWristBone",
                 CubeListBuilder.create().texOffs(0, 14).mirror().addBox(-1.0F, 8.0F, -1.0F, 2.0F, 2.0F, 2.0F), PartPose.offset(0.1F, 0.0F, 0.0F));
 
-        partdefinition.addOrReplaceChild("scull",
-                CubeListBuilder.create().texOffs(32, 48).addBox(-4.0F, -8.0F, -4.0F, 8.0F, 8.0F, 8.0F, new CubeDeformation(-0.250F)), PartPose.ZERO);
         partdefinition.addOrReplaceChild("skeleton",
                 CubeListBuilder.create().texOffs(40, 0).addBox(-4.0F, 0.0F, -2.0F, 8.0F, 12.0F, 4.0F, new CubeDeformation(-0.250F)), PartPose.ZERO);
 
@@ -118,7 +114,6 @@ public class PlayerBonesModel extends PlayerModel<AbstractClientPlayer> {
         this.leftArmForearmBone.visible = visible;
         this.leftArmShoulderBone.visible = visible;
 
-        this.scull.visible = visible;
         this.skeleton.visible = visible;
     }
 }

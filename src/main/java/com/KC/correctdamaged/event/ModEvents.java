@@ -3,8 +3,7 @@ package com.KC.correctdamaged.event;
 import com.KC.correctdamaged.CorrectDamaged;
 import com.KC.correctdamaged.capability.LimbCapability;
 import com.KC.correctdamaged.capability.LimbCapabilityProvider;
-import com.KC.correctdamaged.command.SetLimbCommand;
-import com.KC.correctdamaged.command.ShowLimbLayerCommand;
+import com.KC.correctdamaged.command.LimbCommands;
 import com.KC.correctdamaged.network.PacketHandler;
 
 import net.minecraft.resources.ResourceLocation;
@@ -105,10 +104,7 @@ public class ModEvents {
             RegisterCommandsEvent event
     ) {
 
-        SetLimbCommand.register(
-                event.getDispatcher()
-        );
-        ShowLimbLayerCommand.register(
+        LimbCommands.register(
                 event.getDispatcher()
         );
     }

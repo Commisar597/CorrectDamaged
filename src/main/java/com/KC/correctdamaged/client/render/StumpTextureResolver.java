@@ -37,7 +37,7 @@ public final class StumpTextureResolver {
 
     private static boolean checkIsBurnt(LimbData data, LimbType type) {
         return switch (type) {
-            case HEAD -> data.getHeadState() == 2 || data.getShowSkull() == 2;
+            case HEAD -> data.getHead().getSkinMask() == 2;
             case BODY -> data.getBodyState() == 2 || data.getShowSkeleton() == 2;
             case RIGHT_ARM -> data.getBoneRightArm() > 3;
             case LEFT_ARM -> data.getBoneLeftArm() > 3;

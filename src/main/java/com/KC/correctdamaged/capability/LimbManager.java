@@ -14,6 +14,51 @@ public final class LimbManager {
         return player.getCapability(LimbCapability.INSTANCE).resolve();
     }
 
+    // --- Head Octal Mask Setters & Getters ---
+
+    public static boolean setHeadSkinMask(Player player, byte mask) {
+        return get(player).map(data -> {
+            byte old = data.getHead().getSkinMask();
+            data.getHead().setSkinMask(mask);
+            if (old != mask) sync(player);
+            return true;
+        }).orElse(false);
+    }
+
+    public static boolean setHeadMuscleMask(Player player, byte mask) {
+        return get(player).map(data -> {
+            byte old = data.getHead().getMuscleMask();
+            data.getHead().setMuscleMask(mask);
+            if (old != mask) sync(player);
+            return true;
+        }).orElse(false);
+    }
+
+    public static boolean setHeadSkullMask(Player player, byte mask) {
+        return get(player).map(data -> {
+            byte old = data.getHead().getSkullMask();
+            data.getHead().setSkullMask(mask);
+            if (old != mask) sync(player);
+            return true;
+        }).orElse(false);
+    }
+
+    public static byte getHeadSkinMask(Player player) {
+        return get(player).map(data -> data.getHead().getSkinMask()).orElse((byte) 0xFF);
+    }
+
+    public static byte getHeadMuscleMask(Player player) {
+        return get(player).map(data -> data.getHead().getMuscleMask()).orElse((byte) 0xFF);
+    }
+
+    public static byte getHeadSkullMask(Player player) {
+        return get(player).map(data -> data.getHead().getSkullMask()).orElse((byte) 0xFF);
+    }
+
+    public static boolean isHeadBurntSkull(Player player) {
+        return get(player).map(data -> data.getHead().isBurntSkull()).orElse(false);
+    }
+
     public static boolean setRightArm(Player player, int state) {
         return get(player).map(data -> {
             int oldState = data.getRightArm();
@@ -46,15 +91,6 @@ public final class LimbManager {
             int oldState = data.getLeftLeg();
             data.setLeftLeg(state);
             if (oldState != data.getLeftLeg()) sync(player);
-            return true;
-        }).orElse(false);
-    }
-
-    public static boolean setHeadState(Player player, int state) {
-        return get(player).map(data -> {
-            int oldState = data.getHeadState();
-            data.setHeadState(state);
-            if (oldState != data.getHeadState()) sync(player);
             return true;
         }).orElse(false);
     }
@@ -104,15 +140,6 @@ public final class LimbManager {
         }).orElse(false);
     }
 
-    public static boolean setShowSkull(Player player, int state) {
-        return get(player).map(data -> {
-            int oldState = data.getShowSkull();
-            data.setShowSkull(state);
-            if (oldState != data.getShowSkull()) sync(player);
-            return true;
-        }).orElse(false);
-    }
-
     public static boolean setShowSkeleton(Player player, int state) {
         return get(player).map(data -> {
             int oldState = data.getShowSkeleton();
@@ -158,15 +185,6 @@ public final class LimbManager {
         }).orElse(false);
     }
 
-    public static boolean setMuscleHead(Player player, int state) {
-        return get(player).map(data -> {
-            int oldState = data.getMuscleHead();
-            data.setMuscleHead(state);
-            if (oldState != data.getMuscleHead()) sync(player);
-            return true;
-        }).orElse(false);
-    }
-
     public static boolean setMuscleBody(Player player, int state) {
         return get(player).map(data -> {
             int oldState = data.getMuscleBody();
@@ -176,25 +194,31 @@ public final class LimbManager {
         }).orElse(false);
     }
 
+    public static boolean setHeadBurntSkull(Player player, boolean burnt) {
+        return get(player).map(data -> {
+            boolean old = data.getHead().isBurntSkull();
+            data.getHead().setBurntSkull(burnt);
+            if (old != burnt) sync(player);
+            return true;
+        }).orElse(false);
+    }
+
     public static int getRightArm(Player player) { return get(player).map(LimbData::getRightArm).orElse(3); }
     public static int getLeftArm(Player player) { return get(player).map(LimbData::getLeftArm).orElse(3); }
     public static int getRightLeg(Player player) { return get(player).map(LimbData::getRightLeg).orElse(3); }
     public static int getLeftLeg(Player player) { return get(player).map(LimbData::getLeftLeg).orElse(3); }
-    public static int getHeadState(Player player) { return get(player).map(LimbData::getHeadState).orElse(5); }
     public static int getBodyState(Player player) { return get(player).map(LimbData::getBodyState).orElse(9); }
 
     public static int getBoneRightArm(Player player) { return get(player).map(LimbData::getBoneRightArm).orElse(0); }
     public static int getBoneLeftArm(Player player) { return get(player).map(LimbData::getBoneLeftArm).orElse(0); }
     public static int getBoneRightLeg(Player player) { return get(player).map(LimbData::getBoneRightLeg).orElse(0); }
     public static int getBoneLeftLeg(Player player) { return get(player).map(LimbData::getBoneLeftLeg).orElse(0); }
-    public static int getShowSkull(Player player) { return get(player).map(LimbData::getShowSkull).orElse(0); }
     public static int getShowSkeleton(Player player) { return get(player).map(LimbData::getShowSkeleton).orElse(0); }
 
     public static int getMuscleRightArm(Player player) { return get(player).map(LimbData::getMuscleRightArm).orElse(0); }
     public static int getMuscleLeftArm(Player player) { return get(player).map(LimbData::getMuscleLeftArm).orElse(0); }
     public static int getMuscleRightLeg(Player player) { return get(player).map(LimbData::getMuscleRightLeg).orElse(0); }
     public static int getMuscleLeftLeg(Player player) { return get(player).map(LimbData::getMuscleLeftLeg).orElse(0); }
-    public static int getMuscleHead(Player player) { return get(player).map(LimbData::getMuscleHead).orElse(0); }
     public static int getMuscleBody(Player player) { return get(player).map(LimbData::getMuscleBody).orElse(0); }
 
     private static void sync(Player player) {

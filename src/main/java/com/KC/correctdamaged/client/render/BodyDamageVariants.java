@@ -1,8 +1,11 @@
 package com.KC.correctdamaged.client.render;
 
+import com.KC.correctdamaged.client.render.customRender.CubeUV;
+import com.KC.correctdamaged.client.render.customRender.CustomCube;
+
 import java.util.Map;
 
-import static com.KC.correctdamaged.client.render.FreeUVCubeRenderer.FaceUV;
+import static com.KC.correctdamaged.client.render.customRender.FreeUVCubeRenderer.FaceUV;
 
 public final class BodyDamageVariants {
 

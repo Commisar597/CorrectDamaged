@@ -1,6 +1,9 @@
 package com.KC.correctdamaged.client.render;
 
-import static com.KC.correctdamaged.client.render.FreeUVCubeRenderer.FaceUV;
+import com.KC.correctdamaged.client.render.customRender.CubeUV;
+import com.KC.correctdamaged.client.render.customRender.CustomCube;
+
+import static com.KC.correctdamaged.client.render.customRender.FreeUVCubeRenderer.FaceUV;
 
 public final class LimbDamageVariants {
 
