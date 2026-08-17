@@ -1,6 +1,6 @@
 package com.KC.correctdamaged.client.render.head;
 
-import com.KC.correctdamaged.capability.HeadData;
+import com.KC.correctdamaged.capability.visual.HeadData;
 import com.KC.correctdamaged.capability.LimbManager;
 import com.KC.correctdamaged.client.render.customRender.CubeUV;
 import com.KC.correctdamaged.client.render.customRender.FreeUVCubeRenderer;

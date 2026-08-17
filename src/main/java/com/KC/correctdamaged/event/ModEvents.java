@@ -1,8 +1,8 @@
 package com.KC.correctdamaged.event;
 
 import com.KC.correctdamaged.CorrectDamaged;
-import com.KC.correctdamaged.capability.LimbCapability;
-import com.KC.correctdamaged.capability.LimbCapabilityProvider;
+import com.KC.correctdamaged.capability.visual.LimbCapability;
+import com.KC.correctdamaged.capability.visual.LimbCapabilityProvider;
 import com.KC.correctdamaged.command.LimbCommands;
 import com.KC.correctdamaged.network.PacketHandler;
 

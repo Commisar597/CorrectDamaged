@@ -1,11 +1,11 @@
-package com.KC.correctdamaged.capability;
+package com.KC.correctdamaged.capability.visual;
 
 import net.minecraft.nbt.CompoundTag;
 
 public class HeadData {
     private byte skinMask = (byte) 0xFF;
-    private byte muscleMask = (byte) 0xFF;
-    private byte skullMask = (byte) 0xFF;
+    private byte muscleMask = (byte) 0;
+    private byte skullMask = (byte) 0;
     private boolean burntSkull = false;
 
     public byte getSkinMask() { return skinMask; }

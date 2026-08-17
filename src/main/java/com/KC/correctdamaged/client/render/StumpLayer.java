@@ -1,10 +1,11 @@
 package com.KC.correctdamaged.client.render;
 
+import com.KC.correctdamaged.capability.visual.ArmData;
+import com.KC.correctdamaged.capability.visual.LegData;
 import com.KC.correctdamaged.capability.LimbManager;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
-
 import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
@@ -56,12 +57,19 @@ public class StumpLayer extends RenderLayer<AbstractClientPlayer, PlayerModel<Ab
             float netHeadYaw,
             float headPitch
     ) {
-        LimbManager.get(player).ifPresent(data -> {
+        player.getCapability(LimbManager.LIMB_DATA_CAP).ifPresent(data -> {
             boolean isSlim = player.getModelName().equals("slim");
 
-            int rightArmState = data.getRightArm();
-            int leftArmState = data.getLeftArm();
-            //int headState = data.getHeadState();
+            ArmData rightArm = data.getRightArm();
+            ArmData leftArm = data.getLeftArm();
+            LegData rightLeg = data.getRightLeg();
+            LegData leftLeg = data.getLeftLeg();
+
+            int rightArmState = getCutState(new int[]{ rightArm.getShoulderSkin(), rightArm.getForearmSkin(), rightArm.getWristSkin() });
+            int leftArmState  = getCutState(new int[]{ leftArm.getShoulderSkin(), leftArm.getForearmSkin(), leftArm.getWristSkin() });
+
+            int rightLegState = getCutState(new int[]{ rightLeg.getThighSkin(), rightLeg.getCalfSkin(), rightLeg.getFootSkin() });
+            int leftLegState  = getCutState(new int[]{ leftLeg.getThighSkin(), leftLeg.getCalfSkin(), leftLeg.getFootSkin() });
 
             boolean rightArmSlim = isSlim && rightArmState != 0;
             boolean leftArmSlim = isSlim && leftArmState != 0;
@@ -76,12 +84,23 @@ public class StumpLayer extends RenderLayer<AbstractClientPlayer, PlayerModel<Ab
                     leftArmSlim ? "stump_fresh_4x3" : "stump_fresh_4x4",
                     -2.0F, leftArmSlim ? 0.5F : 1.0F, 1, leftArmSlim, StumpTextureResolver.LimbType.LEFT_ARM);
 
-            renderLimbCap(poseStack, buffer, packedLight, player, getParentModel().rightLeg, data.getRightLeg(),
+            renderLimbCap(poseStack, buffer, packedLight, player, getParentModel().rightLeg, rightLegState,
                     cap4x4, "stump_fresh_4x4", 0.0F, 0.0F, 2, false, StumpTextureResolver.LimbType.RIGHT_LEG);
 
-            renderLimbCap(poseStack, buffer, packedLight, player, getParentModel().leftLeg, data.getLeftLeg(),
+            renderLimbCap(poseStack, buffer, packedLight, player, getParentModel().leftLeg, leftLegState,
                     cap4x4, "stump_fresh_4x4", 0.0F, 0.0F, 3, false, StumpTextureResolver.LimbType.LEFT_LEG);
         });
+    }
+
+    private int getCutState(int[] skinSegments) {
+        if (skinSegments[0] == 1) {
+            if (skinSegments[1] == 1) {
+                return skinSegments[2] == 1 ? 3 : 2;
+            }
+            return 1;
+        }
+
+        return 0;
     }
 
     private void renderLimbCap(

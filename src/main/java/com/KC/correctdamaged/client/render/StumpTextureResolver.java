@@ -1,7 +1,7 @@
 package com.KC.correctdamaged.client.render;
 
 import com.KC.correctdamaged.CorrectDamaged;
-import com.KC.correctdamaged.capability.LimbData;
+import com.KC.correctdamaged.capability.visual.LimbData;
 import com.KC.correctdamaged.capability.LimbManager;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.resources.ResourceLocation;
@@ -19,8 +19,8 @@ public final class StumpTextureResolver {
         LEFT_LEG
     }
 
-    private static ResourceLocation tex(String name) {
-        return new ResourceLocation(CorrectDamaged.MODID, "textures/entity/" + name);
+    private static ResourceLocation tex(String path) {
+        return new ResourceLocation(CorrectDamaged.MODID, "textures/entity/" + path);
     }
 
     public static ResourceLocation getStumpTexture(AbstractClientPlayer player, String baseName, LimbType type) {
@@ -37,12 +37,12 @@ public final class StumpTextureResolver {
 
     private static boolean checkIsBurnt(LimbData data, LimbType type) {
         return switch (type) {
-            case HEAD -> data.getHead().getSkinMask() == 2;
-            case BODY -> data.getBodyState() == 2 || data.getShowSkeleton() == 2;
-            case RIGHT_ARM -> data.getBoneRightArm() > 3;
-            case LEFT_ARM -> data.getBoneLeftArm() > 3;
-            case RIGHT_LEG -> data.getBoneRightLeg() > 3;
-            case LEFT_LEG -> data.getBoneLeftLeg() > 3;
+            case HEAD -> false;
+            case BODY -> false;
+            case RIGHT_ARM -> data.getRightArm().isBurntBone();
+            case LEFT_ARM  -> data.getLeftArm().isBurntBone();
+            case RIGHT_LEG -> data.getRightLeg().isBurntBone();
+            case LEFT_LEG  -> data.getLeftLeg().isBurntBone();
         };
     }
 }

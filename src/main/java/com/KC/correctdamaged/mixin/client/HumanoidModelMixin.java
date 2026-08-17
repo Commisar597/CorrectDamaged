@@ -1,6 +1,7 @@
 package com.KC.correctdamaged.mixin.client;
 
-import com.KC.correctdamaged.capability.HeadData;
+import com.KC.correctdamaged.capability.visual.ArmData;
+import com.KC.correctdamaged.capability.visual.LegData;
 import com.KC.correctdamaged.capability.LimbManager;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.PlayerModel;
@@ -39,10 +40,18 @@ public abstract class HumanoidModelMixin<T extends LivingEntity> {
         }
 
         LimbManager.get(player).ifPresent(data -> {
-            int rightArmState = data.getRightArm();
-            int leftArmState = data.getLeftArm();
-            int rightLegState = data.getRightLeg();
-            int leftLegState = data.getLeftLeg();
+            // Получаем объекты конечностей
+            ArmData rightArmData = data.getRightArm();
+            ArmData leftArmData = data.getLeftArm();
+            LegData rightLegData = data.getRightLeg();
+            LegData leftLegData = data.getLeftLeg();
+
+            int rightArmState = correctDamaged$getCutState(new int[]{ rightArmData.getShoulderSkin(), rightArmData.getForearmSkin(), rightArmData.getWristSkin() });
+            int leftArmState  = correctDamaged$getCutState(new int[]{ leftArmData.getShoulderSkin(), leftArmData.getForearmSkin(), leftArmData.getWristSkin() });
+
+            int rightLegState = correctDamaged$getCutState(new int[]{ rightLegData.getThighSkin(), rightLegData.getCalfSkin(), rightLegData.getFootSkin() });
+            int leftLegState  = correctDamaged$getCutState(new int[]{ leftLegData.getThighSkin(), leftLegData.getCalfSkin(), leftLegData.getFootSkin() });
+
             int bodyState = data.getBodyState();
 
             correctDamaged$applyState(rightArm, rightArmState);
@@ -56,10 +65,8 @@ public abstract class HumanoidModelMixin<T extends LivingEntity> {
                 correctDamaged$applyState(playerModel.rightPants, rightLegState);
                 correctDamaged$applyState(playerModel.leftPants, leftLegState);
 
-                // Получаем маску кожи головы
                 byte headMask = data.getHead().getSkinMask();
 
-                // Если маска полная (255), возвращаем ванильную голову и шляпу
                 boolean isFullHead = (headMask & 0xFF) == 0xFF;
                 playerModel.head.visible = isFullHead;
                 playerModel.hat.visible = isFullHead;
@@ -67,6 +74,16 @@ public abstract class HumanoidModelMixin<T extends LivingEntity> {
                 correctDamaged$applyBodyState(playerModel.body, playerModel.jacket, bodyState);
             }
         });
+    }
+
+    private static int correctDamaged$getCutState(int[] skinSegments) {
+        if (skinSegments[0] == 1) {
+            if (skinSegments[1] == 1) {
+                return skinSegments[2] == 1 ? 3 : 2;
+            }
+            return 1;
+        }
+        return 0;
     }
 
     private static void correctDamaged$applyState(ModelPart limb, int state) {

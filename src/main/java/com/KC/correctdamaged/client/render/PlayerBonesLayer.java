@@ -1,5 +1,7 @@
 package com.KC.correctdamaged.client.render;
 
+import com.KC.correctdamaged.capability.visual.ArmData;
+import com.KC.correctdamaged.capability.visual.LegData;
 import com.KC.correctdamaged.capability.LimbManager;
 import com.KC.correctdamaged.event.ClientEvents;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -27,75 +29,71 @@ public class PlayerBonesLayer extends RenderLayer<AbstractClientPlayer, PlayerMo
 
     @Override
     public void render(PoseStack poseStack, MultiBufferSource buffer, int packedLight, AbstractClientPlayer player, float limbSwing, float limbSwingAmount, float partialTick, float ageInTicks, float netHeadYaw, float headPitch) {
-        int boneRightArm = LimbManager.getBoneRightArm(player);
-        int boneLeftArm = LimbManager.getBoneLeftArm(player);
-        int boneRightLeg = LimbManager.getBoneRightLeg(player);
-        int boneLeftLeg = LimbManager.getBoneLeftLeg(player);
-        int showSkeleton = LimbManager.getShowSkeleton(player);
+        player.getCapability(LimbManager.LIMB_DATA_CAP).ifPresent(data -> {
+            PlayerModel<AbstractClientPlayer> parentModel = getParentModel();
+            bonesModel.setupAnim(player, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);
 
-        if (boneRightArm == 0 && boneLeftArm == 0 && boneRightLeg == 0 && boneLeftLeg == 0 && showSkeleton == 0) return;
+            renderArmBones(poseStack, buffer, packedLight, data.getRightArm(), bonesModel.rightArmShoulderBone, bonesModel.rightArmForearmBone, bonesModel.rightArmWristBone, parentModel.rightArm);
+            renderArmBones(poseStack, buffer, packedLight, data.getLeftArm(), bonesModel.leftArmShoulderBone, bonesModel.leftArmForearmBone, bonesModel.leftArmWristBone, parentModel.leftArm);
 
-        PlayerModel<AbstractClientPlayer> parentModel = this.getParentModel();
-        this.bonesModel.setupAnim(player, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);
+            renderLegBones(poseStack, buffer, packedLight, data.getRightLeg(), bonesModel.rightThighBone, bonesModel.rightCalfBone, bonesModel.rightFootBone, parentModel.rightLeg);
+            renderLegBones(poseStack, buffer, packedLight, data.getLeftLeg(), bonesModel.leftThighBone, bonesModel.leftCalfBone, bonesModel.leftFootBone, parentModel.leftLeg);
 
-        renderLimb(poseStack, buffer, packedLight, boneRightLeg, bonesModel.rightThighBone, bonesModel.rightCalfBone, bonesModel.rightFootBone, parentModel.rightLeg);
-        renderLimb(poseStack, buffer, packedLight, boneLeftLeg, bonesModel.leftThighBone, bonesModel.leftCalfBone, bonesModel.leftFootBone, parentModel.leftLeg);
-        renderLimb(poseStack, buffer, packedLight, boneRightArm, bonesModel.rightArmShoulderBone, bonesModel.rightArmForearmBone, bonesModel.rightArmWristBone, parentModel.rightArm);
-        renderLimb(poseStack, buffer, packedLight, boneLeftArm, bonesModel.leftArmShoulderBone, bonesModel.leftArmForearmBone, bonesModel.leftArmWristBone, parentModel.leftArm);
-
-        renderSingleBone(poseStack, buffer, packedLight, showSkeleton, bonesModel.skeleton, parentModel.body);
+            renderSingleBone(poseStack, buffer, packedLight, data.getShowSkeleton(), bonesModel.skeleton, parentModel.body);
+        });
     }
 
-    private void renderLimb(
-            PoseStack poseStack, MultiBufferSource buffer, int packedLight, int state,
-            ModelPart innerPart, ModelPart midPart, ModelPart outerPart,
-            ModelPart parentBodyPart
+    private void renderArmBones(
+            PoseStack poseStack, MultiBufferSource buffer, int packedLight, ArmData arm,
+            ModelPart shoulderPart, ModelPart forearmPart, ModelPart wristPart, ModelPart parentPart
     ) {
-        if (state <= 0) return;
+        int level = arm.getBoneState();
+        if (level <= 0) return;
 
-        boolean burnt = state > 3;
-        int level = burnt ? state - 3 : state;
-
-        ResourceLocation shoulderTex = burnt ? PlayerBonesModel.BURNT_BONE : PlayerBonesModel.BONE;
-        ResourceLocation forearmTex = burnt ? PlayerBonesModel.BURNT_BONE : PlayerBonesModel.BONE;
-        ResourceLocation wristTex = burnt ? PlayerBonesModel.BURNT_BONE : PlayerBonesModel.BONE;
+        ResourceLocation tex = arm.isBurntBone() ? PlayerBonesModel.BURNT_BONE : PlayerBonesModel.BONE;
 
         poseStack.pushPose();
-        parentBodyPart.translateAndRotate(poseStack);
+        parentPart.translateAndRotate(poseStack);
 
-        if (level >= 1) {
-            VertexConsumer consumer = buffer.getBuffer(RenderType.entityCutoutNoCull(shoulderTex));
-            innerPart.render(poseStack, consumer, packedLight, OverlayTexture.NO_OVERLAY, 1.0f, 1.0f, 1.0f, 1.0f);
-        }
-
-        if (level >= 2) {
-            VertexConsumer consumer = buffer.getBuffer(RenderType.entityCutoutNoCull(forearmTex));
-            midPart.render(poseStack, consumer, packedLight, OverlayTexture.NO_OVERLAY, 1.0f, 1.0f, 1.0f, 1.0f);
-        }
-
-        if (level >= 3) {
-            VertexConsumer consumer = buffer.getBuffer(RenderType.entityCutoutNoCull(wristTex));
-            outerPart.render(poseStack, consumer, packedLight, OverlayTexture.NO_OVERLAY, 1.0f, 1.0f, 1.0f, 1.0f);
-        }
+        if (level >= 1) renderPart(poseStack, buffer, packedLight, shoulderPart, tex);
+        if (level >= 2) renderPart(poseStack, buffer, packedLight, forearmPart, tex);
+        if (level >= 3) renderPart(poseStack, buffer, packedLight, wristPart, tex);
 
         poseStack.popPose();
     }
 
-    private void renderSingleBone(
-            PoseStack poseStack, MultiBufferSource buffer, int packedLight, int state,
-            ModelPart bonePart, ModelPart parentBodyPart
+    private void renderLegBones(
+            PoseStack poseStack, MultiBufferSource buffer, int packedLight, LegData leg,
+            ModelPart thighPart, ModelPart calfPart, ModelPart footPart, ModelPart parentPart
     ) {
-        if (state <= 0) return;
+        int level = leg.getBoneState();
+        if (level <= 0) return;
 
-        boolean burnt = state == 2;
-        ResourceLocation tex = burnt ? PlayerBonesModel.BURNT_BONE : PlayerBonesModel.BONE;
+        ResourceLocation tex = leg.isBurntBone() ? PlayerBonesModel.BURNT_BONE : PlayerBonesModel.BONE;
 
         poseStack.pushPose();
-        parentBodyPart.translateAndRotate(poseStack);
+        parentPart.translateAndRotate(poseStack);
 
+        if (level >= 1) renderPart(poseStack, buffer, packedLight, thighPart, tex);
+        if (level >= 2) renderPart(poseStack, buffer, packedLight, calfPart, tex);
+        if (level >= 3) renderPart(poseStack, buffer, packedLight, footPart, tex);
+
+        poseStack.popPose();
+    }
+
+    private void renderSingleBone(PoseStack poseStack, MultiBufferSource buffer, int packedLight, int state, ModelPart bonePart, ModelPart parentPart) {
+        if (state <= 0) return;
+
+        ResourceLocation tex = state == 2 ? PlayerBonesModel.BURNT_BONE : PlayerBonesModel.BONE;
+
+        poseStack.pushPose();
+        parentPart.translateAndRotate(poseStack);
+        renderPart(poseStack, buffer, packedLight, bonePart, tex);
+        poseStack.popPose();
+    }
+
+    private void renderPart(PoseStack poseStack, MultiBufferSource buffer, int packedLight, ModelPart part, ResourceLocation tex) {
         VertexConsumer consumer = buffer.getBuffer(RenderType.entityCutoutNoCull(tex));
-        bonePart.render(poseStack, consumer, packedLight, OverlayTexture.NO_OVERLAY, 1.0f, 1.0f, 1.0f, 1.0f);
-
-        poseStack.popPose();
+        part.render(poseStack, consumer, packedLight, OverlayTexture.NO_OVERLAY, 1.0f, 1.0f, 1.0f, 1.0f);
     }
 }

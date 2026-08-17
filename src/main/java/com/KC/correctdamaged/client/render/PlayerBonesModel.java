@@ -36,58 +36,71 @@ public class PlayerBonesModel extends PlayerModel<AbstractClientPlayer> {
 
     public PlayerBonesModel(ModelPart root) {
         super(root, false);
-        this.rightThighBone = root.getChild("rightThighBone");
-        this.rightCalfBone = root.getChild("rightCalfBone");
-        this.rightFootBone = root.getChild("rightFootBone");
 
-        this.leftThighBone = root.getChild("leftThighBone");
-        this.leftCalfBone = root.getChild("leftCalfBone");
-        this.leftFootBone = root.getChild("leftFootBone");
+        ModelPart body = root.getChild("body");
+        ModelPart rightLeg = root.getChild("right_leg");
+        ModelPart leftLeg = root.getChild("left_leg");
+        ModelPart rightArm = root.getChild("right_arm");
+        ModelPart leftArm = root.getChild("left_arm");
 
-        this.rightArmShoulderBone = root.getChild("rightArmShoulderBone");
-        this.rightArmForearmBone = root.getChild("rightArmForearmBone");
-        this.rightArmWristBone = root.getChild("rightArmWristBone");
+        this.rightThighBone = rightLeg.getChild("rightThighBone");
+        this.rightCalfBone = rightLeg.getChild("rightCalfBone");
+        this.rightFootBone = rightLeg.getChild("rightFootBone");
 
-        this.leftArmShoulderBone = root.getChild("leftArmShoulderBone");
-        this.leftArmForearmBone = root.getChild("leftArmForearmBone");
-        this.leftArmWristBone = root.getChild("leftArmWristBone");
+        this.leftThighBone = leftLeg.getChild("leftThighBone");
+        this.leftCalfBone = leftLeg.getChild("leftCalfBone");
+        this.leftFootBone = leftLeg.getChild("leftFootBone");
 
-        this.skeleton = root.getChild("skeleton");
+        this.rightArmShoulderBone = rightArm.getChild("rightArmShoulderBone");
+        this.rightArmForearmBone = rightArm.getChild("rightArmForearmBone");
+        this.rightArmWristBone = rightArm.getChild("rightArmWristBone");
+
+        this.leftArmShoulderBone = leftArm.getChild("leftArmShoulderBone");
+        this.leftArmForearmBone = leftArm.getChild("leftArmForearmBone");
+        this.leftArmWristBone = leftArm.getChild("leftArmWristBone");
+
+        this.skeleton = body.getChild("skeleton");
     }
 
     public static LayerDefinition createBodyLayer(boolean slim) {
         MeshDefinition meshdefinition = PlayerModel.createMesh(CubeDeformation.NONE, slim);
-        PartDefinition partdefinition = meshdefinition.getRoot();
+        PartDefinition root = meshdefinition.getRoot();
 
-        partdefinition.addOrReplaceChild("rightThighBone",
+        PartDefinition body = root.getChild("body");
+        PartDefinition rightLeg = root.getChild("right_leg");
+        PartDefinition leftLeg = root.getChild("left_leg");
+        PartDefinition rightArm = root.getChild("right_arm");
+        PartDefinition leftArm = root.getChild("left_arm");
+
+        rightLeg.addOrReplaceChild("rightThighBone",
                 CubeListBuilder.create().texOffs(0, 6).addBox(-1.0F, 0.0F, -1.0F, 2.0F, 6.0F, 2.0F), PartPose.ZERO);
-        partdefinition.addOrReplaceChild("rightCalfBone",
+        rightLeg.addOrReplaceChild("rightCalfBone",
                 CubeListBuilder.create().texOffs(0, 0).addBox(-1.0F, 6.0F, -1.0F, 2.0F, 4.0F, 2.0F), PartPose.ZERO);
-        partdefinition.addOrReplaceChild("rightFootBone",
+        rightLeg.addOrReplaceChild("rightFootBone",
                 CubeListBuilder.create().texOffs(0, 14).addBox(-1.0F, 10.0F, -1.0F, 2.0F, 2.0F, 2.0F), PartPose.ZERO);
 
-        partdefinition.addOrReplaceChild("leftThighBone",
+        leftLeg.addOrReplaceChild("leftThighBone",
                 CubeListBuilder.create().texOffs(0, 6).addBox(-1.0F, 0.0F, -1.0F, 2.0F, 6.0F, 2.0F), PartPose.ZERO);
-        partdefinition.addOrReplaceChild("leftCalfBone",
+        leftLeg.addOrReplaceChild("leftCalfBone",
                 CubeListBuilder.create().texOffs(0, 0).addBox(-1.0F, 6.0F, -1.0F, 2.0F, 4.0F, 2.0F), PartPose.ZERO);
-        partdefinition.addOrReplaceChild("leftFootBone",
+        leftLeg.addOrReplaceChild("leftFootBone",
                 CubeListBuilder.create().texOffs(0, 14).addBox(-1.0F, 10.0F, -1.0F, 2.0F, 2.0F, 2.0F), PartPose.ZERO);
 
-        partdefinition.addOrReplaceChild("rightArmShoulderBone",
+        rightArm.addOrReplaceChild("rightArmShoulderBone",
                 CubeListBuilder.create().texOffs(0, 6).addBox(-1.0F, -2.0F, -1.0F, 2.0F, 6.0F, 2.0F), PartPose.offset(-0.1F, 0.0F, 0.0F));
-        partdefinition.addOrReplaceChild("rightArmForearmBone",
+        rightArm.addOrReplaceChild("rightArmForearmBone",
                 CubeListBuilder.create().texOffs(0, 0).addBox(-1.0F, 4.0F, -1.0F, 2.0F, 4.0F, 2.0F), PartPose.offset(-0.1F, 0.0F, 0.0F));
-        partdefinition.addOrReplaceChild("rightArmWristBone",
+        rightArm.addOrReplaceChild("rightArmWristBone",
                 CubeListBuilder.create().texOffs(0, 14).addBox(-1.0F, 8.0F, -1.0F, 2.0F, 2.0F, 2.0F), PartPose.offset(-0.1F, 0.0F, 0.0F));
 
-        partdefinition.addOrReplaceChild("leftArmShoulderBone",
+        leftArm.addOrReplaceChild("leftArmShoulderBone",
                 CubeListBuilder.create().texOffs(0, 6).mirror().addBox(-1.0F, -2.0F, -1.0F, 2.0F, 6.0F, 2.0F), PartPose.offset(0.1F, 0.0F, 0.0F));
-        partdefinition.addOrReplaceChild("leftArmForearmBone",
+        leftArm.addOrReplaceChild("leftArmForearmBone",
                 CubeListBuilder.create().texOffs(0, 0).mirror().addBox(-1.0F, 4.0F, -1.0F, 2.0F, 4.0F, 2.0F), PartPose.offset(0.1F, 0.0F, 0.0F));
-        partdefinition.addOrReplaceChild("leftArmWristBone",
+        leftArm.addOrReplaceChild("leftArmWristBone",
                 CubeListBuilder.create().texOffs(0, 14).mirror().addBox(-1.0F, 8.0F, -1.0F, 2.0F, 2.0F, 2.0F), PartPose.offset(0.1F, 0.0F, 0.0F));
 
-        partdefinition.addOrReplaceChild("skeleton",
+        body.addOrReplaceChild("skeleton",
                 CubeListBuilder.create().texOffs(40, 0).addBox(-4.0F, 0.0F, -2.0F, 8.0F, 12.0F, 4.0F, new CubeDeformation(-0.250F)), PartPose.ZERO);
 
         return LayerDefinition.create(meshdefinition, 64, 64);

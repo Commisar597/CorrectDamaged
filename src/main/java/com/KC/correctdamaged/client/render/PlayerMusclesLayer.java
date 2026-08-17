@@ -1,5 +1,7 @@
 package com.KC.correctdamaged.client.render;
 
+import com.KC.correctdamaged.capability.visual.ArmData;
+import com.KC.correctdamaged.capability.visual.LegData;
 import com.KC.correctdamaged.capability.LimbManager;
 import com.KC.correctdamaged.event.ClientEvents;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -18,6 +20,8 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 public class PlayerMusclesLayer extends RenderLayer<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>> {
     private final PlayerMusclesModel musclesModel;
 
+    private static final float OFFSET_X = -0.0125F;
+
     public PlayerMusclesLayer(RenderLayerParent<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>> parent, EntityModelSet modelSet, boolean isSlim) {
         super(parent);
         ModelLayerLocation layerLoc = isSlim ? ClientEvents.PLAYER_MUSCLES_SLIM_LAYER : ClientEvents.PLAYER_MUSCLES_LAYER;
@@ -26,65 +30,74 @@ public class PlayerMusclesLayer extends RenderLayer<AbstractClientPlayer, Player
 
     @Override
     public void render(PoseStack poseStack, MultiBufferSource buffer, int packedLight, AbstractClientPlayer player, float limbSwing, float limbSwingAmount, float partialTick, float ageInTicks, float netHeadYaw, float headPitch) {
-        int muscleBody = LimbManager.getMuscleBody(player);
-        int muscleRightArm = LimbManager.getMuscleRightArm(player);
-        int muscleLeftArm = LimbManager.getMuscleLeftArm(player);
-        int muscleRightLeg = LimbManager.getMuscleRightLeg(player);
-        int muscleLeftLeg = LimbManager.getMuscleLeftLeg(player);
+        player.getCapability(LimbManager.LIMB_DATA_CAP).ifPresent(data -> {
+            PlayerModel<AbstractClientPlayer> parentModel = getParentModel();
+            musclesModel.setupAnim(player, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);
 
-        if (muscleBody == 0 && muscleRightArm == 0 && muscleLeftArm == 0 && muscleRightLeg == 0 && muscleLeftLeg == 0) return;
+            if (data.getMuscleBody() > 0) {
+                renderSinglePart(poseStack, buffer, packedLight, musclesModel.bodyMuscle, parentModel.body);
+            }
 
-        PlayerModel<AbstractClientPlayer> parentModel = this.getParentModel();
-        this.musclesModel.setupAnim(player, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);
+            renderArmMuscles(poseStack, buffer, packedLight, data.getRightArm(),
+                    musclesModel.rightArmShoulderMuscle, musclesModel.rightArmForearmMuscle, musclesModel.rightArmWristMuscle,
+                    parentModel.rightArm, OFFSET_X);
 
-        if (muscleBody > 0) {
-            renderSinglePart(poseStack, buffer, packedLight, musclesModel.bodyMuscle, parentModel.body);
-        }
+            renderArmMuscles(poseStack, buffer, packedLight, data.getLeftArm(),
+                    musclesModel.leftArmShoulderMuscle, musclesModel.leftArmForearmMuscle, musclesModel.leftArmWristMuscle,
+                    parentModel.leftArm, -OFFSET_X);
 
-        renderLimb(poseStack, buffer, packedLight, muscleRightLeg, musclesModel.rightThighMuscle, musclesModel.rightCalfMuscle, musclesModel.rightFootMuscle, parentModel.rightLeg);
-        renderLimb(poseStack, buffer, packedLight, muscleLeftLeg, musclesModel.leftThighMuscle, musclesModel.leftCalfMuscle, musclesModel.leftFootMuscle, parentModel.leftLeg);
-        renderLimb(poseStack, buffer, packedLight, muscleRightArm, musclesModel.rightArmShoulderMuscle, musclesModel.rightArmForearmMuscle, musclesModel.rightArmWristMuscle, parentModel.rightArm);
-        renderLimb(poseStack, buffer, packedLight, muscleLeftArm, musclesModel.leftArmShoulderMuscle, musclesModel.leftArmForearmMuscle, musclesModel.leftArmWristMuscle, parentModel.leftArm);
+            renderLegMuscles(poseStack, buffer, packedLight, data.getRightLeg(), musclesModel.rightThighMuscle, musclesModel.rightCalfMuscle, musclesModel.rightFootMuscle, parentModel.rightLeg);
+            renderLegMuscles(poseStack, buffer, packedLight, data.getLeftLeg(), musclesModel.leftThighMuscle, musclesModel.leftCalfMuscle, musclesModel.leftFootMuscle, parentModel.leftLeg);
+        });
     }
 
-    private void renderSinglePart(
-            PoseStack poseStack, MultiBufferSource buffer, int packedLight,
-            ModelPart musclePart, ModelPart parentBodyPart
+    private void renderArmMuscles(
+            PoseStack poseStack, MultiBufferSource buffer, int packedLight, ArmData arm,
+            ModelPart shoulderPart, ModelPart forearmPart, ModelPart wristPart, ModelPart parentPart,
+            float offsetX
     ) {
-        poseStack.pushPose();
-        parentBodyPart.translateAndRotate(poseStack);
+        int level = arm.getMuscleState();
+        if (level <= 0) return;
 
+        poseStack.pushPose();
+
+        parentPart.translateAndRotate(poseStack);
+
+        poseStack.translate(offsetX, 0.0D, 0.0D);
+
+        if (level >= 1) renderPart(poseStack, buffer, packedLight, shoulderPart);
+        if (level >= 2) renderPart(poseStack, buffer, packedLight, forearmPart);
+        if (level >= 3) renderPart(poseStack, buffer, packedLight, wristPart);
+
+        poseStack.popPose();
+    }
+
+    private void renderLegMuscles(
+            PoseStack poseStack, MultiBufferSource buffer, int packedLight, LegData leg,
+            ModelPart thighPart, ModelPart calfPart, ModelPart footPart, ModelPart parentPart
+    ) {
+        int level = leg.getMuscleState();
+        if (level <= 0) return;
+
+        poseStack.pushPose();
+        parentPart.translateAndRotate(poseStack);
+
+        if (level >= 1) renderPart(poseStack, buffer, packedLight, thighPart);
+        if (level >= 2) renderPart(poseStack, buffer, packedLight, calfPart);
+        if (level >= 3) renderPart(poseStack, buffer, packedLight, footPart);
+
+        poseStack.popPose();
+    }
+
+    private void renderSinglePart(PoseStack poseStack, MultiBufferSource buffer, int packedLight, ModelPart part, ModelPart parentPart) {
+        poseStack.pushPose();
+        parentPart.translateAndRotate(poseStack);
+        renderPart(poseStack, buffer, packedLight, part);
+        poseStack.popPose();
+    }
+
+    private void renderPart(PoseStack poseStack, MultiBufferSource buffer, int packedLight, ModelPart part) {
         VertexConsumer consumer = buffer.getBuffer(RenderType.entityCutoutNoCull(PlayerMusclesModel.MUSCLE));
-        musclePart.render(poseStack, consumer, packedLight, OverlayTexture.NO_OVERLAY, 1f, 1f, 1f, 1f);
-
-        poseStack.popPose();
-    }
-
-    private void renderLimb(
-            PoseStack poseStack, MultiBufferSource buffer, int packedLight, int state,
-            ModelPart innerPart, ModelPart midPart, ModelPart outerPart,
-            ModelPart parentBodyPart
-    ) {
-        if (state <= 0) return;
-
-        poseStack.pushPose();
-        parentBodyPart.translateAndRotate(poseStack);
-
-        if (state >= 1) {
-            VertexConsumer consumer = buffer.getBuffer(RenderType.entityCutoutNoCull(PlayerMusclesModel.MUSCLE));
-            innerPart.render(poseStack, consumer, packedLight, OverlayTexture.NO_OVERLAY, 1f, 1f, 1f, 1f);
-        }
-
-        if (state >= 2) {
-            VertexConsumer consumer = buffer.getBuffer(RenderType.entityCutoutNoCull(PlayerMusclesModel.MUSCLE));
-            midPart.render(poseStack, consumer, packedLight, OverlayTexture.NO_OVERLAY, 1f, 1f, 1f, 1f);
-        }
-
-        if (state >= 3) {
-            VertexConsumer consumer = buffer.getBuffer(RenderType.entityCutoutNoCull(PlayerMusclesModel.MUSCLE));
-            outerPart.render(poseStack, consumer, packedLight, OverlayTexture.NO_OVERLAY, 1f, 1f, 1f, 1f);
-        }
-
-        poseStack.popPose();
+        part.render(poseStack, consumer, packedLight, OverlayTexture.NO_OVERLAY, 1.0f, 1.0f, 1.0f, 1.0f);
     }
 }

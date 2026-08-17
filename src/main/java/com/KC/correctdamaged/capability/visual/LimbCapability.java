@@ -1,4 +1,4 @@
-package com.KC.correctdamaged.capability;
+package com.KC.correctdamaged.capability.visual;
 
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityManager;

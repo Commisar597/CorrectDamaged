@@ -12,37 +12,64 @@ import net.minecraft.server.level.ServerPlayer;
 public class LimbCommands {
 
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
+
         dispatcher.register(
                 Commands.literal("limb")
                         .requires(source -> source.hasPermission(2))
 
                         .then(Commands.literal("right_arm")
-                                .then(Commands.argument("state", IntegerArgumentType.integer(0, 3))
-                                        .executes(ctx -> applyLimb(ctx.getSource(), "right_arm", IntegerArgumentType.getInteger(ctx, "state")))))
+                                .then(Commands.literal("shoulder")
+                                        .then(Commands.argument("state", IntegerArgumentType.integer(0, 1))
+                                                .executes(ctx -> applySkinSegment(ctx.getSource(), "right_arm_shoulder", IntegerArgumentType.getInteger(ctx, "state")))))
+                                .then(Commands.literal("forearm")
+                                        .then(Commands.argument("state", IntegerArgumentType.integer(0, 1))
+                                                .executes(ctx -> applySkinSegment(ctx.getSource(), "right_arm_forearm", IntegerArgumentType.getInteger(ctx, "state")))))
+                                .then(Commands.literal("wrist")
+                                        .then(Commands.argument("state", IntegerArgumentType.integer(0, 1))
+                                                .executes(ctx -> applySkinSegment(ctx.getSource(), "right_arm_wrist", IntegerArgumentType.getInteger(ctx, "state"))))))
 
                         .then(Commands.literal("left_arm")
-                                .then(Commands.argument("state", IntegerArgumentType.integer(0, 3))
-                                        .executes(ctx -> applyLimb(ctx.getSource(), "left_arm", IntegerArgumentType.getInteger(ctx, "state")))))
+                                .then(Commands.literal("shoulder")
+                                        .then(Commands.argument("state", IntegerArgumentType.integer(0, 1))
+                                                .executes(ctx -> applySkinSegment(ctx.getSource(), "left_arm_shoulder", IntegerArgumentType.getInteger(ctx, "state")))))
+                                .then(Commands.literal("forearm")
+                                        .then(Commands.argument("state", IntegerArgumentType.integer(0, 1))
+                                                .executes(ctx -> applySkinSegment(ctx.getSource(), "left_arm_forearm", IntegerArgumentType.getInteger(ctx, "state")))))
+                                .then(Commands.literal("wrist")
+                                        .then(Commands.argument("state", IntegerArgumentType.integer(0, 1))
+                                                .executes(ctx -> applySkinSegment(ctx.getSource(), "left_arm_wrist", IntegerArgumentType.getInteger(ctx, "state"))))))
 
                         .then(Commands.literal("right_leg")
-                                .then(Commands.argument("state", IntegerArgumentType.integer(0, 3))
-                                        .executes(ctx -> applyLimb(ctx.getSource(), "right_leg", IntegerArgumentType.getInteger(ctx, "state")))))
+                                .then(Commands.literal("thigh")
+                                        .then(Commands.argument("state", IntegerArgumentType.integer(0, 1))
+                                                .executes(ctx -> applySkinSegment(ctx.getSource(), "right_leg_thigh", IntegerArgumentType.getInteger(ctx, "state")))))
+                                .then(Commands.literal("calf")
+                                        .then(Commands.argument("state", IntegerArgumentType.integer(0, 1))
+                                                .executes(ctx -> applySkinSegment(ctx.getSource(), "right_leg_calf", IntegerArgumentType.getInteger(ctx, "state")))))
+                                .then(Commands.literal("foot")
+                                        .then(Commands.argument("state", IntegerArgumentType.integer(0, 1))
+                                                .executes(ctx -> applySkinSegment(ctx.getSource(), "right_leg_foot", IntegerArgumentType.getInteger(ctx, "state"))))))
 
                         .then(Commands.literal("left_leg")
-                                .then(Commands.argument("state", IntegerArgumentType.integer(0, 3))
-                                        .executes(ctx -> applyLimb(ctx.getSource(), "left_leg", IntegerArgumentType.getInteger(ctx, "state")))))
+                                .then(Commands.literal("thigh")
+                                        .then(Commands.argument("state", IntegerArgumentType.integer(0, 1))
+                                                .executes(ctx -> applySkinSegment(ctx.getSource(), "left_leg_thigh", IntegerArgumentType.getInteger(ctx, "state")))))
+                                .then(Commands.literal("calf")
+                                        .then(Commands.argument("state", IntegerArgumentType.integer(0, 1))
+                                                .executes(ctx -> applySkinSegment(ctx.getSource(), "left_leg_calf", IntegerArgumentType.getInteger(ctx, "state")))))
+                                .then(Commands.literal("foot")
+                                        .then(Commands.argument("state", IntegerArgumentType.integer(0, 1))
+                                                .executes(ctx -> applySkinSegment(ctx.getSource(), "left_leg_foot", IntegerArgumentType.getInteger(ctx, "state"))))))
 
                         .then(Commands.literal("body")
                                 .then(Commands.argument("state", IntegerArgumentType.integer(0, 9))
-                                        .executes(ctx -> applyLimb(ctx.getSource(), "body", IntegerArgumentType.getInteger(ctx, "state")))))
+                                        .executes(ctx -> applySkinSegment(ctx.getSource(), "body", IntegerArgumentType.getInteger(ctx, "state")))))
         );
 
         dispatcher.register(
                 Commands.literal("show")
                         .requires(source -> source.hasPermission(2))
 
-                        // Управление слоями головы: /show head <skin|muscle|skull> <mask>
-                        // И флаг обугленности: /show head burnt <true|false>
                         .then(Commands.literal("head")
                                 .then(Commands.literal("skin")
                                         .then(Commands.argument("mask", IntegerArgumentType.integer(0, 255))
@@ -57,62 +84,86 @@ public class LimbCommands {
                                         .then(Commands.argument("burnt", BoolArgumentType.bool())
                                                 .executes(ctx -> applyHeadBurnt(ctx.getSource(), BoolArgumentType.getBool(ctx, "burnt"))))))
 
-                        // Ветка костей (без головы)
                         .then(Commands.literal("bone")
                                 .then(Commands.literal("right_arm")
-                                        .then(Commands.argument("state", IntegerArgumentType.integer(0, 6))
-                                                .executes(ctx -> apply(ctx.getSource(), "bone", "right_arm", IntegerArgumentType.getInteger(ctx, "state")))))
+                                        .then(Commands.argument("state", IntegerArgumentType.integer(0, 3))
+                                                .executes(ctx -> applyBoneOrMuscle(ctx.getSource(), "bone", "right_arm", IntegerArgumentType.getInteger(ctx, "state")))))
                                 .then(Commands.literal("left_arm")
-                                        .then(Commands.argument("state", IntegerArgumentType.integer(0, 6))
-                                                .executes(ctx -> apply(ctx.getSource(), "bone", "left_arm", IntegerArgumentType.getInteger(ctx, "state")))))
+                                        .then(Commands.argument("state", IntegerArgumentType.integer(0, 3))
+                                                .executes(ctx -> applyBoneOrMuscle(ctx.getSource(), "bone", "left_arm", IntegerArgumentType.getInteger(ctx, "state")))))
                                 .then(Commands.literal("right_leg")
-                                        .then(Commands.argument("state", IntegerArgumentType.integer(0, 6))
-                                                .executes(ctx -> apply(ctx.getSource(), "bone", "right_leg", IntegerArgumentType.getInteger(ctx, "state")))))
+                                        .then(Commands.argument("state", IntegerArgumentType.integer(0, 3))
+                                                .executes(ctx -> applyBoneOrMuscle(ctx.getSource(), "bone", "right_leg", IntegerArgumentType.getInteger(ctx, "state")))))
                                 .then(Commands.literal("left_leg")
-                                        .then(Commands.argument("state", IntegerArgumentType.integer(0, 6))
-                                                .executes(ctx -> apply(ctx.getSource(), "bone", "left_leg", IntegerArgumentType.getInteger(ctx, "state")))))
+                                        .then(Commands.argument("state", IntegerArgumentType.integer(0, 3))
+                                                .executes(ctx -> applyBoneOrMuscle(ctx.getSource(), "bone", "left_leg", IntegerArgumentType.getInteger(ctx, "state")))))
                                 .then(Commands.literal("skeleton")
                                         .then(Commands.argument("state", IntegerArgumentType.integer(0, 2))
-                                                .executes(ctx -> apply(ctx.getSource(), "bone", "skeleton", IntegerArgumentType.getInteger(ctx, "state"))))))
+                                                .executes(ctx -> applyBoneOrMuscle(ctx.getSource(), "bone", "skeleton", IntegerArgumentType.getInteger(ctx, "state")))))
 
-                        // Ветка мышц (без головы)
+                                .then(Commands.literal("burnt")
+                                        .then(Commands.literal("right_arm")
+                                                .then(Commands.argument("burnt", BoolArgumentType.bool())
+                                                        .executes(ctx -> applyBurntBone(ctx.getSource(), "right_arm", BoolArgumentType.getBool(ctx, "burnt")))))
+                                        .then(Commands.literal("left_arm")
+                                                .then(Commands.argument("burnt", BoolArgumentType.bool())
+                                                        .executes(ctx -> applyBurntBone(ctx.getSource(), "left_arm", BoolArgumentType.getBool(ctx, "burnt")))))
+                                        .then(Commands.literal("right_leg")
+                                                .then(Commands.argument("burnt", BoolArgumentType.bool())
+                                                        .executes(ctx -> applyBurntBone(ctx.getSource(), "right_leg", BoolArgumentType.getBool(ctx, "burnt")))))
+                                        .then(Commands.literal("left_leg")
+                                                .then(Commands.argument("burnt", BoolArgumentType.bool())
+                                                        .executes(ctx -> applyBurntBone(ctx.getSource(), "left_leg", BoolArgumentType.getBool(ctx, "burnt")))))))
+
                         .then(Commands.literal("muscle")
                                 .then(Commands.literal("body")
                                         .then(Commands.argument("state", IntegerArgumentType.integer(0, 1))
-                                                .executes(ctx -> apply(ctx.getSource(), "muscle", "body", IntegerArgumentType.getInteger(ctx, "state")))))
+                                                .executes(ctx -> applyBoneOrMuscle(ctx.getSource(), "muscle", "body", IntegerArgumentType.getInteger(ctx, "state")))))
                                 .then(Commands.literal("right_arm")
                                         .then(Commands.argument("state", IntegerArgumentType.integer(0, 3))
-                                                .executes(ctx -> apply(ctx.getSource(), "muscle", "right_arm", IntegerArgumentType.getInteger(ctx, "state")))))
+                                                .executes(ctx -> applyBoneOrMuscle(ctx.getSource(), "muscle", "right_arm", IntegerArgumentType.getInteger(ctx, "state")))))
                                 .then(Commands.literal("left_arm")
                                         .then(Commands.argument("state", IntegerArgumentType.integer(0, 3))
-                                                .executes(ctx -> apply(ctx.getSource(), "muscle", "left_arm", IntegerArgumentType.getInteger(ctx, "state")))))
+                                                .executes(ctx -> applyBoneOrMuscle(ctx.getSource(), "muscle", "left_arm", IntegerArgumentType.getInteger(ctx, "state")))))
                                 .then(Commands.literal("right_leg")
                                         .then(Commands.argument("state", IntegerArgumentType.integer(0, 3))
-                                                .executes(ctx -> apply(ctx.getSource(), "muscle", "right_leg", IntegerArgumentType.getInteger(ctx, "state")))))
+                                                .executes(ctx -> applyBoneOrMuscle(ctx.getSource(), "muscle", "right_leg", IntegerArgumentType.getInteger(ctx, "state")))))
                                 .then(Commands.literal("left_leg")
                                         .then(Commands.argument("state", IntegerArgumentType.integer(0, 3))
-                                                .executes(ctx -> apply(ctx.getSource(), "muscle", "left_leg", IntegerArgumentType.getInteger(ctx, "state"))))))
+                                                .executes(ctx -> applyBoneOrMuscle(ctx.getSource(), "muscle", "left_leg", IntegerArgumentType.getInteger(ctx, "state"))))))
         );
     }
 
-    private static int applyLimb(CommandSourceStack source, String part, int state) {
+    private static int applySkinSegment(CommandSourceStack source, String segment, int state) {
         try {
             ServerPlayer player = source.getPlayerOrException();
-            boolean changed = switch (part) {
-                case "right_arm" -> LimbManager.setRightArm(player, state);
-                case "left_arm" -> LimbManager.setLeftArm(player, state);
-                case "right_leg" -> LimbManager.setRightLeg(player, state);
-                case "left_leg" -> LimbManager.setLeftLeg(player, state);
+            boolean changed = switch (segment) {
+                case "right_arm_shoulder" -> LimbManager.setRightArmShoulderSkin(player, state);
+                case "right_arm_forearm" -> LimbManager.setRightArmForearmSkin(player, state);
+                case "right_arm_wrist" -> LimbManager.setRightArmWristSkin(player, state);
+
+                case "left_arm_shoulder" -> LimbManager.setLeftArmShoulderSkin(player, state);
+                case "left_arm_forearm" -> LimbManager.setLeftArmForearmSkin(player, state);
+                case "left_arm_wrist" -> LimbManager.setLeftArmWristSkin(player, state);
+
+                case "right_leg_thigh" -> LimbManager.setRightLegThighSkin(player, state);
+                case "right_leg_calf" -> LimbManager.setRightLegCalfSkin(player, state);
+                case "right_leg_foot" -> LimbManager.setRightLegFootSkin(player, state);
+
+                case "left_leg_thigh" -> LimbManager.setLeftLegThighSkin(player, state);
+                case "left_leg_calf" -> LimbManager.setLeftLegCalfSkin(player, state);
+                case "left_leg_foot" -> LimbManager.setLeftLegFootSkin(player, state);
+
                 case "body" -> LimbManager.setBodyState(player, state);
                 default -> false;
             };
 
             if (!changed) {
-                source.sendFailure(Component.literal("Capability unavailable."));
+                source.sendFailure(Component.literal("Capability is unavailable."));
                 return 0;
             }
 
-            source.sendSuccess(() -> Component.literal("The state has been established " + part + ": " + state), true);
+            source.sendSuccess(() -> Component.literal("Segment " + segment + " -> " + state), true);
             return 1;
         } catch (Exception e) {
             source.sendFailure(Component.literal("Command execution error: " + e.getMessage()));
@@ -155,7 +206,7 @@ public class LimbCommands {
                 return 0;
             }
 
-            source.sendSuccess(() -> Component.literal("Head burnt skull status set to: " + burnt), true);
+            source.sendSuccess(() -> Component.literal("Head burnt skull set to: " + burnt), true);
             return 1;
         } catch (Exception e) {
             source.sendFailure(Component.literal("Command execution error: " + e.getMessage()));
@@ -163,7 +214,7 @@ public class LimbCommands {
         }
     }
 
-    private static int apply(CommandSourceStack source, String category, String limb, int state) {
+    private static int applyBoneOrMuscle(CommandSourceStack source, String category, String limb, int state) {
         try {
             ServerPlayer player = source.getPlayerOrException();
             boolean changed = false;
@@ -194,6 +245,30 @@ public class LimbCommands {
             }
 
             source.sendSuccess(() -> Component.literal(category + " " + limb + " -> " + state), true);
+            return 1;
+        } catch (Exception e) {
+            source.sendFailure(Component.literal("Command execution error: " + e.getMessage()));
+            return 0;
+        }
+    }
+
+    private static int applyBurntBone(CommandSourceStack source, String limb, boolean burnt) {
+        try {
+            ServerPlayer player = source.getPlayerOrException();
+            boolean changed = switch (limb) {
+                case "right_arm" -> LimbManager.setBurntBoneRightArm(player, burnt);
+                case "left_arm" -> LimbManager.setBurntBoneLeftArm(player, burnt);
+                case "right_leg" -> LimbManager.setBurntBoneRightLeg(player, burnt);
+                case "left_leg" -> LimbManager.setBurntBoneLeftLeg(player, burnt);
+                default -> false;
+            };
+
+            if (!changed) {
+                source.sendFailure(Component.literal("Capability is unavailable."));
+                return 0;
+            }
+
+            source.sendSuccess(() -> Component.literal("Burnt bone " + limb + " -> " + burnt), true);
             return 1;
         } catch (Exception e) {
             source.sendFailure(Component.literal("Command execution error: " + e.getMessage()));

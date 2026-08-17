@@ -1,229 +1,346 @@
 package com.KC.correctdamaged.capability;
 
+import com.KC.correctdamaged.CorrectDamaged;
+import com.KC.correctdamaged.capability.visual.LimbCapabilityProvider;
+import com.KC.correctdamaged.capability.visual.LimbData;
 import com.KC.correctdamaged.network.PacketHandler;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.CapabilityManager;
+import net.minecraftforge.common.capabilities.CapabilityToken;
+import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.event.AttachCapabilitiesEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
 
-import java.util.Optional;
+@Mod.EventBusSubscriber(modid = CorrectDamaged.MODID)
+public class LimbManager {
 
-public final class LimbManager {
+    public static final Capability<LimbData> LIMB_DATA_CAP = CapabilityManager.get(new CapabilityToken<>() {});
+    public static final ResourceLocation CAP_ID = new ResourceLocation(CorrectDamaged.MODID, "limb_data");
 
-    private LimbManager() {}
-
-    public static Optional<LimbData> get(Player player) {
-        return player.getCapability(LimbCapability.INSTANCE).resolve();
+    @SubscribeEvent
+    public static void onAttachCapabilities(AttachCapabilitiesEvent<Entity> event) {
+        if (event.getObject() instanceof Player player) {
+            if (!get(player).isPresent()) {
+                event.addCapability(CAP_ID, new LimbCapabilityProvider());
+            }
+        }
     }
 
-    // --- Head Octal Mask Setters & Getters ---
+    @SubscribeEvent
+    public static void onPlayerCloned(PlayerEvent.Clone event) {
+        Player oldPlayer = event.getOriginal();
+        Player newPlayer = event.getEntity();
+
+        oldPlayer.reviveCaps();
+        oldPlayer.getCapability(LIMB_DATA_CAP).ifPresent(oldCap -> {
+            newPlayer.getCapability(LIMB_DATA_CAP).ifPresent(newCap -> {
+                newCap.copyFrom(oldCap);
+            });
+        });
+        oldPlayer.invalidateCaps();
+
+        if (newPlayer instanceof ServerPlayer serverPlayer) {
+            PacketHandler.syncToPlayer(serverPlayer);
+        }
+    }
+
+    @SubscribeEvent
+    public static void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
+        if (event.getEntity() instanceof ServerPlayer serverPlayer) {
+            PacketHandler.syncToPlayer(serverPlayer);
+        }
+    }
+
+    @SubscribeEvent
+    public static void onStartTracking(PlayerEvent.StartTracking event) {
+        if (event.getTarget() instanceof ServerPlayer targetPlayer && event.getEntity() instanceof ServerPlayer observer) {
+            PacketHandler.sendTo(observer, targetPlayer);
+        }
+    }
+
+    private static void syncIfServer(Player player) {
+        if (!player.level().isClientSide && player instanceof ServerPlayer serverPlayer) {
+            PacketHandler.syncToTrackingAndSelf(serverPlayer);
+        }
+    }
+
+    // ==========================================
+    // 1. СЕГМЕНТЫ КОЖИ (/limb)
+    // ==========================================
+
+    // Правая рука
+    public static boolean setRightArmShoulderSkin(Player player, int state) {
+        return player.getCapability(LIMB_DATA_CAP).map(cap -> {
+            cap.getRightArm().setShoulderSkin(state);
+            syncIfServer(player);
+            return true;
+        }).orElse(false);
+    }
+
+    public static boolean setRightArmForearmSkin(Player player, int state) {
+        return player.getCapability(LIMB_DATA_CAP).map(cap -> {
+            cap.getRightArm().setForearmSkin(state);
+            syncIfServer(player);
+            return true;
+        }).orElse(false);
+    }
+
+    public static boolean setRightArmWristSkin(Player player, int state) {
+        return player.getCapability(LIMB_DATA_CAP).map(cap -> {
+            cap.getRightArm().setWristSkin(state);
+            syncIfServer(player);
+            return true;
+        }).orElse(false);
+    }
+
+    // Левая рука
+    public static boolean setLeftArmShoulderSkin(Player player, int state) {
+        return player.getCapability(LIMB_DATA_CAP).map(cap -> {
+            cap.getLeftArm().setShoulderSkin(state);
+            syncIfServer(player);
+            return true;
+        }).orElse(false);
+    }
+
+    public static boolean setLeftArmForearmSkin(Player player, int state) {
+        return player.getCapability(LIMB_DATA_CAP).map(cap -> {
+            cap.getLeftArm().setForearmSkin(state);
+            syncIfServer(player);
+            return true;
+        }).orElse(false);
+    }
+
+    public static boolean setLeftArmWristSkin(Player player, int state) {
+        return player.getCapability(LIMB_DATA_CAP).map(cap -> {
+            cap.getLeftArm().setWristSkin(state);
+            syncIfServer(player);
+            return true;
+        }).orElse(false);
+    }
+
+    // Правая нога
+    public static boolean setRightLegThighSkin(Player player, int state) {
+        return player.getCapability(LIMB_DATA_CAP).map(cap -> {
+            cap.getRightLeg().setThighSkin(state);
+            syncIfServer(player);
+            return true;
+        }).orElse(false);
+    }
+
+    public static boolean setRightLegCalfSkin(Player player, int state) {
+        return player.getCapability(LIMB_DATA_CAP).map(cap -> {
+            cap.getRightLeg().setCalfSkin(state);
+            syncIfServer(player);
+            return true;
+        }).orElse(false);
+    }
+
+    public static boolean setRightLegFootSkin(Player player, int state) {
+        return player.getCapability(LIMB_DATA_CAP).map(cap -> {
+            cap.getRightLeg().setFootSkin(state);
+            syncIfServer(player);
+            return true;
+        }).orElse(false);
+    }
+
+    // Левая нога
+    public static boolean setLeftLegThighSkin(Player player, int state) {
+        return player.getCapability(LIMB_DATA_CAP).map(cap -> {
+            cap.getLeftLeg().setThighSkin(state);
+            syncIfServer(player);
+            return true;
+        }).orElse(false);
+    }
+
+    public static boolean setLeftLegCalfSkin(Player player, int state) {
+        return player.getCapability(LIMB_DATA_CAP).map(cap -> {
+            cap.getLeftLeg().setCalfSkin(state);
+            syncIfServer(player);
+            return true;
+        }).orElse(false);
+    }
+
+    public static boolean setLeftLegFootSkin(Player player, int state) {
+        return player.getCapability(LIMB_DATA_CAP).map(cap -> {
+            cap.getLeftLeg().setFootSkin(state);
+            syncIfServer(player);
+            return true;
+        }).orElse(false);
+    }
+
+    // Торс
+    public static boolean setBodyState(Player player, int state) {
+        return player.getCapability(LIMB_DATA_CAP).map(cap -> {
+            cap.setBodyState(state);
+            syncIfServer(player);
+            return true;
+        }).orElse(false);
+    }
+
+    // ==========================================
+    // 2. МАСКИ И ОБУГЛЕННОСТЬ ГОЛОВЫ (/show head)
+    // ==========================================
 
     public static boolean setHeadSkinMask(Player player, byte mask) {
-        return get(player).map(data -> {
-            byte old = data.getHead().getSkinMask();
-            data.getHead().setSkinMask(mask);
-            if (old != mask) sync(player);
+        return player.getCapability(LIMB_DATA_CAP).map(cap -> {
+            cap.getHead().setSkinMask(mask);
+            syncIfServer(player);
             return true;
         }).orElse(false);
     }
 
     public static boolean setHeadMuscleMask(Player player, byte mask) {
-        return get(player).map(data -> {
-            byte old = data.getHead().getMuscleMask();
-            data.getHead().setMuscleMask(mask);
-            if (old != mask) sync(player);
+        return player.getCapability(LIMB_DATA_CAP).map(cap -> {
+            cap.getHead().setMuscleMask(mask);
+            syncIfServer(player);
             return true;
         }).orElse(false);
     }
 
     public static boolean setHeadSkullMask(Player player, byte mask) {
-        return get(player).map(data -> {
-            byte old = data.getHead().getSkullMask();
-            data.getHead().setSkullMask(mask);
-            if (old != mask) sync(player);
-            return true;
-        }).orElse(false);
-    }
-
-    public static byte getHeadSkinMask(Player player) {
-        return get(player).map(data -> data.getHead().getSkinMask()).orElse((byte) 0xFF);
-    }
-
-    public static byte getHeadMuscleMask(Player player) {
-        return get(player).map(data -> data.getHead().getMuscleMask()).orElse((byte) 0xFF);
-    }
-
-    public static byte getHeadSkullMask(Player player) {
-        return get(player).map(data -> data.getHead().getSkullMask()).orElse((byte) 0xFF);
-    }
-
-    public static boolean isHeadBurntSkull(Player player) {
-        return get(player).map(data -> data.getHead().isBurntSkull()).orElse(false);
-    }
-
-    public static boolean setRightArm(Player player, int state) {
-        return get(player).map(data -> {
-            int oldState = data.getRightArm();
-            data.setRightArm(state);
-            if (oldState != data.getRightArm()) sync(player);
-            return true;
-        }).orElse(false);
-    }
-
-    public static boolean setLeftArm(Player player, int state) {
-        return get(player).map(data -> {
-            int oldState = data.getLeftArm();
-            data.setLeftArm(state);
-            if (oldState != data.getLeftArm()) sync(player);
-            return true;
-        }).orElse(false);
-    }
-
-    public static boolean setRightLeg(Player player, int state) {
-        return get(player).map(data -> {
-            int oldState = data.getRightLeg();
-            data.setRightLeg(state);
-            if (oldState != data.getRightLeg()) sync(player);
-            return true;
-        }).orElse(false);
-    }
-
-    public static boolean setLeftLeg(Player player, int state) {
-        return get(player).map(data -> {
-            int oldState = data.getLeftLeg();
-            data.setLeftLeg(state);
-            if (oldState != data.getLeftLeg()) sync(player);
-            return true;
-        }).orElse(false);
-    }
-
-    public static boolean setBodyState(Player player, int state) {
-        return get(player).map(data -> {
-            int oldState = data.getBodyState();
-            data.setBodyState(state);
-            if (oldState != data.getBodyState()) sync(player);
-            return true;
-        }).orElse(false);
-    }
-
-    public static boolean setBoneRightArm(Player player, int state) {
-        return get(player).map(data -> {
-            int oldState = data.getBoneRightArm();
-            data.setBoneRightArm(state);
-            if (oldState != data.getBoneRightArm()) sync(player);
-            return true;
-        }).orElse(false);
-    }
-
-    public static boolean setBoneLeftArm(Player player, int state) {
-        return get(player).map(data -> {
-            int oldState = data.getBoneLeftArm();
-            data.setBoneLeftArm(state);
-            if (oldState != data.getBoneLeftArm()) sync(player);
-            return true;
-        }).orElse(false);
-    }
-
-    public static boolean setBoneRightLeg(Player player, int state) {
-        return get(player).map(data -> {
-            int oldState = data.getBoneRightLeg();
-            data.setBoneRightLeg(state);
-            if (oldState != data.getBoneRightLeg()) sync(player);
-            return true;
-        }).orElse(false);
-    }
-
-    public static boolean setBoneLeftLeg(Player player, int state) {
-        return get(player).map(data -> {
-            int oldState = data.getBoneLeftLeg();
-            data.setBoneLeftLeg(state);
-            if (oldState != data.getBoneLeftLeg()) sync(player);
-            return true;
-        }).orElse(false);
-    }
-
-    public static boolean setShowSkeleton(Player player, int state) {
-        return get(player).map(data -> {
-            int oldState = data.getShowSkeleton();
-            data.setShowSkeleton(state);
-            if (oldState != data.getShowSkeleton()) sync(player);
-            return true;
-        }).orElse(false);
-    }
-
-    public static boolean setMuscleRightArm(Player player, int state) {
-        return get(player).map(data -> {
-            int oldState = data.getMuscleRightArm();
-            data.setMuscleRightArm(state);
-            if (oldState != data.getMuscleRightArm()) sync(player);
-            return true;
-        }).orElse(false);
-    }
-
-    public static boolean setMuscleLeftArm(Player player, int state) {
-        return get(player).map(data -> {
-            int oldState = data.getMuscleLeftArm();
-            data.setMuscleLeftArm(state);
-            if (oldState != data.getMuscleLeftArm()) sync(player);
-            return true;
-        }).orElse(false);
-    }
-
-    public static boolean setMuscleRightLeg(Player player, int state) {
-        return get(player).map(data -> {
-            int oldState = data.getMuscleRightLeg();
-            data.setMuscleRightLeg(state);
-            if (oldState != data.getMuscleRightLeg()) sync(player);
-            return true;
-        }).orElse(false);
-    }
-
-    public static boolean setMuscleLeftLeg(Player player, int state) {
-        return get(player).map(data -> {
-            int oldState = data.getMuscleLeftLeg();
-            data.setMuscleLeftLeg(state);
-            if (oldState != data.getMuscleLeftLeg()) sync(player);
-            return true;
-        }).orElse(false);
-    }
-
-    public static boolean setMuscleBody(Player player, int state) {
-        return get(player).map(data -> {
-            int oldState = data.getMuscleBody();
-            data.setMuscleBody(state);
-            if (oldState != data.getMuscleBody()) sync(player);
+        return player.getCapability(LIMB_DATA_CAP).map(cap -> {
+            cap.getHead().setSkullMask(mask);
+            syncIfServer(player);
             return true;
         }).orElse(false);
     }
 
     public static boolean setHeadBurntSkull(Player player, boolean burnt) {
-        return get(player).map(data -> {
-            boolean old = data.getHead().isBurntSkull();
-            data.getHead().setBurntSkull(burnt);
-            if (old != burnt) sync(player);
+        return player.getCapability(LIMB_DATA_CAP).map(cap -> {
+            cap.getHead().setBurntSkull(burnt);
+            syncIfServer(player);
             return true;
         }).orElse(false);
     }
 
-    public static int getRightArm(Player player) { return get(player).map(LimbData::getRightArm).orElse(3); }
-    public static int getLeftArm(Player player) { return get(player).map(LimbData::getLeftArm).orElse(3); }
-    public static int getRightLeg(Player player) { return get(player).map(LimbData::getRightLeg).orElse(3); }
-    public static int getLeftLeg(Player player) { return get(player).map(LimbData::getLeftLeg).orElse(3); }
-    public static int getBodyState(Player player) { return get(player).map(LimbData::getBodyState).orElse(9); }
+    // ==========================================
+    // 3. КОСТИ И ОБЩИЙ СКЕЛЕТ (/show bone)
+    // ==========================================
 
-    public static int getBoneRightArm(Player player) { return get(player).map(LimbData::getBoneRightArm).orElse(0); }
-    public static int getBoneLeftArm(Player player) { return get(player).map(LimbData::getBoneLeftArm).orElse(0); }
-    public static int getBoneRightLeg(Player player) { return get(player).map(LimbData::getBoneRightLeg).orElse(0); }
-    public static int getBoneLeftLeg(Player player) { return get(player).map(LimbData::getBoneLeftLeg).orElse(0); }
-    public static int getShowSkeleton(Player player) { return get(player).map(LimbData::getShowSkeleton).orElse(0); }
+    public static boolean setBoneRightArm(Player player, int state) {
+        return player.getCapability(LIMB_DATA_CAP).map(cap -> {
+            cap.getRightArm().setBoneState(state);
+            syncIfServer(player);
+            return true;
+        }).orElse(false);
+    }
 
-    public static int getMuscleRightArm(Player player) { return get(player).map(LimbData::getMuscleRightArm).orElse(0); }
-    public static int getMuscleLeftArm(Player player) { return get(player).map(LimbData::getMuscleLeftArm).orElse(0); }
-    public static int getMuscleRightLeg(Player player) { return get(player).map(LimbData::getMuscleRightLeg).orElse(0); }
-    public static int getMuscleLeftLeg(Player player) { return get(player).map(LimbData::getMuscleLeftLeg).orElse(0); }
-    public static int getMuscleBody(Player player) { return get(player).map(LimbData::getMuscleBody).orElse(0); }
+    public static boolean setBoneLeftArm(Player player, int state) {
+        return player.getCapability(LIMB_DATA_CAP).map(cap -> {
+            cap.getLeftArm().setBoneState(state);
+            syncIfServer(player);
+            return true;
+        }).orElse(false);
+    }
 
-    private static void sync(Player player) {
-        if (player instanceof ServerPlayer serverPlayer) {
-            PacketHandler.syncToTrackingAndSelf(serverPlayer);
-        }
+    public static boolean setBoneRightLeg(Player player, int state) {
+        return player.getCapability(LIMB_DATA_CAP).map(cap -> {
+            cap.getRightLeg().setBoneState(state);
+            syncIfServer(player);
+            return true;
+        }).orElse(false);
+    }
+
+    public static boolean setBoneLeftLeg(Player player, int state) {
+        return player.getCapability(LIMB_DATA_CAP).map(cap -> {
+            cap.getLeftLeg().setBoneState(state);
+            syncIfServer(player);
+            return true;
+        }).orElse(false);
+    }
+
+    public static boolean setShowSkeleton(Player player, int state) {
+        return player.getCapability(LIMB_DATA_CAP).map(cap -> {
+            cap.setShowSkeleton(state);
+            syncIfServer(player);
+            return true;
+        }).orElse(false);
+    }
+
+    // Обугленные кости
+    public static boolean setBurntBoneRightArm(Player player, boolean burnt) {
+        return player.getCapability(LIMB_DATA_CAP).map(cap -> {
+            cap.getRightArm().setBurntBone(burnt);
+            syncIfServer(player);
+            return true;
+        }).orElse(false);
+    }
+
+    public static boolean setBurntBoneLeftArm(Player player, boolean burnt) {
+        return player.getCapability(LIMB_DATA_CAP).map(cap -> {
+            cap.getLeftArm().setBurntBone(burnt);
+            syncIfServer(player);
+            return true;
+        }).orElse(false);
+    }
+
+    public static boolean setBurntBoneRightLeg(Player player, boolean burnt) {
+        return player.getCapability(LIMB_DATA_CAP).map(cap -> {
+            cap.getRightLeg().setBurntBone(burnt);
+            syncIfServer(player);
+            return true;
+        }).orElse(false);
+    }
+
+    public static boolean setBurntBoneLeftLeg(Player player, boolean burnt) {
+        return player.getCapability(LIMB_DATA_CAP).map(cap -> {
+            cap.getLeftLeg().setBurntBone(burnt);
+            syncIfServer(player);
+            return true;
+        }).orElse(false);
+    }
+
+    // ==========================================
+    // 4. МЫШЦЫ (/show muscle)
+    // ==========================================
+
+    public static boolean setMuscleBody(Player player, int state) {
+        return player.getCapability(LIMB_DATA_CAP).map(cap -> {
+            cap.setMuscleBody(state);
+            syncIfServer(player);
+            return true;
+        }).orElse(false);
+    }
+
+    public static boolean setMuscleRightArm(Player player, int state) {
+        return player.getCapability(LIMB_DATA_CAP).map(cap -> {
+            cap.getRightArm().setMuscleState(state);
+            syncIfServer(player);
+            return true;
+        }).orElse(false);
+    }
+
+    public static boolean setMuscleLeftArm(Player player, int state) {
+        return player.getCapability(LIMB_DATA_CAP).map(cap -> {
+            cap.getLeftArm().setMuscleState(state);
+            syncIfServer(player);
+            return true;
+        }).orElse(false);
+    }
+
+    public static boolean setMuscleRightLeg(Player player, int state) {
+        return player.getCapability(LIMB_DATA_CAP).map(cap -> {
+            cap.getRightLeg().setMuscleState(state);
+            syncIfServer(player);
+            return true;
+        }).orElse(false);
+    }
+
+    public static boolean setMuscleLeftLeg(Player player, int state) {
+        return player.getCapability(LIMB_DATA_CAP).map(cap -> {
+            cap.getLeftLeg().setMuscleState(state);
+            syncIfServer(player);
+            return true;
+        }).orElse(false);
+    }
+
+    public static LazyOptional<LimbData> get(Player player) {
+        return player.getCapability(LIMB_DATA_CAP);
     }
 }

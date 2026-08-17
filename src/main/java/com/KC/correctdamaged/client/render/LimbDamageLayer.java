@@ -1,5 +1,7 @@
 package com.KC.correctdamaged.client.render;
 
+import com.KC.correctdamaged.capability.visual.ArmData;
+import com.KC.correctdamaged.capability.visual.LegData;
 import com.KC.correctdamaged.capability.LimbManager;
 import com.KC.correctdamaged.client.render.customRender.CustomCube;
 import com.KC.correctdamaged.client.render.customRender.FreeUVCubeRenderer;
@@ -27,40 +29,73 @@ public class LimbDamageLayer extends RenderLayer<AbstractClientPlayer, PlayerMod
             AbstractClientPlayer player, float limbSwing, float limbSwingAmount,
             float partialTicks, float ageInTicks, float netHeadYaw, float headPitch
     ) {
-        LimbManager.get(player).ifPresent(data -> {
+        player.getCapability(LimbManager.LIMB_DATA_CAP).ifPresent(data -> {
             boolean slim = player.getModelName().equals("slim");
             ResourceLocation texture = player.getSkinTextureLocation();
             VertexConsumer consumer = buffer.getBuffer(RenderType.entityCutoutNoCull(texture));
 
             PlayerModel<AbstractClientPlayer> model = getParentModel();
 
-            renderLimb(poseStack, consumer, packedLight, model.rightArm, LimbDamageVariants.LimbType.RIGHT_ARM, LimbDamageVariants.LimbType.RIGHT_SLEEVE, data.getRightArm(), slim);
-            renderLimb(poseStack, consumer, packedLight, model.leftArm, LimbDamageVariants.LimbType.LEFT_ARM, LimbDamageVariants.LimbType.LEFT_SLEEVE, data.getLeftArm(), slim);
+            renderArm(poseStack, consumer, packedLight, model.rightArm, LimbDamageVariants.LimbType.RIGHT_ARM, LimbDamageVariants.LimbType.RIGHT_SLEEVE, data.getRightArm(), slim);
+            renderArm(poseStack, consumer, packedLight, model.leftArm, LimbDamageVariants.LimbType.LEFT_ARM, LimbDamageVariants.LimbType.LEFT_SLEEVE, data.getLeftArm(), slim);
 
-            renderLimb(poseStack, consumer, packedLight, model.rightLeg, LimbDamageVariants.LimbType.RIGHT_LEG, LimbDamageVariants.LimbType.RIGHT_PANTS, data.getRightLeg(), false);
-            renderLimb(poseStack, consumer, packedLight, model.leftLeg, LimbDamageVariants.LimbType.LEFT_LEG, LimbDamageVariants.LimbType.LEFT_PANTS, data.getLeftLeg(), false);
+            renderLeg(poseStack, consumer, packedLight, model.rightLeg, LimbDamageVariants.LimbType.RIGHT_LEG, LimbDamageVariants.LimbType.RIGHT_PANTS, data.getRightLeg());
+            renderLeg(poseStack, consumer, packedLight, model.leftLeg, LimbDamageVariants.LimbType.LEFT_LEG, LimbDamageVariants.LimbType.LEFT_PANTS, data.getLeftLeg());
         });
     }
 
-    private void renderLimb(
+    private void renderArm(
             PoseStack poseStack, VertexConsumer consumer, int packedLight,
             ModelPart parentPart, LimbDamageVariants.LimbType baseType, LimbDamageVariants.LimbType layerType,
-            int state, boolean slim
+            ArmData arm, boolean slim
     ) {
-        if (state <= 0 || state >= 3) return;
-
-        float height = state == 2 ? 10.0F : 6.0F;
-
         poseStack.pushPose();
         parentPart.translateAndRotate(poseStack);
 
-        CustomCube baseCube = LimbDamageVariants.createLimbStageCube(baseType, slim, height);
-        drawCustomCube(poseStack, consumer, packedLight, baseCube);
-
-        CustomCube layerCube = LimbDamageVariants.createLimbStageCube(layerType, slim, height);
-        drawCustomCube(poseStack, consumer, packedLight, layerCube);
+        if (arm.hasShoulderSkin()) {
+            renderSegment(poseStack, consumer, packedLight, baseType, layerType, slim, 6.0F, -2.0F);
+        }
+        if (arm.hasForearmSkin()) {
+            renderSegment(poseStack, consumer, packedLight, baseType, layerType, slim, 4.0F, 4.0F);
+        }
+        if (arm.hasWristSkin()) {
+            renderSegment(poseStack, consumer, packedLight, baseType, layerType, slim, 2.0F, 8.0F);
+        }
 
         poseStack.popPose();
+    }
+
+    private void renderLeg(
+            PoseStack poseStack, VertexConsumer consumer, int packedLight,
+            ModelPart parentPart, LimbDamageVariants.LimbType baseType, LimbDamageVariants.LimbType layerType,
+            LegData leg
+    ) {
+        poseStack.pushPose();
+        parentPart.translateAndRotate(poseStack);
+
+        if (leg.hasThighSkin()) {
+            renderSegment(poseStack, consumer, packedLight, baseType, layerType, false, 6.0F, 0.0F);
+        }
+        if (leg.hasCalfSkin()) {
+            renderSegment(poseStack, consumer, packedLight, baseType, layerType, false, 4.0F, 6.0F);
+        }
+        if (leg.hasFootSkin()) {
+            renderSegment(poseStack, consumer, packedLight, baseType, layerType, false, 2.0F, 10.0F);
+        }
+
+        poseStack.popPose();
+    }
+
+    private void renderSegment(
+            PoseStack poseStack, VertexConsumer consumer, int packedLight,
+            LimbDamageVariants.LimbType baseType, LimbDamageVariants.LimbType layerType,
+            boolean slim, float height, float yOffset
+    ) {
+        CustomCube baseCube = LimbDamageVariants.createLimbSegmentCube(baseType, slim, height, yOffset);
+        drawCustomCube(poseStack, consumer, packedLight, baseCube);
+
+        CustomCube layerCube = LimbDamageVariants.createLimbSegmentCube(layerType, slim, height, yOffset);
+        drawCustomCube(poseStack, consumer, packedLight, layerCube);
     }
 
     private void drawCustomCube(PoseStack poseStack, VertexConsumer consumer, int packedLight, CustomCube cube) {
