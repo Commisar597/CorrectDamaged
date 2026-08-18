@@ -10,10 +10,7 @@ public class LimbData implements INBTSerializable<CompoundTag> {
     private final LegData rightLeg = new LegData(LimbSide.RIGHT);
     private final LegData leftLeg = new LegData(LimbSide.LEFT);
     private final HeadData head = new HeadData();
-
-    private int bodyState = 9;
-    private int muscleBody = 0;
-    private int showSkeleton = 0;
+    private final BodyData body = new BodyData();
 
     public void copyFrom(LimbData source) {
         this.rightArm.copyFrom(source.rightArm);
@@ -21,9 +18,7 @@ public class LimbData implements INBTSerializable<CompoundTag> {
         this.rightLeg.copyFrom(source.rightLeg);
         this.leftLeg.copyFrom(source.leftLeg);
         this.head.copyFrom(source.head);
-        this.bodyState = source.bodyState;
-        this.muscleBody = source.muscleBody;
-        this.showSkeleton = source.showSkeleton;
+        this.body.copyFrom(source.body);
     }
 
     @Override
@@ -34,9 +29,7 @@ public class LimbData implements INBTSerializable<CompoundTag> {
         tag.put("RightLeg", rightLeg.serializeNBT());
         tag.put("LeftLeg", leftLeg.serializeNBT());
         tag.put("Head", head.serializeNBT());
-        tag.putInt("BodyState", bodyState);
-        tag.putInt("MuscleBody", muscleBody);
-        tag.putInt("ShowSkeleton", showSkeleton);
+        tag.put("Body", body.serializeNBT());
         return tag;
     }
 
@@ -47,9 +40,7 @@ public class LimbData implements INBTSerializable<CompoundTag> {
         if (tag.contains("RightLeg")) rightLeg.deserializeNBT(tag.getCompound("RightLeg"));
         if (tag.contains("LeftLeg")) leftLeg.deserializeNBT(tag.getCompound("LeftLeg"));
         if (tag.contains("Head")) head.deserializeNBT(tag.getCompound("Head"));
-        if (tag.contains("BodyState")) bodyState = tag.getInt("BodyState");
-        if (tag.contains("MuscleBody")) muscleBody = tag.getInt("MuscleBody");
-        if (tag.contains("ShowSkeleton")) showSkeleton = tag.getInt("ShowSkeleton");
+        if (tag.contains("Body")) body.deserializeNBT(tag.getCompound("Body"));
     }
 
     public ArmData getRightArm() { return rightArm; }
@@ -57,13 +48,5 @@ public class LimbData implements INBTSerializable<CompoundTag> {
     public LegData getRightLeg() { return rightLeg; }
     public LegData getLeftLeg() { return leftLeg; }
     public HeadData getHead() { return head; }
-
-    public int getBodyState() { return bodyState; }
-    public void setBodyState(int bodyState) { this.bodyState = bodyState; }
-
-    public int getMuscleBody() { return muscleBody; }
-    public void setMuscleBody(int muscleBody) { this.muscleBody = muscleBody; }
-
-    public int getShowSkeleton() { return showSkeleton; }
-    public void setShowSkeleton(int showSkeleton) { this.showSkeleton = showSkeleton; }
+    public BodyData getBody() { return body; }
 }

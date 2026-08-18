@@ -2,6 +2,7 @@ package com.KC.correctdamaged.mixin.client;
 
 import com.KC.correctdamaged.capability.visual.ArmData;
 import com.KC.correctdamaged.capability.visual.LegData;
+import com.KC.correctdamaged.capability.visual.BodyData;
 import com.KC.correctdamaged.capability.LimbManager;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.PlayerModel;
@@ -40,86 +41,47 @@ public abstract class HumanoidModelMixin<T extends LivingEntity> {
         }
 
         LimbManager.get(player).ifPresent(data -> {
-            // Получаем объекты конечностей
             ArmData rightArmData = data.getRightArm();
-            ArmData leftArmData = data.getLeftArm();
+            ArmData leftArmData  = data.getLeftArm();
             LegData rightLegData = data.getRightLeg();
-            LegData leftLegData = data.getLeftLeg();
+            LegData leftLegData  = data.getLeftLeg();
 
-            int rightArmState = correctDamaged$getCutState(new int[]{ rightArmData.getShoulderSkin(), rightArmData.getForearmSkin(), rightArmData.getWristSkin() });
-            int leftArmState  = correctDamaged$getCutState(new int[]{ leftArmData.getShoulderSkin(), leftArmData.getForearmSkin(), leftArmData.getWristSkin() });
+            boolean rightArmFull = rightArmData.hasShoulderSkin() && rightArmData.hasForearmSkin() && rightArmData.hasWristSkin();
+            boolean leftArmFull  = leftArmData.hasShoulderSkin()  && leftArmData.hasForearmSkin()  && leftArmData.hasWristSkin();
+            boolean rightLegFull = rightLegData.hasThighSkin()    && rightLegData.hasCalfSkin()    && rightLegData.hasFootSkin();
+            boolean leftLegFull  = leftLegData.hasThighSkin()     && leftLegData.hasCalfSkin()     && leftLegData.hasFootSkin();
 
-            int rightLegState = correctDamaged$getCutState(new int[]{ rightLegData.getThighSkin(), rightLegData.getCalfSkin(), rightLegData.getFootSkin() });
-            int leftLegState  = correctDamaged$getCutState(new int[]{ leftLegData.getThighSkin(), leftLegData.getCalfSkin(), leftLegData.getFootSkin() });
+            rightArm.visible = rightArmFull;
+            rightArm.skipDraw = !rightArmFull;
 
-            int bodyState = data.getBodyState();
+            leftArm.visible = leftArmFull;
+            leftArm.skipDraw = !leftArmFull;
 
-            correctDamaged$applyState(rightArm, rightArmState);
-            correctDamaged$applyState(leftArm, leftArmState);
-            correctDamaged$applyState(rightLeg, rightLegState);
-            correctDamaged$applyState(leftLeg, leftLegState);
+            rightLeg.visible = rightLegFull;
+            rightLeg.skipDraw = !rightLegFull;
+
+            leftLeg.visible = leftLegFull;
+            leftLeg.skipDraw = !leftLegFull;
 
             if ((Object) this instanceof PlayerModel<?> playerModel) {
-                correctDamaged$applyState(playerModel.rightSleeve, rightArmState);
-                correctDamaged$applyState(playerModel.leftSleeve, leftArmState);
-                correctDamaged$applyState(playerModel.rightPants, rightLegState);
-                correctDamaged$applyState(playerModel.leftPants, leftLegState);
+                playerModel.rightSleeve.visible = rightArmFull;
+                playerModel.leftSleeve.visible  = leftArmFull;
+                playerModel.rightPants.visible  = rightLegFull;
+                playerModel.leftPants.visible   = leftLegFull;
 
                 byte headMask = data.getHead().getSkinMask();
-
                 boolean isFullHead = (headMask & 0xFF) == 0xFF;
                 playerModel.head.visible = isFullHead;
                 playerModel.hat.visible = isFullHead;
 
-                correctDamaged$applyBodyState(playerModel.body, playerModel.jacket, bodyState);
+                BodyData bodyData = data.getBody();
+                boolean isFullBody = bodyData.isBodyIntact();
+
+                playerModel.body.visible = isFullBody;
+                playerModel.body.skipDraw = !isFullBody;
+                playerModel.jacket.visible = isFullBody;
+                playerModel.jacket.skipDraw = !isFullBody;
             }
         });
-    }
-
-    private static int correctDamaged$getCutState(int[] skinSegments) {
-        if (skinSegments[0] == 1) {
-            if (skinSegments[1] == 1) {
-                return skinSegments[2] == 1 ? 3 : 2;
-            }
-            return 1;
-        }
-        return 0;
-    }
-
-    private static void correctDamaged$applyState(ModelPart limb, int state) {
-        if (state == 3) {
-            limb.visible = true;
-            limb.skipDraw = false;
-            return;
-        }
-
-        if (state == 0) {
-            limb.visible = false;
-            return;
-        }
-
-        limb.visible = true;
-        limb.skipDraw = true;
-    }
-
-    private static void correctDamaged$applyBodyState(ModelPart body, ModelPart jacket, int state) {
-        if (state == 9) {
-            body.visible = true;
-            body.skipDraw = false;
-            jacket.visible = true;
-            jacket.skipDraw = false;
-            return;
-        }
-
-        if (state == 0) {
-            body.visible = false;
-            jacket.visible = false;
-            return;
-        }
-
-        body.visible = true;
-        body.skipDraw = true;
-        jacket.visible = true;
-        jacket.skipDraw = true;
     }
 }

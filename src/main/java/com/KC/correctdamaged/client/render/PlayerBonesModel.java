@@ -32,12 +32,9 @@ public class PlayerBonesModel extends PlayerModel<AbstractClientPlayer> {
     public final ModelPart leftArmForearmBone;
     public final ModelPart leftArmShoulderBone;
 
-    public final ModelPart skeleton;
-
     public PlayerBonesModel(ModelPart root) {
         super(root, false);
 
-        ModelPart body = root.getChild("body");
         ModelPart rightLeg = root.getChild("right_leg");
         ModelPart leftLeg = root.getChild("left_leg");
         ModelPart rightArm = root.getChild("right_arm");
@@ -58,15 +55,12 @@ public class PlayerBonesModel extends PlayerModel<AbstractClientPlayer> {
         this.leftArmShoulderBone = leftArm.getChild("leftArmShoulderBone");
         this.leftArmForearmBone = leftArm.getChild("leftArmForearmBone");
         this.leftArmWristBone = leftArm.getChild("leftArmWristBone");
-
-        this.skeleton = body.getChild("skeleton");
     }
 
     public static LayerDefinition createBodyLayer(boolean slim) {
         MeshDefinition meshdefinition = PlayerModel.createMesh(CubeDeformation.NONE, slim);
         PartDefinition root = meshdefinition.getRoot();
 
-        PartDefinition body = root.getChild("body");
         PartDefinition rightLeg = root.getChild("right_leg");
         PartDefinition leftLeg = root.getChild("left_leg");
         PartDefinition rightArm = root.getChild("right_arm");
@@ -100,9 +94,6 @@ public class PlayerBonesModel extends PlayerModel<AbstractClientPlayer> {
         leftArm.addOrReplaceChild("leftArmWristBone",
                 CubeListBuilder.create().texOffs(0, 14).mirror().addBox(-1.0F, 8.0F, -1.0F, 2.0F, 2.0F, 2.0F), PartPose.offset(0.1F, 0.0F, 0.0F));
 
-        body.addOrReplaceChild("skeleton",
-                CubeListBuilder.create().texOffs(40, 0).addBox(-4.0F, 0.0F, -2.0F, 8.0F, 12.0F, 4.0F, new CubeDeformation(-0.250F)), PartPose.ZERO);
-
         return LayerDefinition.create(meshdefinition, 64, 64);
     }
 
@@ -126,7 +117,5 @@ public class PlayerBonesModel extends PlayerModel<AbstractClientPlayer> {
         this.leftArmWristBone.visible = visible;
         this.leftArmForearmBone.visible = visible;
         this.leftArmShoulderBone.visible = visible;
-
-        this.skeleton.visible = visible;
     }
 }

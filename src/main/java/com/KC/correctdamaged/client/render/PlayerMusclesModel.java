@@ -15,8 +15,6 @@ import net.minecraft.resources.ResourceLocation;
 public class PlayerMusclesModel extends PlayerModel<AbstractClientPlayer> {
     public static final ResourceLocation MUSCLE = new ResourceLocation(CorrectDamaged.MODID, "textures/entity/muscles_texture.png");
 
-    public final ModelPart bodyMuscle;
-
     public final ModelPart rightFootMuscle;
     public final ModelPart rightCalfMuscle;
     public final ModelPart rightThighMuscle;
@@ -36,13 +34,10 @@ public class PlayerMusclesModel extends PlayerModel<AbstractClientPlayer> {
     public PlayerMusclesModel(ModelPart root) {
         super(root, false);
 
-        ModelPart body = root.getChild("body");
         ModelPart rightLeg = root.getChild("right_leg");
         ModelPart leftLeg = root.getChild("left_leg");
         ModelPart rightArm = root.getChild("right_arm");
         ModelPart leftArm = root.getChild("left_arm");
-
-        this.bodyMuscle = body.getChild("bodyMuscle");
 
         this.rightThighMuscle = rightLeg.getChild("rightThighMuscle");
         this.rightCalfMuscle = rightLeg.getChild("rightCalfMuscle");
@@ -65,14 +60,10 @@ public class PlayerMusclesModel extends PlayerModel<AbstractClientPlayer> {
         MeshDefinition meshdefinition = PlayerModel.createMesh(CubeDeformation.NONE, slim);
         PartDefinition root = meshdefinition.getRoot();
 
-        PartDefinition body = root.getChild("body");
         PartDefinition rightLeg = root.getChild("right_leg");
         PartDefinition leftLeg = root.getChild("left_leg");
         PartDefinition rightArm = root.getChild("right_arm");
         PartDefinition leftArm = root.getChild("left_arm");
-
-        body.addOrReplaceChild("bodyMuscle",
-                CubeListBuilder.create().texOffs(40, 0).addBox(-4.0F, 0.0F, -2.0F, 8.0F, 12.0F, 4.0F, new CubeDeformation(-0.125F)), PartPose.ZERO);
 
         rightLeg.addOrReplaceChild("rightThighMuscle",
                 CubeListBuilder.create().texOffs(0, 7).addBox(-1.5F, 0.0F, -1.5F, 3.0F, 6.0F, 3.0F), PartPose.ZERO);
@@ -112,8 +103,6 @@ public class PlayerMusclesModel extends PlayerModel<AbstractClientPlayer> {
     }
 
     public void setAllPartsVisible(boolean visible) {
-        this.bodyMuscle.visible = visible;
-
         this.rightFootMuscle.visible = visible;
         this.rightCalfMuscle.visible = visible;
         this.rightThighMuscle.visible = visible;

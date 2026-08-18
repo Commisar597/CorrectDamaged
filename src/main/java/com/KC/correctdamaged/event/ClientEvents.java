@@ -3,6 +3,8 @@ package com.KC.correctdamaged.event;
 import com.KC.correctdamaged.CorrectDamaged;
 import com.KC.correctdamaged.client.render.*;
 import com.KC.correctdamaged.client.render.head.*;
+import com.KC.correctdamaged.client.render.torso.BodyAnatomyLayer;
+import com.KC.correctdamaged.client.render.torso.BodyModel;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import net.minecraft.resources.ResourceLocation;
@@ -28,6 +30,9 @@ public class ClientEvents {
     public static final ModelLayerLocation PLAYER_MUSCLES_SLIM_LAYER = new ModelLayerLocation(
             new ResourceLocation(CorrectDamaged.MODID, "player_muscles_slim"), "main");
 
+    public static final ModelLayerLocation BODY_LAYER = new ModelLayerLocation(
+            new ResourceLocation(CorrectDamaged.MODID, "body"), "main");
+
     @SubscribeEvent
     public static void onRegisterLayerDefinitions(EntityRenderersEvent.RegisterLayerDefinitions event) {
         event.registerLayerDefinition(
@@ -47,6 +52,11 @@ public class ClientEvents {
                 PLAYER_MUSCLES_SLIM_LAYER,
                 () -> PlayerMusclesModel.createBodyLayer(true)
         );
+
+        event.registerLayerDefinition(
+                BODY_LAYER,
+                BodyModel::createBodyLayer
+        );
     }
 
     @SubscribeEvent
@@ -56,11 +66,10 @@ public class ClientEvents {
             if (renderer != null) {
                 boolean isSlim = "slim".equals(skinName);
 
-                renderer.addLayer(new StumpLayer(renderer));
-                renderer.addLayer(new StumpBodyLayer(renderer));
-                renderer.addLayer(new BodyDamageLayer(renderer));
                 renderer.addLayer(new PlayerBonesLayer(renderer, event.getEntityModels(), isSlim));
                 renderer.addLayer(new PlayerMusclesLayer(renderer, event.getEntityModels(), isSlim));
+                renderer.addLayer(new StumpLayer(renderer));
+                renderer.addLayer(new BodyAnatomyLayer(renderer, event.getEntityModels()));
                 renderer.addLayer(new LimbDamageLayer(renderer));
 
                 renderer.addLayer(new OctalHeadSkullLayer(renderer));

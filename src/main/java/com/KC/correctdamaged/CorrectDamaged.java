@@ -25,10 +25,6 @@ public class CorrectDamaged {
 
     public CorrectDamaged() {
 
-        IEventBus modEventBus =
-                FMLJavaModLoadingContext.get()
-                        .getModEventBus();
-
         MinecraftForge.EVENT_BUS.register(this);
 
         ModLoadingContext.get().registerConfig(

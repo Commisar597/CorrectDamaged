@@ -24,14 +24,12 @@ public class StumpLayer extends RenderLayer<AbstractClientPlayer, PlayerModel<Ab
 
     private final ModelPart cap4x4;
     private final ModelPart cap3x4;
-    private final ModelPart cap8x8;
 
     public StumpLayer(RenderLayerParent<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>> parent) {
         super(parent);
 
         this.cap4x4 = createCap(-2.0F, -2.0F, 4.0F, 4.0F, 0, 0, 4, 4);
         this.cap3x4 = createCap(-1.5F, -2.0F, 3.0F, 4.0F, 2, 0, 3, 4);
-        this.cap8x8 = createCap(-4.0F, -4.0F, 8.0F, 8.0F, 0, 0, 8, 8);
     }
 
     private ModelPart createCap(float x, float z, float width, float depth, int texU, int texV, int texW, int texH) {
@@ -65,66 +63,76 @@ public class StumpLayer extends RenderLayer<AbstractClientPlayer, PlayerModel<Ab
             LegData rightLeg = data.getRightLeg();
             LegData leftLeg = data.getLeftLeg();
 
-            int rightArmState = getCutState(new int[]{ rightArm.getShoulderSkin(), rightArm.getForearmSkin(), rightArm.getWristSkin() });
-            int leftArmState  = getCutState(new int[]{ leftArm.getShoulderSkin(), leftArm.getForearmSkin(), leftArm.getWristSkin() });
+            renderArmStumps(poseStack, buffer, packedLight, player, getParentModel().rightArm, rightArm, isSlim, 0, StumpTextureResolver.LimbType.RIGHT_ARM);
+            renderArmStumps(poseStack, buffer, packedLight, player, getParentModel().leftArm, leftArm, isSlim, 1, StumpTextureResolver.LimbType.LEFT_ARM);
 
-            int rightLegState = getCutState(new int[]{ rightLeg.getThighSkin(), rightLeg.getCalfSkin(), rightLeg.getFootSkin() });
-            int leftLegState  = getCutState(new int[]{ leftLeg.getThighSkin(), leftLeg.getCalfSkin(), leftLeg.getFootSkin() });
-
-            boolean rightArmSlim = isSlim && rightArmState != 0;
-            boolean leftArmSlim = isSlim && leftArmState != 0;
-
-            renderLimbCap(poseStack, buffer, packedLight, player, getParentModel().rightArm, rightArmState,
-                    rightArmSlim ? cap3x4 : cap4x4,
-                    rightArmSlim ? "stump_fresh_4x3" : "stump_fresh_4x4",
-                    -2.0F, rightArmSlim ? -0.5F : -1.0F, 0, rightArmSlim, StumpTextureResolver.LimbType.RIGHT_ARM);
-
-            renderLimbCap(poseStack, buffer, packedLight, player, getParentModel().leftArm, leftArmState,
-                    leftArmSlim ? cap3x4 : cap4x4,
-                    leftArmSlim ? "stump_fresh_4x3" : "stump_fresh_4x4",
-                    -2.0F, leftArmSlim ? 0.5F : 1.0F, 1, leftArmSlim, StumpTextureResolver.LimbType.LEFT_ARM);
-
-            renderLimbCap(poseStack, buffer, packedLight, player, getParentModel().rightLeg, rightLegState,
-                    cap4x4, "stump_fresh_4x4", 0.0F, 0.0F, 2, false, StumpTextureResolver.LimbType.RIGHT_LEG);
-
-            renderLimbCap(poseStack, buffer, packedLight, player, getParentModel().leftLeg, leftLegState,
-                    cap4x4, "stump_fresh_4x4", 0.0F, 0.0F, 3, false, StumpTextureResolver.LimbType.LEFT_LEG);
+            renderLegStumps(poseStack, buffer, packedLight, player, getParentModel().rightLeg, rightLeg, 2, StumpTextureResolver.LimbType.RIGHT_LEG);
+            renderLegStumps(poseStack, buffer, packedLight, player, getParentModel().leftLeg, leftLeg, 3, StumpTextureResolver.LimbType.LEFT_LEG);
         });
     }
 
-    private int getCutState(int[] skinSegments) {
-        if (skinSegments[0] == 1) {
-            if (skinSegments[1] == 1) {
-                return skinSegments[2] == 1 ? 3 : 2;
-            }
-            return 1;
+    private void renderArmStumps(
+            PoseStack poseStack, MultiBufferSource buffer, int packedLight, AbstractClientPlayer player,
+            ModelPart parentLimb, ArmData arm, boolean isSlim, int limbId, StumpTextureResolver.LimbType limbType
+    ) {
+        boolean s = arm.hasShoulderSkin();
+        boolean f = arm.hasForearmSkin();
+        boolean w = arm.hasWristSkin();
+
+        if (s && f && w) return;
+
+        if (!s) {
+            renderCapAtPosition(poseStack, buffer, packedLight, player, parentLimb, cap4x4, "stump_fresh_4x4", 0.0F, 0.0F, limbId, false, limbType, true);
         }
 
-        return 0;
+        ModelPart cap = isSlim ? cap3x4 : cap4x4;
+        String texName = isSlim ? "stump_fresh_4x3" : "stump_fresh_4x4";
+        float centerX = isSlim ? (limbId == 0 ? -0.5F : 0.5F) : -1.0F;
+
+        if (s != f) {
+            renderCapAtPosition(poseStack, buffer, packedLight, player, parentLimb, cap, texName, 4.0F, centerX, limbId, isSlim, limbType, false);
+        }
+
+        if (f != w) {
+            renderCapAtPosition(poseStack, buffer, packedLight, player, parentLimb, cap, texName, 8.0F, centerX, limbId, isSlim, limbType, false);
+        }
     }
 
-    private void renderLimbCap(
-            PoseStack poseStack,
-            MultiBufferSource buffer,
-            int packedLight,
-            AbstractClientPlayer player,
-            ModelPart parentLimb,
-            int state,
-            ModelPart capModel,
-            String baseTexName,
-            float startY,
-            float centerX,
-            int limbId,
-            boolean isSlim,
-            StumpTextureResolver.LimbType limbType
+    private void renderLegStumps(
+            PoseStack poseStack, MultiBufferSource buffer, int packedLight, AbstractClientPlayer player,
+            ModelPart parentLimb, LegData leg, int limbId, StumpTextureResolver.LimbType limbType
     ) {
-        if (state == 3) return;
+        boolean t = leg.hasThighSkin();
+        boolean c = leg.hasCalfSkin();
+        boolean f = leg.hasFootSkin();
 
+        if (t && c && f) return;
+
+        ModelPart cap = cap4x4;
+        String texName = "stump_fresh_4x4";
+
+        if (!t) {
+            renderCapAtPosition(poseStack, buffer, packedLight, player, parentLimb, cap, texName, 0.0F, 0.0F, limbId, false, limbType, true);
+        }
+
+        if (t != c) {
+            renderCapAtPosition(poseStack, buffer, packedLight, player, parentLimb, cap, texName, 6.0F, 0.0F, limbId, false, limbType, false);
+        }
+
+        if (c != f) {
+            renderCapAtPosition(poseStack, buffer, packedLight, player, parentLimb, cap, texName, 10.0F, 0.0F, limbId, false, limbType, false);
+        }
+    }
+
+    private void renderCapAtPosition(
+            PoseStack poseStack, MultiBufferSource buffer, int packedLight, AbstractClientPlayer player,
+            ModelPart parentLimb, ModelPart capModel, String baseTexName, float yOffset, float centerX,
+            int limbId, boolean isSlim, StumpTextureResolver.LimbType limbType, boolean isRoot
+    ) {
         poseStack.pushPose();
 
-        if (state == 0) {
+        if (isRoot) {
             getParentModel().body.translateAndRotate(poseStack);
-
             if (limbId == 0 || limbId == 1) {
                 float armX = (limbId == 0) ? -4.01F : 4.01F;
                 poseStack.translate(armX / 16.0D, 2.0D / 16.0D, 0.0D);
@@ -134,9 +142,6 @@ public class StumpLayer extends RenderLayer<AbstractClientPlayer, PlayerModel<Ab
                 poseStack.translate(legX / 16.0D, 12.01D / 16.0D, 0.0D);
             }
         } else {
-            float cutHeight = (state == 2) ? 10.0F : 6.0F;
-            float yOffset = startY + cutHeight + 0.01F;
-
             parentLimb.translateAndRotate(poseStack);
             poseStack.translate(centerX / 16.0D, yOffset / 16.0D, 0.0D);
         }

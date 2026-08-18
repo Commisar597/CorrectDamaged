@@ -62,8 +62,23 @@ public class LimbCommands {
                                                 .executes(ctx -> applySkinSegment(ctx.getSource(), "left_leg_foot", IntegerArgumentType.getInteger(ctx, "state"))))))
 
                         .then(Commands.literal("body")
-                                .then(Commands.argument("state", IntegerArgumentType.integer(0, 9))
+                                .then(Commands.argument("state", IntegerArgumentType.integer(0, 1))
                                         .executes(ctx -> applySkinSegment(ctx.getSource(), "body", IntegerArgumentType.getInteger(ctx, "state")))))
+        );
+
+        dispatcher.register(
+                Commands.literal("damage")
+                        .requires(source -> source.hasPermission(2))
+                        .then(Commands.literal("voxel")
+                                .then(Commands.literal("body")
+                                        .then(Commands.literal("bullet_center")
+                                                .executes(ctx -> applyVoxelPreset(ctx.getSource(), "bullet_center")))
+                                        .then(Commands.literal("slash_diagonal")
+                                                .executes(ctx -> applyVoxelPreset(ctx.getSource(), "slash_diagonal")))
+                                        .then(Commands.literal("heavy_blast")
+                                                .executes(ctx -> applyVoxelPreset(ctx.getSource(), "heavy_blast")))
+                                        .then(Commands.literal("reset")
+                                                .executes(ctx -> applyVoxelPreset(ctx.getSource(), "reset")))))
         );
 
         dispatcher.register(
@@ -102,6 +117,9 @@ public class LimbCommands {
                                                 .executes(ctx -> applyBoneOrMuscle(ctx.getSource(), "bone", "skeleton", IntegerArgumentType.getInteger(ctx, "state")))))
 
                                 .then(Commands.literal("burnt")
+                                        .then(Commands.literal("skeleton")
+                                                .then(Commands.argument("burnt", BoolArgumentType.bool())
+                                                        .executes(ctx -> applyBurntSkeleton(ctx.getSource(), BoolArgumentType.getBool(ctx, "burnt")))))
                                         .then(Commands.literal("right_arm")
                                                 .then(Commands.argument("burnt", BoolArgumentType.bool())
                                                         .executes(ctx -> applyBurntBone(ctx.getSource(), "right_arm", BoolArgumentType.getBool(ctx, "burnt")))))
@@ -134,6 +152,24 @@ public class LimbCommands {
         );
     }
 
+    private static int applyVoxelPreset(CommandSourceStack source, String preset) {
+        try {
+            ServerPlayer player = source.getPlayerOrException();
+            boolean changed = LimbManager.applyBodyVoxelPreset(player, preset);
+
+            if (!changed) {
+                source.sendFailure(Component.literal("Capability is unavailable."));
+                return 0;
+            }
+
+            source.sendSuccess(() -> Component.literal("Applied voxel preset: " + preset), true);
+            return 1;
+        } catch (Exception e) {
+            source.sendFailure(Component.literal("Command execution error: " + e.getMessage()));
+            return 0;
+        }
+    }
+
     private static int applySkinSegment(CommandSourceStack source, String segment, int state) {
         try {
             ServerPlayer player = source.getPlayerOrException();
@@ -154,7 +190,7 @@ public class LimbCommands {
                 case "left_leg_calf" -> LimbManager.setLeftLegCalfSkin(player, state);
                 case "left_leg_foot" -> LimbManager.setLeftLegFootSkin(player, state);
 
-                case "body" -> LimbManager.setBodyState(player, state);
+                case "body" -> LimbManager.setBodySkinMask(player, state);
                 default -> false;
             };
 
@@ -269,6 +305,24 @@ public class LimbCommands {
             }
 
             source.sendSuccess(() -> Component.literal("Burnt bone " + limb + " -> " + burnt), true);
+            return 1;
+        } catch (Exception e) {
+            source.sendFailure(Component.literal("Command execution error: " + e.getMessage()));
+            return 0;
+        }
+    }
+
+    private static int applyBurntSkeleton(CommandSourceStack source, boolean burnt) {
+        try {
+            ServerPlayer player = source.getPlayerOrException();
+            boolean changed = LimbManager.setBurntSkeleton(player, burnt);
+
+            if (!changed) {
+                source.sendFailure(Component.literal("Capability is unavailable."));
+                return 0;
+            }
+
+            source.sendSuccess(() -> Component.literal("Burnt skeleton -> " + burnt), true);
             return 1;
         } catch (Exception e) {
             source.sendFailure(Component.literal("Command execution error: " + e.getMessage()));

@@ -34,10 +34,6 @@ public class PlayerMusclesLayer extends RenderLayer<AbstractClientPlayer, Player
             PlayerModel<AbstractClientPlayer> parentModel = getParentModel();
             musclesModel.setupAnim(player, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);
 
-            if (data.getMuscleBody() > 0) {
-                renderSinglePart(poseStack, buffer, packedLight, musclesModel.bodyMuscle, parentModel.body);
-            }
-
             renderArmMuscles(poseStack, buffer, packedLight, data.getRightArm(),
                     musclesModel.rightArmShoulderMuscle, musclesModel.rightArmForearmMuscle, musclesModel.rightArmWristMuscle,
                     parentModel.rightArm, OFFSET_X);
@@ -86,13 +82,6 @@ public class PlayerMusclesLayer extends RenderLayer<AbstractClientPlayer, Player
         if (level >= 2) renderPart(poseStack, buffer, packedLight, calfPart);
         if (level >= 3) renderPart(poseStack, buffer, packedLight, footPart);
 
-        poseStack.popPose();
-    }
-
-    private void renderSinglePart(PoseStack poseStack, MultiBufferSource buffer, int packedLight, ModelPart part, ModelPart parentPart) {
-        poseStack.pushPose();
-        parentPart.translateAndRotate(poseStack);
-        renderPart(poseStack, buffer, packedLight, part);
         poseStack.popPose();
     }
 

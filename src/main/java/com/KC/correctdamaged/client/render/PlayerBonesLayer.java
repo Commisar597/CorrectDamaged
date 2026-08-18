@@ -38,8 +38,6 @@ public class PlayerBonesLayer extends RenderLayer<AbstractClientPlayer, PlayerMo
 
             renderLegBones(poseStack, buffer, packedLight, data.getRightLeg(), bonesModel.rightThighBone, bonesModel.rightCalfBone, bonesModel.rightFootBone, parentModel.rightLeg);
             renderLegBones(poseStack, buffer, packedLight, data.getLeftLeg(), bonesModel.leftThighBone, bonesModel.leftCalfBone, bonesModel.leftFootBone, parentModel.leftLeg);
-
-            renderSingleBone(poseStack, buffer, packedLight, data.getShowSkeleton(), bonesModel.skeleton, parentModel.body);
         });
     }
 
@@ -78,17 +76,6 @@ public class PlayerBonesLayer extends RenderLayer<AbstractClientPlayer, PlayerMo
         if (level >= 2) renderPart(poseStack, buffer, packedLight, calfPart, tex);
         if (level >= 3) renderPart(poseStack, buffer, packedLight, footPart, tex);
 
-        poseStack.popPose();
-    }
-
-    private void renderSingleBone(PoseStack poseStack, MultiBufferSource buffer, int packedLight, int state, ModelPart bonePart, ModelPart parentPart) {
-        if (state <= 0) return;
-
-        ResourceLocation tex = state == 2 ? PlayerBonesModel.BURNT_BONE : PlayerBonesModel.BONE;
-
-        poseStack.pushPose();
-        parentPart.translateAndRotate(poseStack);
-        renderPart(poseStack, buffer, packedLight, bonePart, tex);
         poseStack.popPose();
     }
 

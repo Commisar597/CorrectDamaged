@@ -49,6 +49,10 @@ public class LimbDamageLayer extends RenderLayer<AbstractClientPlayer, PlayerMod
             ModelPart parentPart, LimbDamageVariants.LimbType baseType, LimbDamageVariants.LimbType layerType,
             ArmData arm, boolean slim
     ) {
+        if (arm.hasShoulderSkin() && arm.hasForearmSkin() && arm.hasWristSkin()) {
+            return;
+        }
+
         poseStack.pushPose();
         parentPart.translateAndRotate(poseStack);
 
@@ -70,6 +74,10 @@ public class LimbDamageLayer extends RenderLayer<AbstractClientPlayer, PlayerMod
             ModelPart parentPart, LimbDamageVariants.LimbType baseType, LimbDamageVariants.LimbType layerType,
             LegData leg
     ) {
+        if (leg.hasThighSkin() && leg.hasCalfSkin() && leg.hasFootSkin()) {
+            return;
+        }
+
         poseStack.pushPose();
         parentPart.translateAndRotate(poseStack);
 

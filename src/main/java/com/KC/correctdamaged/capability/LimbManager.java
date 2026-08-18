@@ -70,11 +70,6 @@ public class LimbManager {
         }
     }
 
-    // ==========================================
-    // 1. СЕГМЕНТЫ КОЖИ (/limb)
-    // ==========================================
-
-    // Правая рука
     public static boolean setRightArmShoulderSkin(Player player, int state) {
         return player.getCapability(LIMB_DATA_CAP).map(cap -> {
             cap.getRightArm().setShoulderSkin(state);
@@ -99,7 +94,6 @@ public class LimbManager {
         }).orElse(false);
     }
 
-    // Левая рука
     public static boolean setLeftArmShoulderSkin(Player player, int state) {
         return player.getCapability(LIMB_DATA_CAP).map(cap -> {
             cap.getLeftArm().setShoulderSkin(state);
@@ -124,7 +118,6 @@ public class LimbManager {
         }).orElse(false);
     }
 
-    // Правая нога
     public static boolean setRightLegThighSkin(Player player, int state) {
         return player.getCapability(LIMB_DATA_CAP).map(cap -> {
             cap.getRightLeg().setThighSkin(state);
@@ -149,7 +142,6 @@ public class LimbManager {
         }).orElse(false);
     }
 
-    // Левая нога
     public static boolean setLeftLegThighSkin(Player player, int state) {
         return player.getCapability(LIMB_DATA_CAP).map(cap -> {
             cap.getLeftLeg().setThighSkin(state);
@@ -174,18 +166,13 @@ public class LimbManager {
         }).orElse(false);
     }
 
-    // Торс
-    public static boolean setBodyState(Player player, int state) {
+    public static boolean setBodySkinMask(Player player, int state) {
         return player.getCapability(LIMB_DATA_CAP).map(cap -> {
-            cap.setBodyState(state);
+            cap.getBody().setSkinMask(state);
             syncIfServer(player);
             return true;
         }).orElse(false);
     }
-
-    // ==========================================
-    // 2. МАСКИ И ОБУГЛЕННОСТЬ ГОЛОВЫ (/show head)
-    // ==========================================
 
     public static boolean setHeadSkinMask(Player player, byte mask) {
         return player.getCapability(LIMB_DATA_CAP).map(cap -> {
@@ -218,10 +205,6 @@ public class LimbManager {
             return true;
         }).orElse(false);
     }
-
-    // ==========================================
-    // 3. КОСТИ И ОБЩИЙ СКЕЛЕТ (/show bone)
-    // ==========================================
 
     public static boolean setBoneRightArm(Player player, int state) {
         return player.getCapability(LIMB_DATA_CAP).map(cap -> {
@@ -257,7 +240,7 @@ public class LimbManager {
 
     public static boolean setShowSkeleton(Player player, int state) {
         return player.getCapability(LIMB_DATA_CAP).map(cap -> {
-            cap.setShowSkeleton(state);
+            cap.getBody().setShowSkeleton(state);
             syncIfServer(player);
             return true;
         }).orElse(false);
@@ -296,13 +279,9 @@ public class LimbManager {
         }).orElse(false);
     }
 
-    // ==========================================
-    // 4. МЫШЦЫ (/show muscle)
-    // ==========================================
-
     public static boolean setMuscleBody(Player player, int state) {
         return player.getCapability(LIMB_DATA_CAP).map(cap -> {
-            cap.setMuscleBody(state);
+            cap.getBody().setMuscleBody(state);
             syncIfServer(player);
             return true;
         }).orElse(false);
@@ -342,5 +321,21 @@ public class LimbManager {
 
     public static LazyOptional<LimbData> get(Player player) {
         return player.getCapability(LIMB_DATA_CAP);
+    }
+
+    public static boolean setBurntSkeleton(Player player, boolean burnt) {
+        return player.getCapability(LIMB_DATA_CAP).map(cap -> {
+            cap.getBody().setBurntSkeleton(burnt);
+            syncIfServer(player);
+            return true;
+        }).orElse(false);
+    }
+
+    public static boolean applyBodyVoxelPreset(Player player, String preset) {
+        return player.getCapability(LIMB_DATA_CAP).map(cap -> {
+            cap.getBody().getBodyVoxelMatrix().applyPreset(preset);
+            syncIfServer(player);
+            return true;
+        }).orElse(false);
     }
 }
