@@ -4,7 +4,6 @@ import com.KC.correctdamaged.capability.visual.BodyVoxelMatrix;
 import com.KC.correctdamaged.client.render.customRender.CubeUV;
 import com.KC.correctdamaged.client.render.customRender.FreeUVCubeRenderer;
 import com.KC.correctdamaged.client.render.customRender.FreeUVCubeRenderer.FaceUV;
-
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.player.AbstractClientPlayer;
