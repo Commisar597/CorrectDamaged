@@ -17,6 +17,11 @@ import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 
+/**
+ * Слой рендеринга внешнего слоя головного убора / волос (Hat Layer).
+ * Зачем нужен: Отрисовывает по октантам объёмную шляпу/волосы игрока (второй слой кожи),
+ * синхонизируя его разрушение с основной маской кожи головы.
+ */
 public class OctalHatDamageLayer extends RenderLayer<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>> {
 
     private static final CubeUV HAT_UV = new CubeUV(
@@ -60,6 +65,9 @@ public class OctalHatDamageLayer extends RenderLayer<AbstractClientPlayer, Playe
         });
     }
 
+    /**
+     * Отрисовывает октанты слоя Hat (слегка увеличенного объема 8.5x8.5x8.5).
+     */
     private void renderHatOctants(
             PoseStack.Pose pose, VertexConsumer hatConsumer,
             byte headMask, int packedLight

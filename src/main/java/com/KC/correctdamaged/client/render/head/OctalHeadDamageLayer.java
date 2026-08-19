@@ -17,6 +17,11 @@ import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 
+/**
+ * Слой рендеринга внешней кожи головы с учетом повреждений.
+ * Зачем нужен: Заменяет ванильную цельную голову частичным рендерингом октантов кожи
+ * на основе маски повреждений `skinMask`.
+ */
 public class OctalHeadDamageLayer extends RenderLayer<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>> {
 
     private static final CubeUV HEAD_UV = new CubeUV(
@@ -60,6 +65,9 @@ public class OctalHeadDamageLayer extends RenderLayer<AbstractClientPlayer, Play
         });
     }
 
+    /**
+     * Отрисовывает оставшиеся уцелевшие октанты кожи головы.
+     */
     private void renderSkinOctants(
             PoseStack.Pose pose, VertexConsumer skinConsumer,
             byte headMask, HeadData headData, int packedLight

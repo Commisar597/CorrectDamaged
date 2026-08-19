@@ -17,6 +17,11 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 
+/**
+ * 3D-модель внутреннего анатомического строения туловища (скелет и мышцы).
+ * Зачем нужен: Хранит геометрию грудной клетки/позвоночника (skeleton) и глубокого мышечного корсета (bodyMuscle)
+ * с деформациями масштаба для предотвращения Z-fighting с кожей игрока.
+ */
 public class BodyModel extends PlayerModel<AbstractClientPlayer> {
 
     public static final ResourceLocation BONE = new ResourceLocation(CorrectDamaged.MODID, "textures/entity/bone_texture.png");
@@ -26,6 +31,9 @@ public class BodyModel extends PlayerModel<AbstractClientPlayer> {
     public final ModelPart skeleton;
     public final ModelPart bodyMuscle;
 
+    /**
+     * Конструктор модели анатомии туловища.
+     */
     public BodyModel(ModelPart root) {
         super(root, false);
         ModelPart body = root.getChild("body");
@@ -33,15 +41,20 @@ public class BodyModel extends PlayerModel<AbstractClientPlayer> {
         this.bodyMuscle = body.getChild("bodyMuscle");
     }
 
+    /**
+     * Создает базовую геометрию и разметку слоя для скелета и мышц туловища.
+     */
     public static LayerDefinition createBodyLayer() {
         MeshDefinition meshdefinition = PlayerModel.createMesh(CubeDeformation.NONE, false);
         PartDefinition root = meshdefinition.getRoot();
 
         PartDefinition body = root.getChild("body");
 
+        // Скелет туловища (слегка уменьшен на -0.15F для размещения внутри)
         body.addOrReplaceChild("skeleton",
                 CubeListBuilder.create().texOffs(40, 0).addBox(-4.0F, 0.0F, -2.0F, 8.0F, 12.0F, 4.0F, new CubeDeformation(-0.15F)), PartPose.ZERO);
 
+        // Мышечный корпус туловища (уменьшен на -0.125F)
         body.addOrReplaceChild("bodyMuscle",
                 CubeListBuilder.create().texOffs(40, 0).addBox(-4.0F, 0.0F, -2.0F, 8.0F, 12.0F, 4.0F, new CubeDeformation(-0.125F)), PartPose.ZERO);
 
@@ -53,12 +66,18 @@ public class BodyModel extends PlayerModel<AbstractClientPlayer> {
         super.setupAnim(entity, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);
     }
 
+    /**
+     * Выполняет отрисовку скелета туловища с учётом флага обугленности костей.
+     */
     public void renderSkeleton(PoseStack poseStack, MultiBufferSource buffer, int packedLight, boolean isBurnt) {
         ResourceLocation tex = isBurnt ? BURNT_BONE : BONE;
         VertexConsumer consumer = buffer.getBuffer(RenderType.entityCutoutNoCull(tex));
         this.skeleton.render(poseStack, consumer, packedLight, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
     }
 
+    /**
+     * Выполняет отрисовку мышечного слоя туловища.
+     */
     public void renderMuscles(PoseStack poseStack, MultiBufferSource buffer, int packedLight) {
         VertexConsumer consumer = buffer.getBuffer(RenderType.entityCutoutNoCull(MUSCLE));
         this.bodyMuscle.render(poseStack, consumer, packedLight, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);

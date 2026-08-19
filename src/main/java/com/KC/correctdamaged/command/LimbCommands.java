@@ -11,11 +11,19 @@ import net.minecraft.server.level.ServerPlayer;
 
 public class LimbCommands {
 
+    /**
+     * Регистрирует дерево команд мода в командном диспетчере Minecraft (Brigadier).
+     * Зачем нужен: Создает внутриигровые команды `/limb`, `/damage` и `/show` для тестирования
+     * и ручной настройки видимости/повреждений частей тела, мышц, костей и вокселей у игрока.
+     *
+     * @param dispatcher Диспетчер команд сервера Minecraft.
+     */
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
 
+        // Регистрация ветки /limb (управление видимостью сегментов кожи)
         dispatcher.register(
                 Commands.literal("limb")
-                        .requires(source -> source.hasPermission(2))
+                        .requires(source -> source.hasPermission(2)) // Требует права оператора (OP lvl 2)
 
                         .then(Commands.literal("right_arm")
                                 .then(Commands.literal("shoulder")
@@ -66,6 +74,7 @@ public class LimbCommands {
                                         .executes(ctx -> applySkinSegment(ctx.getSource(), "body", IntegerArgumentType.getInteger(ctx, "state")))))
         );
 
+        // Регистрация ветки /damage (применение готовых пресетов повреждений/дыр на теле)
         dispatcher.register(
                 Commands.literal("damage")
                         .requires(source -> source.hasPermission(2))
@@ -81,6 +90,7 @@ public class LimbCommands {
                                                 .executes(ctx -> applyVoxelPreset(ctx.getSource(), "reset")))))
         );
 
+        // Регистрация ветки /show (отображение костей, мышц, черепа и обгоревших состояний)
         dispatcher.register(
                 Commands.literal("show")
                         .requires(source -> source.hasPermission(2))
@@ -152,6 +162,14 @@ public class LimbCommands {
         );
     }
 
+    /**
+     * Вспомогательный метод для выполнения пресетов воксельных повреждений тела.
+     * Зачем нужен: Читает имя пресета, вызывает логику в LimbManager и отправляет ответ в чат вызвавшему.
+     *
+     * @param source Контекст источника команды (кто выловил команду).
+     * @param preset Имя пресета (например "bullet_center", "slash_diagonal").
+     * @return 1 если успешно, 0 если произошла ошибка или Capability недоступна.
+     */
     private static int applyVoxelPreset(CommandSourceStack source, String preset) {
         try {
             ServerPlayer player = source.getPlayerOrException();
@@ -170,6 +188,15 @@ public class LimbCommands {
         }
     }
 
+    /**
+     * Применяет состояние включен/выключен к отдельному сегменту кожи (плечо, предплечье, кисть и т.д.).
+     * Зачем нужен: Связывает имя сегмента из команды с конкретным методом изменения в LimbManager.
+     *
+     * @param source Источник вызова команды.
+     * @param segment Идентификатор текстового сегмента.
+     * @param state Числовое состояние (0 — скрыт, 1 — виден).
+     * @return 1 при успехе, 0 при ошибке.
+     */
     private static int applySkinSegment(CommandSourceStack source, String segment, int state) {
         try {
             ServerPlayer player = source.getPlayerOrException();
@@ -207,6 +234,15 @@ public class LimbCommands {
         }
     }
 
+    /**
+     * Применяет битовую маску видимости для слоев головы (кожа, мышцы, череп).
+     * Зачем нужен: Передает целочисленное значение (0-255) в виде байтовой маски в LimbManager.
+     *
+     * @param source Источник вызова.
+     * @param target Целевой слой ("skin", "muscle", "skull").
+     * @param mask Маска видимости в диапазоне от 0 до 255 (8 бит для 8 сегментов головы).
+     * @return 1 при успехе, 0 при ошибке.
+     */
     private static int applyHeadMask(CommandSourceStack source, String target, int mask) {
         try {
             ServerPlayer player = source.getPlayerOrException();
@@ -232,6 +268,13 @@ public class LimbCommands {
         }
     }
 
+    /**
+     * Переключает визуальный флаг обугленности (burnt) для черепа игрока.
+     *
+     * @param source Источник команды.
+     * @param burnt true — сделать череп обугленным/черным, false — обычным.
+     * @return 1 при успехе, 0 при ошибке.
+     */
     private static int applyHeadBurnt(CommandSourceStack source, boolean burnt) {
         try {
             ServerPlayer player = source.getPlayerOrException();
@@ -250,6 +293,15 @@ public class LimbCommands {
         }
     }
 
+    /**
+     * Настраивает уровни отображения внутренней анатомии (кости или мышцы) для конечностей или скелета.
+     *
+     * @param source Источник команды.
+     * @param category Категория ("bone" — кости, "muscle" — мышцы).
+     * @param limb Целевая конечность ("right_arm", "left_leg", "skeleton" и т.д.).
+     * @param state Состояние видимости (обычно от 0 до 3).
+     * @return 1 при успехе, 0 при ошибке.
+     */
     private static int applyBoneOrMuscle(CommandSourceStack source, String category, String limb, int state) {
         try {
             ServerPlayer player = source.getPlayerOrException();
@@ -288,6 +340,14 @@ public class LimbCommands {
         }
     }
 
+    /**
+     * Переключает обугленный вид кости конкретной конечности (руки или ноги).
+     *
+     * @param source Источник команды.
+     * @param limb Название конечности.
+     * @param burnt Флаг обугленности.
+     * @return 1 при успехе, 0 при ошибке.
+     */
     private static int applyBurntBone(CommandSourceStack source, String limb, boolean burnt) {
         try {
             ServerPlayer player = source.getPlayerOrException();
@@ -312,6 +372,13 @@ public class LimbCommands {
         }
     }
 
+    /**
+     * Переключает обугленное состояние для всего скелета игрока целиком.
+     *
+     * @param source Источник команды.
+     * @param burnt Флаг обугленности скелета.
+     * @return 1 при успехе, 0 при ошибке.
+     */
     private static int applyBurntSkeleton(CommandSourceStack source, boolean burnt) {
         try {
             ServerPlayer player = source.getPlayerOrException();

@@ -18,6 +18,11 @@ import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 
+/**
+ * Слой рендеринга костей игрока.
+ * Зачем нужен: Выполняет рендеринг глубокого скелетного слоя при травмах или сгорании кожи/мышц.
+ * Поддерживает динамическое переключение между нормальной костью и обгоревшей (isBurntBone).
+ */
 public class PlayerBonesLayer extends RenderLayer<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>> {
     private final PlayerBonesModel bonesModel;
 
@@ -41,6 +46,9 @@ public class PlayerBonesLayer extends RenderLayer<AbstractClientPlayer, PlayerMo
         });
     }
 
+    /**
+     * Отрисовывает кости руки, проверяя флаг обугленности для выбора нужного файла текстуры.
+     */
     private void renderArmBones(
             PoseStack poseStack, MultiBufferSource buffer, int packedLight, ArmData arm,
             ModelPart shoulderPart, ModelPart forearmPart, ModelPart wristPart, ModelPart parentPart
@@ -60,6 +68,9 @@ public class PlayerBonesLayer extends RenderLayer<AbstractClientPlayer, PlayerMo
         poseStack.popPose();
     }
 
+    /**
+     * Отрисовывает кости ноги, проверяя состояние флага isBurntBone.
+     */
     private void renderLegBones(
             PoseStack poseStack, MultiBufferSource buffer, int packedLight, LegData leg,
             ModelPart thighPart, ModelPart calfPart, ModelPart footPart, ModelPart parentPart

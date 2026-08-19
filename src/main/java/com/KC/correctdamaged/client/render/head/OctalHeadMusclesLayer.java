@@ -17,6 +17,11 @@ import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 
+/**
+ * Слой рендеринга мышечного слоя головы.
+ * Зачем нужен: Отображает промежуточный мышечный слой головы по октантам,
+ * располагающийся между кожей и черепом.
+ */
 public class OctalHeadMusclesLayer extends RenderLayer<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>> {
 
     private static final CubeUV HEAD_MUSCLE_UV = new CubeUV(
@@ -52,7 +57,6 @@ public class OctalHeadMusclesLayer extends RenderLayer<AbstractClientPlayer, Pla
             PoseStack.Pose pose = poseStack.last();
             VertexConsumer consumer = buffer.getBuffer(RenderType.entityCutoutNoCull(PlayerMusclesModel.MUSCLE));
 
-            // Используем геометрию мышц
             float radius = HeadLayerGeometry.getMuscleRadius(headData);
             float[] yBounds = HeadLayerGeometry.getMuscleYBounds(headData);
 
@@ -74,6 +78,9 @@ public class OctalHeadMusclesLayer extends RenderLayer<AbstractClientPlayer, Pla
         });
     }
 
+    /**
+     * Отрисовывает мышцы головы по октантам.
+     */
     private void renderMuscleOctants(
             PoseStack.Pose pose, VertexConsumer consumer,
             byte muscleMask, HeadData headData, int packedLight

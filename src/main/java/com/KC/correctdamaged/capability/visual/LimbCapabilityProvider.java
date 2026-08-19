@@ -9,6 +9,9 @@ import net.minecraftforge.common.util.LazyOptional;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+/**
+ * Провайдер Capability для прикрепления {@link LimbData} к объекту игрока в Forge.
+ */
 public class LimbCapabilityProvider implements ICapabilitySerializable<CompoundTag> {
 
     private final LimbData limbData = new LimbData();

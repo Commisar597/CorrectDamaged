@@ -17,6 +17,10 @@ import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 
+/**
+ * Слой рендеринга костной ткани (черепа) головы.
+ * Зачем нужен: Отображает подслой черепа по октантам, когда верхние слои кожи/мышц удалены.
+ */
 public class OctalHeadSkullLayer extends RenderLayer<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>> {
 
     private static final ResourceLocation SKULL_TEXTURE = new ResourceLocation("correct_damaged", "textures/entity/bone_texture.png");
@@ -57,7 +61,6 @@ public class OctalHeadSkullLayer extends RenderLayer<AbstractClientPlayer, Playe
             ResourceLocation skullTex = headData.isBurntSkull() ? BURNT_SKULL_TEXTURE : SKULL_TEXTURE;
             VertexConsumer consumer = buffer.getBuffer(RenderType.entityCutoutNoCull(skullTex));
 
-            // Используем геометрию черепа
             float radius = HeadLayerGeometry.getSkullRadius(headData);
             float[] yBounds = HeadLayerGeometry.getSkullYBounds(headData);
 
@@ -79,6 +82,9 @@ public class OctalHeadSkullLayer extends RenderLayer<AbstractClientPlayer, Playe
         });
     }
 
+    /**
+     * Отрисовывает череп по октантам.
+     */
     private void renderSkullOctants(
             PoseStack.Pose pose, VertexConsumer consumer,
             byte skullMask, HeadData headData, int packedLight

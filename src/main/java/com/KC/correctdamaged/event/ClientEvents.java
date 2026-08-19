@@ -13,11 +13,7 @@ import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
-@Mod.EventBusSubscriber(
-        modid = CorrectDamaged.MODID,
-        bus = Mod.EventBusSubscriber.Bus.MOD,
-        value = Dist.CLIENT
-)
+@Mod.EventBusSubscriber(modid = CorrectDamaged.MODID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 public class ClientEvents {
 
     public static final ModelLayerLocation PLAYER_BONES_LAYER = new ModelLayerLocation(
@@ -33,6 +29,13 @@ public class ClientEvents {
     public static final ModelLayerLocation BODY_LAYER = new ModelLayerLocation(
             new ResourceLocation(CorrectDamaged.MODID, "body"), "main");
 
+    /**
+     * Регистрация LayerDefinition для клиентских моделей (Forge bus event).
+     * Зачем нужен: Объявляет геометрическую структуру кастомных моделей (костей, мышц, туловища)
+     * для обычных и "slim" (Alex) скинов.
+     *
+     * @param event Событие регистрации геометрии слоев рендера.
+     */
     @SubscribeEvent
     public static void onRegisterLayerDefinitions(EntityRenderersEvent.RegisterLayerDefinitions event) {
         event.registerLayerDefinition(
@@ -59,6 +62,13 @@ public class ClientEvents {
         );
     }
 
+    /**
+     * Добавление дополнительних слоев рендера (RenderLayers) к модели игрока.
+     * Зачем нужен: Накладывает кастомные видимые слои (кости, мышцы, обрубки, ранения) поверх или вместо
+     * стандартного скина Minecraft для каждого типа скина (default/slim).
+     *
+     * @param event Событие добавления слоев к сущностям.
+     */
     @SubscribeEvent
     public static void onAddLayers(EntityRenderersEvent.AddLayers event) {
         for (String skinName : event.getSkins()) {
@@ -66,12 +76,14 @@ public class ClientEvents {
             if (renderer != null) {
                 boolean isSlim = "slim".equals(skinName);
 
+                // Добавление анатомических слоев тела
                 renderer.addLayer(new PlayerBonesLayer(renderer, event.getEntityModels(), isSlim));
                 renderer.addLayer(new PlayerMusclesLayer(renderer, event.getEntityModels(), isSlim));
                 renderer.addLayer(new StumpLayer(renderer));
                 renderer.addLayer(new BodyAnatomyLayer(renderer, event.getEntityModels()));
                 renderer.addLayer(new LimbDamageLayer(renderer));
 
+                // Добавление кастомных слоев головы
                 renderer.addLayer(new OctalHeadSkullLayer(renderer));
                 renderer.addLayer(new OctalHeadMusclesLayer(renderer));
                 renderer.addLayer(new OctalHeadStumpLayer(renderer));

@@ -12,7 +12,13 @@ import net.minecraft.client.model.geom.builders.PartDefinition;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.resources.ResourceLocation;
 
+/**
+ * 3D-модель мышечного слоя игрока (руки и ноги).
+ * Зачем нужен: Определяет геометрию кубов (кубоидов) мышц для бедер, голеней, стоп, плеч, предплечий и кистей,
+ * подгоняя их под анатомическое строение и размеры игрока (включая поддержку Slim-модели Alex).
+ */
 public class PlayerMusclesModel extends PlayerModel<AbstractClientPlayer> {
+    /** Путь к файла текстуры мышечной ткани в ресурсах мода. */
     public static final ResourceLocation MUSCLE = new ResourceLocation(CorrectDamaged.MODID, "textures/entity/muscles_texture.png");
 
     public final ModelPart rightFootMuscle;
@@ -31,6 +37,12 @@ public class PlayerMusclesModel extends PlayerModel<AbstractClientPlayer> {
     public final ModelPart leftArmForearmMuscle;
     public final ModelPart leftArmShoulderMuscle;
 
+    /**
+     * Конструктор модели мышц.
+     * Зачем нужен: Связывает локальные переменные с иерархией ModelPart, собранной движком Minecraft из LayerDefinition.
+     *
+     * @param root Корневой элемент запеченной модели.
+     */
     public PlayerMusclesModel(ModelPart root) {
         super(root, false);
 
@@ -56,6 +68,14 @@ public class PlayerMusclesModel extends PlayerModel<AbstractClientPlayer> {
         this.leftArmWristMuscle = leftArm.getChild("leftArmWristMuscle");
     }
 
+    /**
+     * Создает определение сетки (MeshDefinition) и UV-развертки для мышц.
+     * Зачем нужен: Формирует размеры кубоидов мышц (по умолчанию чуть меньше стандартных костей/кожи, 3x3 по ширине)
+     * и привязывает их к точкам трансформации суставов.
+     *
+     * @param slim Признак тонкой модели Alex (3px руки).
+     * @return Скомпонованное определение слоя LayerDefinition с UV-сеткой 64x64.
+     */
     public static LayerDefinition createBodyLayer(boolean slim) {
         MeshDefinition meshdefinition = PlayerModel.createMesh(CubeDeformation.NONE, slim);
         PartDefinition root = meshdefinition.getRoot();
@@ -65,6 +85,7 @@ public class PlayerMusclesModel extends PlayerModel<AbstractClientPlayer> {
         PartDefinition rightArm = root.getChild("right_arm");
         PartDefinition leftArm = root.getChild("left_arm");
 
+        // Мышцы правой ноги (Бедро, Голень, Стопа)
         rightLeg.addOrReplaceChild("rightThighMuscle",
                 CubeListBuilder.create().texOffs(0, 7).addBox(-1.5F, 0.0F, -1.5F, 3.0F, 6.0F, 3.0F), PartPose.ZERO);
         rightLeg.addOrReplaceChild("rightCalfMuscle",
@@ -72,6 +93,7 @@ public class PlayerMusclesModel extends PlayerModel<AbstractClientPlayer> {
         rightLeg.addOrReplaceChild("rightFootMuscle",
                 CubeListBuilder.create().texOffs(0, 16).addBox(-1.5F, 10.0F, -1.5F, 3.0F, 2.0F, 3.0F), PartPose.ZERO);
 
+        // Мышцы левой ноги
         leftLeg.addOrReplaceChild("leftThighMuscle",
                 CubeListBuilder.create().texOffs(0, 7).addBox(-1.5F, 0.0F, -1.5F, 3.0F, 6.0F, 3.0F), PartPose.ZERO);
         leftLeg.addOrReplaceChild("leftCalfMuscle",
@@ -79,6 +101,7 @@ public class PlayerMusclesModel extends PlayerModel<AbstractClientPlayer> {
         leftLeg.addOrReplaceChild("leftFootMuscle",
                 CubeListBuilder.create().texOffs(0, 16).addBox(-1.5F, 10.0F, -1.5F, 3.0F, 2.0F, 3.0F), PartPose.ZERO);
 
+        // Мышцы правой руки (Плечо, Предплечье, Кисть)
         rightArm.addOrReplaceChild("rightArmShoulderMuscle",
                 CubeListBuilder.create().texOffs(0, 7).addBox(-1.5F, -2.0F, -1.5F, 3.0F, 6.0F, 3.0F), PartPose.offset(-0.3F, 0.0F, 0.0F));
         rightArm.addOrReplaceChild("rightArmForearmMuscle",
@@ -86,6 +109,7 @@ public class PlayerMusclesModel extends PlayerModel<AbstractClientPlayer> {
         rightArm.addOrReplaceChild("rightArmWristMuscle",
                 CubeListBuilder.create().texOffs(0, 16).addBox(-1.5F, 8.0F, -1.5F, 3.0F, 2.0F, 3.0F), PartPose.offset(-0.3F, 0.0F, 0.0F));
 
+        // Мышцы левой руки (с отзеркаливанием текстур)
         leftArm.addOrReplaceChild("leftArmShoulderMuscle",
                 CubeListBuilder.create().texOffs(0, 7).mirror().addBox(-1.5F, -2.0F, -1.5F, 3.0F, 6.0F, 3.0F), PartPose.offset(0.3F, 0.0F, 0.0F));
         leftArm.addOrReplaceChild("leftArmForearmMuscle",
@@ -96,12 +120,21 @@ public class PlayerMusclesModel extends PlayerModel<AbstractClientPlayer> {
         return LayerDefinition.create(meshdefinition, 64, 64);
     }
 
+    /**
+     * Настраивает анимацию модели.
+     * Зачем нужен: Переключает видимость частей перед обновлением углов поворота из базовой PlayerModel.
+     */
     @Override
     public void setupAnim(AbstractClientPlayer entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
         super.setupAnim(entity, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);
         setAllPartsVisible(true);
     }
 
+    /**
+     * Управляет флагом видимости (visible) всех мышечных сегментов сразу.
+     *
+     * @param visible true — сделать все сегменты видимыми, false — скрыть.
+     */
     public void setAllPartsVisible(boolean visible) {
         this.rightFootMuscle.visible = visible;
         this.rightCalfMuscle.visible = visible;

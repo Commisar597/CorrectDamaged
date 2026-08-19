@@ -16,6 +16,10 @@ import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 
+/**
+ * Слой рендеринга внутренних срезов (пеньков/ран) головы.
+ * Зачем нужен: Рисует внутреннюю текстуру мяса/черепа на границе отрубленных или разрушенных октантов головы.
+ */
 public class OctalHeadStumpLayer extends RenderLayer<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>> {
 
     private static final ResourceLocation NORMAL_STUMP = new ResourceLocation("correct_damaged", "textures/entity/head_stump_8x8.png");
@@ -57,7 +61,6 @@ public class OctalHeadStumpLayer extends RenderLayer<AbstractClientPlayer, Playe
             } else if (isMuscleOnly) {
                 stumpTex = (skinMask == 2) ? BURNT_STUMP : NORMAL_STUMP;
             } else {
-                // Обычные срезы кожи
                 stumpTex = (skinMask == 2) ? BURNT_STUMP : NORMAL_STUMP;
             }
 
@@ -74,6 +77,9 @@ public class OctalHeadStumpLayer extends RenderLayer<AbstractClientPlayer, Playe
         });
     }
 
+    /**
+     * Перебирает октанты активного слоя и рендерит внутренние спилы/срезы для отсутствующих соседей.
+     */
     private void renderStumpOctants(
             PoseStack.Pose pose, VertexConsumer consumer,
             byte activeMask, HeadData headData, int packedLight
@@ -117,6 +123,9 @@ public class OctalHeadStumpLayer extends RenderLayer<AbstractClientPlayer, Playe
         }
     }
 
+    /**
+     * Высчитывает UV внутренних граней среза (stump) для октанта на основе отсутствия соседних октантов.
+     */
     private CubeUV getStumpUV(byte headMask, int octantIndex, float[] b) {
         float minX = b[0], minY = b[1], minZ = b[2];
         float maxX = b[3], maxY = b[4], maxZ = b[5];

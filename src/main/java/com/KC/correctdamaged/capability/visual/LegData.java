@@ -2,6 +2,9 @@ package com.KC.correctdamaged.capability.visual;
 
 import net.minecraft.nbt.CompoundTag;
 
+/**
+ * Хранит состояние слоя кожи, мышц и костей для конкретной ноги игрока.
+ */
 public class LegData {
     private final LimbSide side;
 

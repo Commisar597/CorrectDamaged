@@ -1,5 +1,8 @@
 package com.KC.correctdamaged.capability.visual;
 
+/**
+ * Перечисление сторон для парных конечностей (левая/правая сторона).
+ */
 public enum LimbSide {
     LEFT("left"),
     RIGHT("right");
@@ -12,9 +15,5 @@ public enum LimbSide {
 
     public String getName() {
         return name;
-    }
-
-    public LimbSide getOpposite() {
-        return this == LEFT ? RIGHT : LEFT;
     }
 }

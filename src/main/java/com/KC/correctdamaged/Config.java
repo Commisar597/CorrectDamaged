@@ -11,6 +11,13 @@ public class Config {
 
     static final ForgeConfigSpec SPEC = BUILDER.build();
 
+    /**
+     * Обработчик события загрузки или перезагрузки файла конфигурации (ModConfigEvent).
+     * Зачем нужен: Позволяет синхронизировать Java-переменные с изменениями в config-файле .toml.
+     * Что делает: Сейчас пуст, так как в билдере нет прописанных параметров.
+     *
+     * @param event Контекст события конфигурации.
+     */
     @SubscribeEvent
     static void onLoad(final ModConfigEvent event) {
     }

@@ -17,12 +17,20 @@ import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 
+/**
+ * Перекрывающий слой рендеринга выборочного скрытия/частичного рендера кожи.
+ * Зачем нужен: Если стандартная рука/нога игрока повреждена лишь частично (например, нет плеча, но есть кисть),
+ * этот слой подменяет цельную стандартную модель vanilla-Minecraft на составные фрагменты из CustomCube.
+ */
 public class LimbDamageLayer extends RenderLayer<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>> {
 
     public LimbDamageLayer(RenderLayerParent<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>> parent) {
         super(parent);
     }
 
+    /**
+     * Запускает проверку видимости кожи конечностей и заменяет рендер при наличии утраченных сегментов.
+     */
     @Override
     public void render(
             PoseStack poseStack, MultiBufferSource buffer, int packedLight,
@@ -44,11 +52,15 @@ public class LimbDamageLayer extends RenderLayer<AbstractClientPlayer, PlayerMod
         });
     }
 
+    /**
+     * Проверяет сегменты руки и рисует только уцелевшие участки кожи и рукавов.
+     */
     private void renderArm(
             PoseStack poseStack, VertexConsumer consumer, int packedLight,
             ModelPart parentPart, LimbDamageVariants.LimbType baseType, LimbDamageVariants.LimbType layerType,
             ArmData arm, boolean slim
     ) {
+        // Если вся рука целая — пропуск (работает стандартная ванильная модель)
         if (arm.hasShoulderSkin() && arm.hasForearmSkin() && arm.hasWristSkin()) {
             return;
         }
@@ -69,6 +81,9 @@ public class LimbDamageLayer extends RenderLayer<AbstractClientPlayer, PlayerMod
         poseStack.popPose();
     }
 
+    /**
+     * Проверяет сегменты ноги и рисует уцелевшие фрагменты кожи и штанин.
+     */
     private void renderLeg(
             PoseStack poseStack, VertexConsumer consumer, int packedLight,
             ModelPart parentPart, LimbDamageVariants.LimbType baseType, LimbDamageVariants.LimbType layerType,
@@ -94,6 +109,9 @@ public class LimbDamageLayer extends RenderLayer<AbstractClientPlayer, PlayerMod
         poseStack.popPose();
     }
 
+    /**
+     * Рендерит базовый слой кожи и второй слой (одежду) с расширением (deformation).
+     */
     private void renderSegment(
             PoseStack poseStack, VertexConsumer consumer, int packedLight,
             LimbDamageVariants.LimbType baseType, LimbDamageVariants.LimbType layerType,
@@ -106,6 +124,9 @@ public class LimbDamageLayer extends RenderLayer<AbstractClientPlayer, PlayerMod
         drawCustomCube(poseStack, consumer, packedLight, layerCube);
     }
 
+    /**
+     * Производит непосредственный рендеринг геометрии куба через произвольную UV-рендерер систему (FreeUVCubeRenderer).
+     */
     private void drawCustomCube(PoseStack poseStack, VertexConsumer consumer, int packedLight, CustomCube cube) {
         float def = cube.deformation();
 

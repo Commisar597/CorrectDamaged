@@ -2,11 +2,15 @@ package com.KC.correctdamaged.capability.visual;
 
 import net.minecraft.nbt.CompoundTag;
 
+/**
+ * Хранит маски состояний кожи, мышц и черепа для головы игрока (битовые маски/флаги).
+ */
 public class HeadData {
-    private byte skinMask = (byte) 0xFF;
-    private byte muscleMask = (byte) 0;
-    private byte skullMask = (byte) 0;
-    private boolean burntSkull = false;
+
+    private byte skinMask = (byte) 0xFF;   // Маска целых участков кожи
+    private byte muscleMask = (byte) 0;    // Маска повреждения/отображения мышц
+    private byte skullMask = (byte) 0;     // Маска разрушения/отображения черепа
+    private boolean burntSkull = false;    // Обуглен ли череп
 
     public byte getSkinMask() { return skinMask; }
     public void setSkinMask(byte skinMask) { this.skinMask = skinMask; }

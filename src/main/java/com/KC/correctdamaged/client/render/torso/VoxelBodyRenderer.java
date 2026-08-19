@@ -12,8 +12,15 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 
+/**
+ * Воксельный рендерер геометрии туловища (Torso).
+ * Зачем нужен: Выполняет повоксельную отрисовку разрушаемого туловища игрока (8x12x4).
+ * Определяет, является ли воксел наружной кожей или обнаженной мякотью/мясом (Flesh),
+ * скрывает изолированные невидимые вокселы и накладывает соответствующий UV-маппинг.
+ */
 public class VoxelBodyRenderer {
 
+    /** Текстурный атлас мяса/мякоти для срезов ранений. */
     private static final ResourceLocation FLESH_TEXTURE =
             new ResourceLocation("correct_damaged", "textures/entity/flesh_atlas.png");
 
@@ -22,6 +29,17 @@ public class VoxelBodyRenderer {
     private static final int FLESH_TEX_W = 32;
     private static final int FLESH_TEX_H = 32;
 
+    /**
+     * Основной метод отрисовки воксельной матрицы туловища.
+     * Зачем нужен: Проходит по всем координатам трехмерной сетки `BodyVoxelMatrix` и рендерит
+     * воксели (кубы 1x1x1 пиксель) с динамическим подбором текстуры кожи или мяса на границах ран.
+     *
+     * @param poseStack Матрица трансформаций.
+     * @param buffer Буфер рендеринга.
+     * @param packedLight Уровень освещения.
+     * @param player Объект игрока.
+     * @param matrix Трехмерная воксельная матрица состояния туловища.
+     */
     public static void renderVoxelBody(
             PoseStack poseStack,
             MultiBufferSource buffer,
@@ -39,10 +57,13 @@ public class VoxelBodyRenderer {
             for (int y = 0; y < BodyVoxelMatrix.HEIGHT_Y; y++) {
                 for (int z = 0; z < BodyVoxelMatrix.DEPTH_Z; z++) {
 
+                    // Пропуск пустых (выбитых) вокселей
                     if (!matrix.isSolid(x, y, z)) continue;
 
+                    // Пропуск полностью закрытых со всех сторон вокселей для оптимизации Draw Calls
                     if (isFullyIsolated(matrix, x, y, z)) continue;
 
+                    // Локальные координаты куба воксела относительно центра модели туловища
                     float x0 = (x - 4);
                     float x1 = x0 + 1;
                     float y0 = y;
@@ -52,6 +73,7 @@ public class VoxelBodyRenderer {
 
                     boolean borderToDamage = hasDamagedNeighbor(matrix, x, y, z);
 
+                    // Если воксел граничит с разрушенным участком — рендерим текстуру мяса (Flesh)
                     if (borderToDamage) {
                         boolean isSurface = isSurfaceVoxel(x, y, z);
 
@@ -67,6 +89,7 @@ public class VoxelBodyRenderer {
                             );
                         }
                     } else {
+                        // В противном случае рендерим стандартную кожу игрока с его скина
                         CubeUV skinUV = buildSkinUV(matrix, x, y, z);
                         if (hasAnyFace(skinUV)) {
                             FreeUVCubeRenderer.renderBox(
@@ -84,6 +107,9 @@ public class VoxelBodyRenderer {
         }
     }
 
+    /**
+     * Строит UV-развертку мяса/мякоти для вокселей на срезе раны.
+     */
     private static CubeUV buildFleshUV(BodyVoxelMatrix matrix, int x, int y, int z, boolean isBorder) {
         FaceUV fleshFace = isBorder
                 ? getTopRightQuadrantUV(x, y, z)
@@ -99,12 +125,18 @@ public class VoxelBodyRenderer {
         return new CubeUV(front, back, left, right, top, bottom);
     }
 
+    /**
+     * Высчитывает квадрант UV для поверхностных слоев повреждения мякоти.
+     */
     private static FaceUV getTopRightQuadrantUV(int x, int y, int z) {
         int uOffset = 16 + ((x + y + z) % 2 * 8);
-        int vOffset = 0  + ((x * 2 + z) % 2* 8);
-        return FaceUV.of(uOffset, vOffset, uOffset+8, vOffset+8);
+        int vOffset = 0  + ((x * 2 + z) % 2 * 8);
+        return FaceUV.of(uOffset, vOffset, uOffset + 8, vOffset + 8);
     }
 
+    /**
+     * Высчитывает квадрант UV для глубоких слоев мяса на основе псевдослучайного распределения по координатам.
+     */
     private static FaceUV getDeepFleshUV(int x, int y, int z) {
         int quadrant = Math.abs(x * 7 + y * 13 + z * 31) % 3;
 
@@ -120,15 +152,21 @@ public class VoxelBodyRenderer {
         int uOffset = baseU + ((x + y) % 2 * 8);
         int vOffset = baseV + ((y + z) % 2 * 8);
 
-        return FaceUV.of(uOffset, vOffset, uOffset+8, vOffset+8);
+        return FaceUV.of(uOffset, vOffset, uOffset + 8, vOffset + 8);
     }
 
+    /**
+     * Проверяет, расположен ли воксел на внешней границе кубоида туловища.
+     */
     private static boolean isSurfaceVoxel(int x, int y, int z) {
         return x == 0 || x == BodyVoxelMatrix.WIDTH_X - 1 ||
                 y == 0 || y == BodyVoxelMatrix.HEIGHT_Y - 1 ||
                 z == 0 || z == BodyVoxelMatrix.DEPTH_Z - 1;
     }
 
+    /**
+     * Проверяет, граничит ли текущий цельный воксел хотя бы с одним разрушенным (пустым) вокселом.
+     */
     private static boolean hasDamagedNeighbor(BodyVoxelMatrix matrix, int x, int y, int z) {
         if (BodyVoxelMatrix.isInBounds(x, y, z - 1) && !matrix.isSolid(x, y, z - 1)) return true;
         if (BodyVoxelMatrix.isInBounds(x, y, z + 1) && !matrix.isSolid(x, y, z + 1)) return true;
@@ -140,6 +178,9 @@ public class VoxelBodyRenderer {
         return false;
     }
 
+    /**
+     * Проверяет, находится ли воксел в абсолютной изоляции (нет ни одного цельного соседнего воксела).
+     */
     private static boolean isFullyIsolated(BodyVoxelMatrix matrix, int x, int y, int z) {
         return !matrix.isSolidSafe(x, y, z - 1) &&
                 !matrix.isSolidSafe(x, y, z + 1) &&
@@ -149,6 +190,9 @@ public class VoxelBodyRenderer {
                 !matrix.isSolidSafe(x, y + 1, z);
     }
 
+    /**
+     * Рассчитывает точные координаты UV-развертки скина игрока (в пикселях 64x64) для конкретного внешнего воксела туловища.
+     */
     private static CubeUV buildSkinUV(BodyVoxelMatrix matrix, int x, int y, int z) {
         FaceUV front  = (z == 0  && !matrix.isSolidSafe(x, y, z - 1)) ? FaceUV.of(20 + x, 20 + y, 20 + x + 1, 20 + y + 1) : null;
         FaceUV back   = (z == 3  && !matrix.isSolidSafe(x, y, z + 1)) ? FaceUV.of(32 + (7 - x), 20 + y, 32 + (7 - x) + 1, 20 + y + 1) : null;
@@ -160,6 +204,9 @@ public class VoxelBodyRenderer {
         return new CubeUV(front, back, left, right, top, bottom);
     }
 
+    /**
+     * Проверяет, содержит ли CubeUV хотя бы одну видимую грань.
+     */
     private static boolean hasAnyFace(CubeUV uv) {
         return uv.front() != null || uv.back() != null || uv.left() != null ||
                 uv.right() != null || uv.top() != null || uv.bottom() != null;

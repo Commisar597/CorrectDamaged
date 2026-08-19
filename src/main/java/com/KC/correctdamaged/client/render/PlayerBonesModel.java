@@ -12,8 +12,15 @@ import net.minecraft.client.model.geom.builders.PartDefinition;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.resources.ResourceLocation;
 
+/**
+ * 3D-модель скелетных костей игрока для рук и ног.
+ * Зачем нужен: Задает тонкие геометрические блоки (2x2 по ширине) костей плечевого пояса, предплечий,
+ * бедер и голеней, помещаемые в самый центр конечностей под слои кожи и мышц.
+ */
 public class PlayerBonesModel extends PlayerModel<AbstractClientPlayer> {
+    /** Текстура нормальной белой кости. */
     public static final ResourceLocation BONE = new ResourceLocation(CorrectDamaged.MODID, "textures/entity/bone_texture.png");
+    /** Текстура обугленной/сожженной кости. */
     public static final ResourceLocation BURNT_BONE = new ResourceLocation(CorrectDamaged.MODID, "textures/entity/burnt_bone_texture.png");
 
     public final ModelPart rightFootBone;
@@ -32,6 +39,9 @@ public class PlayerBonesModel extends PlayerModel<AbstractClientPlayer> {
     public final ModelPart leftArmForearmBone;
     public final ModelPart leftArmShoulderBone;
 
+    /**
+     * Конструктор модели костей.
+     */
     public PlayerBonesModel(ModelPart root) {
         super(root, false);
 
@@ -57,6 +67,12 @@ public class PlayerBonesModel extends PlayerModel<AbstractClientPlayer> {
         this.leftArmWristBone = leftArm.getChild("leftArmWristBone");
     }
 
+    /**
+     * Генерирует костные сегменты уменьшенного сечения (2x2px).
+     *
+     * @param slim Флаг модели Slim.
+     * @return Слой с UV-сеткой 64x64.
+     */
     public static LayerDefinition createBodyLayer(boolean slim) {
         MeshDefinition meshdefinition = PlayerModel.createMesh(CubeDeformation.NONE, slim);
         PartDefinition root = meshdefinition.getRoot();
@@ -66,6 +82,7 @@ public class PlayerBonesModel extends PlayerModel<AbstractClientPlayer> {
         PartDefinition rightArm = root.getChild("right_arm");
         PartDefinition leftArm = root.getChild("left_arm");
 
+        // Кости ног (размер 2x2 пикселя)
         rightLeg.addOrReplaceChild("rightThighBone",
                 CubeListBuilder.create().texOffs(0, 6).addBox(-1.0F, 0.0F, -1.0F, 2.0F, 6.0F, 2.0F), PartPose.ZERO);
         rightLeg.addOrReplaceChild("rightCalfBone",
@@ -80,6 +97,7 @@ public class PlayerBonesModel extends PlayerModel<AbstractClientPlayer> {
         leftLeg.addOrReplaceChild("leftFootBone",
                 CubeListBuilder.create().texOffs(0, 14).addBox(-1.0F, 10.0F, -1.0F, 2.0F, 2.0F, 2.0F), PartPose.ZERO);
 
+        // Кости рук
         rightArm.addOrReplaceChild("rightArmShoulderBone",
                 CubeListBuilder.create().texOffs(0, 6).addBox(-1.0F, -2.0F, -1.0F, 2.0F, 6.0F, 2.0F), PartPose.offset(-0.1F, 0.0F, 0.0F));
         rightArm.addOrReplaceChild("rightArmForearmBone",
