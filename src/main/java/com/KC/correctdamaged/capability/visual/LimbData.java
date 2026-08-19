@@ -50,10 +50,27 @@ public class LimbData implements INBTSerializable<CompoundTag> {
         if (tag.contains("Body")) body.deserializeNBT(tag.getCompound("Body"));
     }
 
-    public ArmData getRightArm() { return rightArm; }
-    public ArmData getLeftArm() { return leftArm; }
-    public LegData getRightLeg() { return rightLeg; }
-    public LegData getLeftLeg() { return leftLeg; }
-    public HeadData getHead() { return head; }
-    public BodyData getBody() { return body; }
+    public ArmData getRightArm() {
+        return rightArm;
+    }
+
+    public ArmData getLeftArm() {
+        return leftArm;
+    }
+
+    public LegData getRightLeg() {
+        return rightLeg;
+    }
+
+    public LegData getLeftLeg() {
+        return leftLeg;
+    }
+
+    public HeadData getHead() {
+        return head;
+    }
+
+    public BodyData getBody() {
+        return body;
+    }
 }

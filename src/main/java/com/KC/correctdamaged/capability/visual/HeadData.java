@@ -7,22 +7,42 @@ import net.minecraft.nbt.CompoundTag;
  */
 public class HeadData {
 
-    private byte skinMask = (byte) 0xFF;   // Маска целых участков кожи
-    private byte muscleMask = (byte) 0;    // Маска повреждения/отображения мышц
-    private byte skullMask = (byte) 0;     // Маска разрушения/отображения черепа
-    private boolean burntSkull = false;    // Обуглен ли череп
+    private byte skinMask = (byte) 0xFF;
+    private byte muscleMask = (byte) 0;
+    private byte skullMask = (byte) 0;
+    private boolean burntSkull = false;
 
-    public byte getSkinMask() { return skinMask; }
-    public void setSkinMask(byte skinMask) { this.skinMask = skinMask; }
+    public byte getSkinMask() {
+        return skinMask;
+    }
 
-    public byte getMuscleMask() { return muscleMask; }
-    public void setMuscleMask(byte muscleMask) { this.muscleMask = muscleMask; }
+    public void setSkinMask(byte skinMask) {
+        this.skinMask = skinMask;
+    }
 
-    public byte getSkullMask() { return skullMask; }
-    public void setSkullMask(byte skullMask) { this.skullMask = skullMask; }
+    public byte getMuscleMask() {
+        return muscleMask;
+    }
 
-    public boolean isBurntSkull() { return burntSkull; }
-    public void setBurntSkull(boolean burntSkull) { this.burntSkull = burntSkull; }
+    public void setMuscleMask(byte muscleMask) {
+        this.muscleMask = muscleMask;
+    }
+
+    public byte getSkullMask() {
+        return skullMask;
+    }
+
+    public void setSkullMask(byte skullMask) {
+        this.skullMask = skullMask;
+    }
+
+    public boolean isBurntSkull() {
+        return burntSkull;
+    }
+
+    public void setBurntSkull(boolean burntSkull) {
+        this.burntSkull = burntSkull;
+    }
 
     public void copyFrom(HeadData source) {
         this.skinMask = source.skinMask;

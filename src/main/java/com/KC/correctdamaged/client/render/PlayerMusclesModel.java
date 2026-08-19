@@ -19,7 +19,8 @@ import net.minecraft.resources.ResourceLocation;
  */
 public class PlayerMusclesModel extends PlayerModel<AbstractClientPlayer> {
     /** Путь к файла текстуры мышечной ткани в ресурсах мода. */
-    public static final ResourceLocation MUSCLE = new ResourceLocation(CorrectDamaged.MODID, "textures/entity/muscles_texture.png");
+    public static final ResourceLocation MUSCLE = new ResourceLocation(CorrectDamaged.MODID,
+            "textures/entity/muscles_texture.png");
 
     public final ModelPart rightFootMuscle;
     public final ModelPart rightCalfMuscle;
@@ -39,7 +40,8 @@ public class PlayerMusclesModel extends PlayerModel<AbstractClientPlayer> {
 
     /**
      * Конструктор модели мышц.
-     * Зачем нужен: Связывает локальные переменные с иерархией ModelPart, собранной движком Minecraft из LayerDefinition.
+     * Зачем нужен: Связывает локальные переменные с иерархией ModelPart, собранной движком Minecraft
+     * из LayerDefinition.
      *
      * @param root Корневой элемент запеченной модели.
      */
@@ -85,7 +87,6 @@ public class PlayerMusclesModel extends PlayerModel<AbstractClientPlayer> {
         PartDefinition rightArm = root.getChild("right_arm");
         PartDefinition leftArm = root.getChild("left_arm");
 
-        // Мышцы правой ноги (Бедро, Голень, Стопа)
         rightLeg.addOrReplaceChild("rightThighMuscle",
                 CubeListBuilder.create().texOffs(0, 7).addBox(-1.5F, 0.0F, -1.5F, 3.0F, 6.0F, 3.0F), PartPose.ZERO);
         rightLeg.addOrReplaceChild("rightCalfMuscle",
@@ -93,7 +94,6 @@ public class PlayerMusclesModel extends PlayerModel<AbstractClientPlayer> {
         rightLeg.addOrReplaceChild("rightFootMuscle",
                 CubeListBuilder.create().texOffs(0, 16).addBox(-1.5F, 10.0F, -1.5F, 3.0F, 2.0F, 3.0F), PartPose.ZERO);
 
-        // Мышцы левой ноги
         leftLeg.addOrReplaceChild("leftThighMuscle",
                 CubeListBuilder.create().texOffs(0, 7).addBox(-1.5F, 0.0F, -1.5F, 3.0F, 6.0F, 3.0F), PartPose.ZERO);
         leftLeg.addOrReplaceChild("leftCalfMuscle",
@@ -101,7 +101,6 @@ public class PlayerMusclesModel extends PlayerModel<AbstractClientPlayer> {
         leftLeg.addOrReplaceChild("leftFootMuscle",
                 CubeListBuilder.create().texOffs(0, 16).addBox(-1.5F, 10.0F, -1.5F, 3.0F, 2.0F, 3.0F), PartPose.ZERO);
 
-        // Мышцы правой руки (Плечо, Предплечье, Кисть)
         rightArm.addOrReplaceChild("rightArmShoulderMuscle",
                 CubeListBuilder.create().texOffs(0, 7).addBox(-1.5F, -2.0F, -1.5F, 3.0F, 6.0F, 3.0F), PartPose.offset(-0.3F, 0.0F, 0.0F));
         rightArm.addOrReplaceChild("rightArmForearmMuscle",
@@ -109,7 +108,6 @@ public class PlayerMusclesModel extends PlayerModel<AbstractClientPlayer> {
         rightArm.addOrReplaceChild("rightArmWristMuscle",
                 CubeListBuilder.create().texOffs(0, 16).addBox(-1.5F, 8.0F, -1.5F, 3.0F, 2.0F, 3.0F), PartPose.offset(-0.3F, 0.0F, 0.0F));
 
-        // Мышцы левой руки (с отзеркаливанием текстур)
         leftArm.addOrReplaceChild("leftArmShoulderMuscle",
                 CubeListBuilder.create().texOffs(0, 7).mirror().addBox(-1.5F, -2.0F, -1.5F, 3.0F, 6.0F, 3.0F), PartPose.offset(0.3F, 0.0F, 0.0F));
         leftArm.addOrReplaceChild("leftArmForearmMuscle",
@@ -125,7 +123,8 @@ public class PlayerMusclesModel extends PlayerModel<AbstractClientPlayer> {
      * Зачем нужен: Переключает видимость частей перед обновлением углов поворота из базовой PlayerModel.
      */
     @Override
-    public void setupAnim(AbstractClientPlayer entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
+    public void setupAnim(AbstractClientPlayer entity, float limbSwing, float limbSwingAmount,
+                          float ageInTicks, float netHeadYaw, float headPitch) {
         super.setupAnim(entity, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);
         setAllPartsVisible(true);
     }

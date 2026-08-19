@@ -194,12 +194,23 @@ public class VoxelBodyRenderer {
      * Рассчитывает точные координаты UV-развертки скина игрока (в пикселях 64x64) для конкретного внешнего воксела туловища.
      */
     private static CubeUV buildSkinUV(BodyVoxelMatrix matrix, int x, int y, int z) {
-        FaceUV front  = (z == 0  && !matrix.isSolidSafe(x, y, z - 1)) ? FaceUV.of(20 + x, 20 + y, 20 + x + 1, 20 + y + 1) : null;
-        FaceUV back   = (z == 3  && !matrix.isSolidSafe(x, y, z + 1)) ? FaceUV.of(32 + (7 - x), 20 + y, 32 + (7 - x) + 1, 20 + y + 1) : null;
-        FaceUV left   = (x == 0  && !matrix.isSolidSafe(x - 1, y, z)) ? FaceUV.of(16 + z, 20 + y, 16 + z + 1, 20 + y + 1) : null;
-        FaceUV right  = (x == 7  && !matrix.isSolidSafe(x + 1, y, z)) ? FaceUV.of(28 + (3 - z), 20 + y, 28 + (3 - z) + 1, 20 + y + 1) : null;
-        FaceUV top    = (y == 0  && !matrix.isSolidSafe(x, y - 1, z)) ? FaceUV.of(20 + x, 16 + z, 20 + x + 1, 16 + z + 1) : null;
-        FaceUV bottom = (y == 11 && !matrix.isSolidSafe(x, y + 1, z)) ? FaceUV.of(28 + x, 16 + z, 28 + x + 1, 16 + z + 1) : null;
+        FaceUV front  = (z == 0  && !matrix.isSolidSafe(x, y, z - 1)) ?
+                FaceUV.of(20 + x, 20 + y, 20 + x + 1, 20 + y + 1) : null;
+
+        FaceUV back   = (z == 3  && !matrix.isSolidSafe(x, y, z + 1)) ?
+                FaceUV.of(32 + (7 - x), 20 + y, 32 + (7 - x) + 1, 20 + y + 1) : null;
+
+        FaceUV left   = (x == 0  && !matrix.isSolidSafe(x - 1, y, z)) ?
+                FaceUV.of(16 + z, 20 + y, 16 + z + 1, 20 + y + 1) : null;
+
+        FaceUV right  = (x == 7  && !matrix.isSolidSafe(x + 1, y, z)) ?
+                FaceUV.of(28 + (3 - z), 20 + y, 28 + (3 - z) + 1, 20 + y + 1) : null;
+
+        FaceUV top    = (y == 0  && !matrix.isSolidSafe(x, y - 1, z)) ?
+                FaceUV.of(20 + x, 16 + z, 20 + x + 1, 16 + z + 1) : null;
+
+        FaceUV bottom = (y == 11 && !matrix.isSolidSafe(x, y + 1, z)) ?
+                FaceUV.of(28 + x, 16 + z, 28 + x + 1, 16 + z + 1) : null;
 
         return new CubeUV(front, back, left, right, top, bottom);
     }

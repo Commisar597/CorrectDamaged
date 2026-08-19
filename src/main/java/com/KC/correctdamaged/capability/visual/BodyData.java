@@ -56,20 +56,30 @@ public class BodyData implements INBTSerializable<CompoundTag> {
         }
     }
 
-    /** @return Маска состояния кожи туловища. */
-    public int getSkinMask() { return skinMask; }
     /** @param skinMask Состояние кожи туловища. */
-    public void setSkinMask(int skinMask) { this.skinMask = skinMask; }
+    public void setSkinMask(int skinMask) {
+        this.skinMask = skinMask;
+    }
 
     /** @return Состояние мышц туловища. */
-    public int getMuscleBody() { return muscleBody; }
+    public int getMuscleBody() {
+        return muscleBody;
+    }
+
     /** @param muscleBody Состояние мышц туловища. */
-    public void setMuscleBody(int muscleBody) { this.muscleBody = muscleBody; }
+    public void setMuscleBody(int muscleBody) {
+        this.muscleBody = muscleBody;
+    }
 
     /** @return Режим отображения скелета туловища. */
-    public int getShowSkeleton() { return showSkeleton; }
+    public int getShowSkeleton() {
+        return showSkeleton;
+    }
+
     /** @param showSkeleton Режим отображения скелета. */
-    public void setShowSkeleton(int showSkeleton) { this.showSkeleton = showSkeleton; }
+    public void setShowSkeleton(int showSkeleton) {
+        this.showSkeleton = showSkeleton;
+    }
 
     /**
      * Проверяет, обуглен ли скелет туловища (по флагу или по режиму {@code showSkeleton == 2}).
@@ -86,15 +96,6 @@ public class BodyData implements INBTSerializable<CompoundTag> {
     }
 
     /**
-     * Проверяет, обуглено ли туловище.
-     *
-     * @return {@code true}, если туловище/скелет обуглены.
-     */
-    public boolean isBurntBody() {
-        return isBurntSkeleton();
-    }
-
-    /**
      * Проверяет, находится ли туловище в полностью неповреждённом состоянии.
      *
      * @return {@code true}, если кожа цела и воксельная матрица не имеет разрушений.
@@ -105,15 +106,6 @@ public class BodyData implements INBTSerializable<CompoundTag> {
 
     /** @return Воксельная матрица туловища {@link BodyVoxelMatrix}. */
     public BodyVoxelMatrix getBodyVoxelMatrix() {
-        return this.bodyVoxelMatrix;
-    }
-
-    /**
-     * Псевдоним для {@link #getBodyVoxelMatrix()}.
-     *
-     * @return Воксельная матрица туловища {@link BodyVoxelMatrix}.
-     */
-    public BodyVoxelMatrix getVoxelMatrix() {
         return this.bodyVoxelMatrix;
     }
 }

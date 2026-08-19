@@ -33,42 +33,65 @@ public class ArmData {
         this.side = side;
     }
 
-    /** @return Состояние кожи плеча. */
-    public int getShoulderSkin() { return shoulderSkin; }
     /** @param state Состояние кожи плеча (ограничивается диапазоном 0..1). */
-    public void setShoulderSkin(int state) { this.shoulderSkin = clamp(state, 0, 1); }
+    public void setShoulderSkin(int state) {
+        this.shoulderSkin = clamp(state, 0, 1);
+    }
 
-    /** @return Состояние кожи предплечья. */
-    public int getForearmSkin() { return forearmSkin; }
     /** @param state Состояние кожи предплечья (ограничивается диапазоном 0..1). */
-    public void setForearmSkin(int state) { this.forearmSkin = clamp(state, 0, 1); }
+    public void setForearmSkin(int state) {
+        this.forearmSkin = clamp(state, 0, 1);
+    }
 
-    /** @return Состояние кожи запястья. */
-    public int getWristSkin() { return wristSkin; }
     /** @param state Состояние кожи запястья (ограничивается диапазоном 0..1). */
-    public void setWristSkin(int state) { this.wristSkin = clamp(state, 0, 1); }
+    public void setWristSkin(int state) {
+        this.wristSkin = clamp(state, 0, 1);
+    }
 
     /** @return {@code true}, если кожа плеча цела. */
-    public boolean hasShoulderSkin() { return shoulderSkin == 1; }
+    public boolean hasShoulderSkin() {
+        return shoulderSkin == 1;
+    }
+
     /** @return {@code true}, если кожа предплечья цела. */
-    public boolean hasForearmSkin() { return forearmSkin == 1; }
+    public boolean hasForearmSkin() {
+        return forearmSkin == 1;
+    }
+
     /** @return {@code true}, если кожа запястья цела. */
-    public boolean hasWristSkin() { return wristSkin == 1; }
+    public boolean hasWristSkin() {
+        return wristSkin == 1;
+    }
 
     /** @return Уровень повреждения/отображения мышц (0-3). */
-    public int getMuscleState() { return muscleState; }
+    public int getMuscleState() {
+        return muscleState;
+    }
+
     /** @param state Уровень повреждения мышц (ограничивается диапазоном 0..3). */
-    public void setMuscleState(int state) { this.muscleState = clamp(state, 0, 3); }
+    public void setMuscleState(int state) {
+        this.muscleState = clamp(state, 0, 3);
+    }
 
     /** @return Уровень повреждения/отображения костей (0-3). */
-    public int getBoneState() { return boneState; }
+    public int getBoneState() {
+        return boneState;
+    }
+
     /** @param state Уровень повреждения костей (ограничивается диапазоном 0..3). */
-    public void setBoneState(int state) { this.boneState = clamp(state, 0, 3); }
+    public void setBoneState(int state) {
+        this.boneState = clamp(state, 0, 3);
+    }
 
     /** @return {@code true}, если кость руки обуглена. */
-    public boolean isBurntBone() { return burntBone; }
+    public boolean isBurntBone() {
+        return burntBone;
+    }
+
     /** @param burntBone Флаг обугливания кости. */
-    public void setBurntBone(boolean burntBone) { this.burntBone = burntBone; }
+    public void setBurntBone(boolean burntBone) {
+        this.burntBone = burntBone;
+    }
 
     /**
      * Копирует состояние из другого объекта {@link ArmData}.

@@ -22,11 +22,14 @@ import net.minecraft.resources.ResourceLocation;
  */
 public class OctalHeadStumpLayer extends RenderLayer<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>> {
 
-    private static final ResourceLocation NORMAL_STUMP = new ResourceLocation("correct_damaged", "textures/entity/head_stump_8x8.png");
-    private static final ResourceLocation BURNT_STUMP = new ResourceLocation("correct_damaged", "textures/entity/head_stump_8x8_burnt_bone.png");
-
-    private static final ResourceLocation SCULL_STUMP = new ResourceLocation("correct_damaged", "textures/entity/head_stump_8x8_scull.png");
-    private static final ResourceLocation BURNT_SCULL_STUMP = new ResourceLocation("correct_damaged", "textures/entity/head_stump_8x8_burnt_bone_scull.png");
+    private static final ResourceLocation NORMAL_STUMP = new ResourceLocation("correct_damaged",
+            "textures/entity/head_stump_8x8.png");
+    private static final ResourceLocation BURNT_STUMP = new ResourceLocation("correct_damaged",
+            "textures/entity/head_stump_8x8_burnt_bone.png");
+    private static final ResourceLocation SCULL_STUMP = new ResourceLocation("correct_damaged",
+            "textures/entity/head_stump_8x8_scull.png");
+    private static final ResourceLocation BURNT_SCULL_STUMP = new ResourceLocation("correct_damaged",
+            "textures/entity/head_stump_8x8_burnt_bone_scull.png");
 
     public OctalHeadStumpLayer(RenderLayerParent<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>> parent) {
         super(parent);

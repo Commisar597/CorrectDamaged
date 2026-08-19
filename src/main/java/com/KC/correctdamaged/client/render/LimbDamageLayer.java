@@ -44,11 +44,17 @@ public class LimbDamageLayer extends RenderLayer<AbstractClientPlayer, PlayerMod
 
             PlayerModel<AbstractClientPlayer> model = getParentModel();
 
-            renderArm(poseStack, consumer, packedLight, model.rightArm, LimbDamageVariants.LimbType.RIGHT_ARM, LimbDamageVariants.LimbType.RIGHT_SLEEVE, data.getRightArm(), slim);
-            renderArm(poseStack, consumer, packedLight, model.leftArm, LimbDamageVariants.LimbType.LEFT_ARM, LimbDamageVariants.LimbType.LEFT_SLEEVE, data.getLeftArm(), slim);
+            renderArm(poseStack, consumer, packedLight, model.rightArm, LimbDamageVariants.LimbType.RIGHT_ARM,
+                    LimbDamageVariants.LimbType.RIGHT_SLEEVE, data.getRightArm(), slim);
 
-            renderLeg(poseStack, consumer, packedLight, model.rightLeg, LimbDamageVariants.LimbType.RIGHT_LEG, LimbDamageVariants.LimbType.RIGHT_PANTS, data.getRightLeg());
-            renderLeg(poseStack, consumer, packedLight, model.leftLeg, LimbDamageVariants.LimbType.LEFT_LEG, LimbDamageVariants.LimbType.LEFT_PANTS, data.getLeftLeg());
+            renderArm(poseStack, consumer, packedLight, model.leftArm, LimbDamageVariants.LimbType.LEFT_ARM,
+                    LimbDamageVariants.LimbType.LEFT_SLEEVE, data.getLeftArm(), slim);
+
+            renderLeg(poseStack, consumer, packedLight, model.rightLeg, LimbDamageVariants.LimbType.RIGHT_LEG,
+                    LimbDamageVariants.LimbType.RIGHT_PANTS, data.getRightLeg());
+
+            renderLeg(poseStack, consumer, packedLight, model.leftLeg, LimbDamageVariants.LimbType.LEFT_LEG,
+                    LimbDamageVariants.LimbType.LEFT_PANTS, data.getLeftLeg());
         });
     }
 
@@ -97,13 +103,18 @@ public class LimbDamageLayer extends RenderLayer<AbstractClientPlayer, PlayerMod
         parentPart.translateAndRotate(poseStack);
 
         if (leg.hasThighSkin()) {
-            renderSegment(poseStack, consumer, packedLight, baseType, layerType, false, 6.0F, 0.0F);
+            renderSegment(poseStack, consumer, packedLight, baseType, layerType,
+                    false, 6.0F, 0.0F);
         }
+
         if (leg.hasCalfSkin()) {
-            renderSegment(poseStack, consumer, packedLight, baseType, layerType, false, 4.0F, 6.0F);
+            renderSegment(poseStack, consumer, packedLight, baseType, layerType,
+                    false, 4.0F, 6.0F);
         }
+
         if (leg.hasFootSkin()) {
-            renderSegment(poseStack, consumer, packedLight, baseType, layerType, false, 2.0F, 10.0F);
+            renderSegment(poseStack, consumer, packedLight, baseType, layerType,
+                    false, 2.0F, 10.0F);
         }
 
         poseStack.popPose();

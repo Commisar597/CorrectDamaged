@@ -21,7 +21,8 @@ public class BodyAnatomyLayer extends RenderLayer<AbstractClientPlayer, PlayerMo
     /**
      * Конструктор слоя анатомии туловища.
      */
-    public BodyAnatomyLayer(RenderLayerParent<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>> parent, EntityModelSet modelSet) {
+    public BodyAnatomyLayer(RenderLayerParent<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>> parent,
+                            EntityModelSet modelSet) {
         super(parent);
         this.bodyModel = new BodyModel(modelSet.bakeLayer(ClientEvents.BODY_LAYER));
     }

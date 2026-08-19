@@ -20,27 +20,52 @@ public class LegData {
         this.side = side;
     }
 
-    public int getThighSkin() { return thighSkin; }
-    public void setThighSkin(int state) { this.thighSkin = clamp(state, 0, 1); }
+    public void setThighSkin(int state) {
+        this.thighSkin = clamp(state, 0, 1);
+    }
 
-    public int getCalfSkin() { return calfSkin; }
-    public void setCalfSkin(int state) { this.calfSkin = clamp(state, 0, 1); }
+    public void setCalfSkin(int state) {
+        this.calfSkin = clamp(state, 0, 1);
+    }
 
-    public int getFootSkin() { return footSkin; }
-    public void setFootSkin(int state) { this.footSkin = clamp(state, 0, 1); }
+    public void setFootSkin(int state) {
+        this.footSkin = clamp(state, 0, 1);
+    }
 
-    public boolean hasThighSkin() { return thighSkin == 1; }
-    public boolean hasCalfSkin() { return calfSkin == 1; }
-    public boolean hasFootSkin() { return footSkin == 1; }
+    public boolean hasThighSkin() {
+        return thighSkin == 1;
+    }
 
-    public int getMuscleState() { return muscleState; }
-    public void setMuscleState(int state) { this.muscleState = clamp(state, 0, 3); }
+    public boolean hasCalfSkin() {
+        return calfSkin == 1;
+    }
 
-    public int getBoneState() { return boneState; }
-    public void setBoneState(int state) { this.boneState = clamp(state, 0, 3); }
+    public boolean hasFootSkin() {
+        return footSkin == 1;
+    }
 
-    public boolean isBurntBone() { return burntBone; }
-    public void setBurntBone(boolean burntBone) { this.burntBone = burntBone; }
+    public int getMuscleState() {
+        return muscleState; }
+
+    public void setMuscleState(int state) {
+        this.muscleState = clamp(state, 0, 3);
+    }
+
+    public int getBoneState() {
+        return boneState;
+    }
+
+    public void setBoneState(int state) {
+        this.boneState = clamp(state, 0, 3);
+    }
+
+    public boolean isBurntBone() {
+        return burntBone;
+    }
+
+    public void setBurntBone(boolean burntBone) {
+        this.burntBone = burntBone;
+    }
 
     public void copyFrom(LegData source) {
         this.thighSkin = source.thighSkin;

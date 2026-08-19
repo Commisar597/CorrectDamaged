@@ -57,10 +57,17 @@ public abstract class HumanoidModelMixin<T extends LivingEntity> {
             LegData leftLegData  = data.getLeftLeg();
 
             // Проверка: целостность кожи всех подчастей конечностей
-            boolean rightArmFull = rightArmData.hasShoulderSkin() && rightArmData.hasForearmSkin() && rightArmData.hasWristSkin();
-            boolean leftArmFull  = leftArmData.hasShoulderSkin()  && leftArmData.hasForearmSkin()  && leftArmData.hasWristSkin();
-            boolean rightLegFull = rightLegData.hasThighSkin()    && rightLegData.hasCalfSkin()    && rightLegData.hasFootSkin();
-            boolean leftLegFull  = leftLegData.hasThighSkin()     && leftLegData.hasCalfSkin()     && leftLegData.hasFootSkin();
+            boolean rightArmFull = rightArmData.hasShoulderSkin() && rightArmData.hasForearmSkin()
+                    && rightArmData.hasWristSkin();
+
+            boolean leftArmFull  = leftArmData.hasShoulderSkin()  && leftArmData.hasForearmSkin()
+                    && leftArmData.hasWristSkin();
+
+            boolean rightLegFull = rightLegData.hasThighSkin()    && rightLegData.hasCalfSkin()
+                    && rightLegData.hasFootSkin();
+
+            boolean leftLegFull  = leftLegData.hasThighSkin()     && leftLegData.hasCalfSkin()
+                    && leftLegData.hasFootSkin();
 
             // Если конечность повреждена/отсутствует — скрываем её стандартную часть модели
             rightArm.visible = rightArmFull;
@@ -75,7 +82,8 @@ public abstract class HumanoidModelMixin<T extends LivingEntity> {
             leftLeg.visible = leftLegFull;
             leftLeg.skipDraw = !leftLegFull;
 
-            // Если модель — конкретно модель игрока ( PlayerModel ), скрываем еще и внешние слои одежды (рукава, штанины, куртку)
+            // Если модель — конкретно модель игрока ( PlayerModel ), скрываем еще и внешние слои одежды
+            // (рукава, штанины, куртку)
             if ((Object) this instanceof PlayerModel<?> playerModel) {
                 playerModel.rightSleeve.visible = rightArmFull;
                 playerModel.leftSleeve.visible  = leftArmFull;

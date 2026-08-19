@@ -24,9 +24,12 @@ import net.minecraft.resources.ResourceLocation;
  */
 public class BodyModel extends PlayerModel<AbstractClientPlayer> {
 
-    public static final ResourceLocation BONE = new ResourceLocation(CorrectDamaged.MODID, "textures/entity/bone_texture.png");
-    public static final ResourceLocation BURNT_BONE = new ResourceLocation(CorrectDamaged.MODID, "textures/entity/burnt_bone_texture.png");
-    public static final ResourceLocation MUSCLE = new ResourceLocation(CorrectDamaged.MODID, "textures/entity/muscles_texture.png");
+    public static final ResourceLocation BONE = new ResourceLocation(CorrectDamaged.MODID,
+            "textures/entity/bone_texture.png");
+    public static final ResourceLocation BURNT_BONE = new ResourceLocation(CorrectDamaged.MODID,
+            "textures/entity/burnt_bone_texture.png");
+    public static final ResourceLocation MUSCLE = new ResourceLocation(CorrectDamaged.MODID,
+            "textures/entity/muscles_texture.png");
 
     public final ModelPart skeleton;
     public final ModelPart bodyMuscle;
@@ -52,17 +55,22 @@ public class BodyModel extends PlayerModel<AbstractClientPlayer> {
 
         // Скелет туловища (слегка уменьшен на -0.15F для размещения внутри)
         body.addOrReplaceChild("skeleton",
-                CubeListBuilder.create().texOffs(40, 0).addBox(-4.0F, 0.0F, -2.0F, 8.0F, 12.0F, 4.0F, new CubeDeformation(-0.15F)), PartPose.ZERO);
+                CubeListBuilder.create().texOffs(40, 0).addBox(-4.0F,
+                        0.0F, -2.0F, 8.0F, 12.0F, 4.0F,
+                        new CubeDeformation(-0.15F)), PartPose.ZERO);
 
         // Мышечный корпус туловища (уменьшен на -0.125F)
         body.addOrReplaceChild("bodyMuscle",
-                CubeListBuilder.create().texOffs(40, 0).addBox(-4.0F, 0.0F, -2.0F, 8.0F, 12.0F, 4.0F, new CubeDeformation(-0.125F)), PartPose.ZERO);
+                CubeListBuilder.create().texOffs(40, 0).addBox(-4.0F,
+                        0.0F, -2.0F, 8.0F, 12.0F, 4.0F,
+                        new CubeDeformation(-0.125F)), PartPose.ZERO);
 
         return LayerDefinition.create(meshdefinition, 64, 64);
     }
 
     @Override
-    public void setupAnim(AbstractClientPlayer entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
+    public void setupAnim(AbstractClientPlayer entity, float limbSwing, float limbSwingAmount,
+                          float ageInTicks, float netHeadYaw, float headPitch) {
         super.setupAnim(entity, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);
     }
 
@@ -72,7 +80,8 @@ public class BodyModel extends PlayerModel<AbstractClientPlayer> {
     public void renderSkeleton(PoseStack poseStack, MultiBufferSource buffer, int packedLight, boolean isBurnt) {
         ResourceLocation tex = isBurnt ? BURNT_BONE : BONE;
         VertexConsumer consumer = buffer.getBuffer(RenderType.entityCutoutNoCull(tex));
-        this.skeleton.render(poseStack, consumer, packedLight, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
+        this.skeleton.render(poseStack, consumer, packedLight, OverlayTexture.NO_OVERLAY, 1.0F,
+                1.0F, 1.0F, 1.0F);
     }
 
     /**
@@ -80,6 +89,7 @@ public class BodyModel extends PlayerModel<AbstractClientPlayer> {
      */
     public void renderMuscles(PoseStack poseStack, MultiBufferSource buffer, int packedLight) {
         VertexConsumer consumer = buffer.getBuffer(RenderType.entityCutoutNoCull(MUSCLE));
-        this.bodyMuscle.render(poseStack, consumer, packedLight, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
+        this.bodyMuscle.render(poseStack, consumer, packedLight, OverlayTexture.NO_OVERLAY, 1.0F,
+                1.0F, 1.0F, 1.0F);
     }
 }

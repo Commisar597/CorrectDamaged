@@ -26,23 +26,32 @@ import net.minecraft.resources.ResourceLocation;
 public class PlayerBonesLayer extends RenderLayer<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>> {
     private final PlayerBonesModel bonesModel;
 
-    public PlayerBonesLayer(RenderLayerParent<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>> parent, EntityModelSet modelSet, boolean isSlim) {
+    public PlayerBonesLayer(RenderLayerParent<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>> parent,
+                            EntityModelSet modelSet, boolean isSlim) {
         super(parent);
         ModelLayerLocation layerLoc = isSlim ? ClientEvents.PLAYER_BONES_SLIM_LAYER : ClientEvents.PLAYER_BONES_LAYER;
         this.bonesModel = new PlayerBonesModel(modelSet.bakeLayer(layerLoc));
     }
 
     @Override
-    public void render(PoseStack poseStack, MultiBufferSource buffer, int packedLight, AbstractClientPlayer player, float limbSwing, float limbSwingAmount, float partialTick, float ageInTicks, float netHeadYaw, float headPitch) {
+    public void render(PoseStack poseStack, MultiBufferSource buffer, int packedLight,
+                       AbstractClientPlayer player, float limbSwing, float limbSwingAmount,
+                       float partialTick, float ageInTicks, float netHeadYaw, float headPitch) {
         player.getCapability(LimbManager.LIMB_DATA_CAP).ifPresent(data -> {
             PlayerModel<AbstractClientPlayer> parentModel = getParentModel();
             bonesModel.setupAnim(player, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);
 
-            renderArmBones(poseStack, buffer, packedLight, data.getRightArm(), bonesModel.rightArmShoulderBone, bonesModel.rightArmForearmBone, bonesModel.rightArmWristBone, parentModel.rightArm);
-            renderArmBones(poseStack, buffer, packedLight, data.getLeftArm(), bonesModel.leftArmShoulderBone, bonesModel.leftArmForearmBone, bonesModel.leftArmWristBone, parentModel.leftArm);
+            renderArmBones(poseStack, buffer, packedLight, data.getRightArm(), bonesModel.rightArmShoulderBone,
+                    bonesModel.rightArmForearmBone, bonesModel.rightArmWristBone, parentModel.rightArm);
 
-            renderLegBones(poseStack, buffer, packedLight, data.getRightLeg(), bonesModel.rightThighBone, bonesModel.rightCalfBone, bonesModel.rightFootBone, parentModel.rightLeg);
-            renderLegBones(poseStack, buffer, packedLight, data.getLeftLeg(), bonesModel.leftThighBone, bonesModel.leftCalfBone, bonesModel.leftFootBone, parentModel.leftLeg);
+            renderArmBones(poseStack, buffer, packedLight, data.getLeftArm(), bonesModel.leftArmShoulderBone,
+                    bonesModel.leftArmForearmBone, bonesModel.leftArmWristBone, parentModel.leftArm);
+
+            renderLegBones(poseStack, buffer, packedLight, data.getRightLeg(), bonesModel.rightThighBone,
+                    bonesModel.rightCalfBone, bonesModel.rightFootBone, parentModel.rightLeg);
+
+            renderLegBones(poseStack, buffer, packedLight, data.getLeftLeg(), bonesModel.leftThighBone,
+                    bonesModel.leftCalfBone, bonesModel.leftFootBone, parentModel.leftLeg);
         });
     }
 
@@ -90,8 +99,10 @@ public class PlayerBonesLayer extends RenderLayer<AbstractClientPlayer, PlayerMo
         poseStack.popPose();
     }
 
-    private void renderPart(PoseStack poseStack, MultiBufferSource buffer, int packedLight, ModelPart part, ResourceLocation tex) {
+    private void renderPart(PoseStack poseStack, MultiBufferSource buffer, int packedLight,
+                            ModelPart part, ResourceLocation tex) {
         VertexConsumer consumer = buffer.getBuffer(RenderType.entityCutoutNoCull(tex));
-        part.render(poseStack, consumer, packedLight, OverlayTexture.NO_OVERLAY, 1.0f, 1.0f, 1.0f, 1.0f);
+        part.render(poseStack, consumer, packedLight, OverlayTexture.NO_OVERLAY, 1.0f,
+                1.0f, 1.0f, 1.0f);
     }
 }

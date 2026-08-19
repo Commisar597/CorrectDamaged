@@ -19,9 +19,11 @@ import net.minecraft.resources.ResourceLocation;
  */
 public class PlayerBonesModel extends PlayerModel<AbstractClientPlayer> {
     /** Текстура нормальной белой кости. */
-    public static final ResourceLocation BONE = new ResourceLocation(CorrectDamaged.MODID, "textures/entity/bone_texture.png");
+    public static final ResourceLocation BONE = new ResourceLocation(CorrectDamaged.MODID,
+            "textures/entity/bone_texture.png");
     /** Текстура обугленной/сожженной кости. */
-    public static final ResourceLocation BURNT_BONE = new ResourceLocation(CorrectDamaged.MODID, "textures/entity/burnt_bone_texture.png");
+    public static final ResourceLocation BURNT_BONE = new ResourceLocation(CorrectDamaged.MODID,
+            "textures/entity/burnt_bone_texture.png");
 
     public final ModelPart rightFootBone;
     public final ModelPart rightCalfBone;
@@ -97,7 +99,6 @@ public class PlayerBonesModel extends PlayerModel<AbstractClientPlayer> {
         leftLeg.addOrReplaceChild("leftFootBone",
                 CubeListBuilder.create().texOffs(0, 14).addBox(-1.0F, 10.0F, -1.0F, 2.0F, 2.0F, 2.0F), PartPose.ZERO);
 
-        // Кости рук
         rightArm.addOrReplaceChild("rightArmShoulderBone",
                 CubeListBuilder.create().texOffs(0, 6).addBox(-1.0F, -2.0F, -1.0F, 2.0F, 6.0F, 2.0F), PartPose.offset(-0.1F, 0.0F, 0.0F));
         rightArm.addOrReplaceChild("rightArmForearmBone",
@@ -116,7 +117,8 @@ public class PlayerBonesModel extends PlayerModel<AbstractClientPlayer> {
     }
 
     @Override
-    public void setupAnim(AbstractClientPlayer entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
+    public void setupAnim(AbstractClientPlayer entity, float limbSwing, float limbSwingAmount,
+                          float ageInTicks, float netHeadYaw, float headPitch) {
         super.setupAnim(entity, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);
         setAllPartsVisible(true);
     }

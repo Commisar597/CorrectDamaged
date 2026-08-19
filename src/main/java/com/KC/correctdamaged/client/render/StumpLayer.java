@@ -41,7 +41,8 @@ public class StumpLayer extends RenderLayer<AbstractClientPlayer, PlayerModel<Ab
 
     /**
      * Фабричный метод для создания отдельного ModelPart плоской заглушки (спила).
-     * Зачем нужен: Создает полигон заданной ширины и глубины с очень малой высотой (0.001F) для закрытия среды среза ампутированной руки или ноги.
+     * Зачем нужен: Создает полигон заданной ширины и глубины с очень малой высотой (0.001F)
+     * для закрытия среды среза ампутированной руки или ноги.
      *
      * @param x Смещение по X.
      * @param z Смещение по Z.
@@ -65,7 +66,8 @@ public class StumpLayer extends RenderLayer<AbstractClientPlayer, PlayerModel<Ab
 
     /**
      * Главный метод рендера слоя. Вызывается каждый кадр для каждого отрисовываемого игрока.
-     * Зачем нужен: Читает состояние Capability конечностей и рендерит заглушки-обрубки в местах ампутации или частичной потери сегментов рук и ног.
+     * Зачем нужен: Читает состояние Capability конечностей и рендерит заглушки-обрубки в местах
+     * ампутации или частичной потери сегментов рук и ног.
      */
     @Override
     public void render(
@@ -89,12 +91,16 @@ public class StumpLayer extends RenderLayer<AbstractClientPlayer, PlayerModel<Ab
             LegData leftLeg = data.getLeftLeg();
 
             // Отрисовка заглушек для рук
-            renderArmStumps(poseStack, buffer, packedLight, player, getParentModel().rightArm, rightArm, isSlim, 0, StumpTextureResolver.LimbType.RIGHT_ARM);
-            renderArmStumps(poseStack, buffer, packedLight, player, getParentModel().leftArm, leftArm, isSlim, 1, StumpTextureResolver.LimbType.LEFT_ARM);
+            renderArmStumps(poseStack, buffer, packedLight, player, getParentModel().rightArm,
+                    rightArm, isSlim, 0, StumpTextureResolver.LimbType.RIGHT_ARM);
+            renderArmStumps(poseStack, buffer, packedLight, player, getParentModel().leftArm,
+                    leftArm, isSlim, 1, StumpTextureResolver.LimbType.LEFT_ARM);
 
             // Отрисовка заглушек для ног
-            renderLegStumps(poseStack, buffer, packedLight, player, getParentModel().rightLeg, rightLeg, 2, StumpTextureResolver.LimbType.RIGHT_LEG);
-            renderLegStumps(poseStack, buffer, packedLight, player, getParentModel().leftLeg, leftLeg, 3, StumpTextureResolver.LimbType.LEFT_LEG);
+            renderLegStumps(poseStack, buffer, packedLight, player, getParentModel().rightLeg,
+                    rightLeg, 2, StumpTextureResolver.LimbType.RIGHT_LEG);
+            renderLegStumps(poseStack, buffer, packedLight, player, getParentModel().leftLeg,
+                    leftLeg, 3, StumpTextureResolver.LimbType.LEFT_LEG);
         });
     }
 
@@ -116,7 +122,9 @@ public class StumpLayer extends RenderLayer<AbstractClientPlayer, PlayerModel<Ab
 
         // Если плеча нет — рендерим заглушку в самом основании (у сустава с туловищем)
         if (!s) {
-            renderCapAtPosition(poseStack, buffer, packedLight, player, parentLimb, cap4x4, "stump_fresh_4x4", 0.0F, 0.0F, limbId, false, limbType, true);
+            renderCapAtPosition(poseStack, buffer, packedLight, player, parentLimb,
+                    cap4x4, "stump_fresh_4x4", 0.0F, 0.0F,
+                    limbId, false, limbType, true);
         }
 
         ModelPart cap = isSlim ? cap3x4 : cap4x4;
@@ -125,12 +133,14 @@ public class StumpLayer extends RenderLayer<AbstractClientPlayer, PlayerModel<Ab
 
         // Граница между плечом и предплечьем
         if (s != f) {
-            renderCapAtPosition(poseStack, buffer, packedLight, player, parentLimb, cap, texName, 4.0F, centerX, limbId, isSlim, limbType, false);
+            renderCapAtPosition(poseStack, buffer, packedLight, player, parentLimb,
+                    cap, texName, 4.0F, centerX, limbId, isSlim, limbType, false);
         }
 
         // Граница между предплечьем и кистью
         if (f != w) {
-            renderCapAtPosition(poseStack, buffer, packedLight, player, parentLimb, cap, texName, 8.0F, centerX, limbId, isSlim, limbType, false);
+            renderCapAtPosition(poseStack, buffer, packedLight, player, parentLimb,
+                    cap, texName, 8.0F, centerX, limbId, isSlim, limbType, false);
         }
     }
 
@@ -154,23 +164,27 @@ public class StumpLayer extends RenderLayer<AbstractClientPlayer, PlayerModel<Ab
 
         // Если нет бедра — спил у самого таза
         if (!t) {
-            renderCapAtPosition(poseStack, buffer, packedLight, player, parentLimb, cap, texName, 0.0F, 0.0F, limbId, false, limbType, true);
+            renderCapAtPosition(poseStack, buffer, packedLight, player, parentLimb,
+                    cap, texName, 0.0F, 0.0F, limbId, false, limbType, true);
         }
 
         // Граница бедро-голень (колено)
         if (t != c) {
-            renderCapAtPosition(poseStack, buffer, packedLight, player, parentLimb, cap, texName, 6.0F, 0.0F, limbId, false, limbType, false);
+            renderCapAtPosition(poseStack, buffer, packedLight, player, parentLimb,
+                    cap, texName, 6.0F, 0.0F, limbId, false, limbType, false);
         }
 
         // Граница голень-стопа (лодыжка)
         if (c != f) {
-            renderCapAtPosition(poseStack, buffer, packedLight, player, parentLimb, cap, texName, 10.0F, 0.0F, limbId, false, limbType, false);
+            renderCapAtPosition(poseStack, buffer, packedLight, player, parentLimb,
+                    cap, texName, 10.0F, 0.0F, limbId, false, limbType, false);
         }
     }
 
     /**
      * Низкоуровневая отрисовка модели заглушки в пространстве с применением матричных трансформаций.
-     * Зачем нужен: Перемещает PoseStack в нужную точку модели игрока, поворачивает заглушку на рандомный/фиксированный угол,
+     * Зачем нужен: Перемещает PoseStack в нужную точку модели игрока, поворачивает заглушку на
+     * рандомный/фиксированный угол,
      * накладывает текстуру и передает геометрию в буфер рендера.
      */
     private void renderCapAtPosition(
@@ -204,7 +218,8 @@ public class StumpLayer extends RenderLayer<AbstractClientPlayer, PlayerModel<Ab
 
         ResourceLocation texture = StumpTextureResolver.getStumpTexture(player, baseTexName, limbType);
         VertexConsumer vertexConsumer = buffer.getBuffer(RenderType.entityCutoutNoCull(texture));
-        capModel.render(poseStack, vertexConsumer, packedLight, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
+        capModel.render(poseStack, vertexConsumer, packedLight, OverlayTexture.NO_OVERLAY,
+                1.0F, 1.0F, 1.0F, 1.0F);
 
         poseStack.popPose();
     }

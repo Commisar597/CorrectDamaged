@@ -31,21 +31,6 @@ public class BodyVoxelMatrix {
         return voxels.cardinality() < TOTAL_VOXELS;
     }
 
-    /**
-     * Проверяет, разрушен ли хоть один воксель на внешних гранях (коже).
-     */
-    public boolean isAnySkinDestroyed() {
-        for (int y = 0; y < HEIGHT_Y; y++) {
-            for (int x = 0; x < WIDTH_X; x++) {
-                if (!isSolid(x, y, 0) || !isSolid(x, y, DEPTH_Z - 1)) return true;
-            }
-            for (int z = 0; z < DEPTH_Z; z++) {
-                if (!isSolid(0, y, z) || !isSolid(WIDTH_X - 1, y, z)) return true;
-            }
-        }
-        return false;
-    }
-
     /** Вычисляет плоский индекс 1D-массива из 3D-координат. */
     public static int getIndex(int x, int y, int z) {
         return x + (y * WIDTH_X) + (z * WIDTH_X * HEIGHT_Y);
@@ -82,69 +67,6 @@ public class BodyVoxelMatrix {
     /** Заполняет весь объем (полное восстановление). */
     public void fillAll() {
         voxels.set(0, TOTAL_VOXELS, true);
-    }
-
-    /** Полностью очищает объем (полное уничтожение). */
-    public void clearAll() {
-        voxels.clear(0, TOTAL_VOXELS);
-    }
-
-    /** Проверяет, повреждены ли центральные воксели, отвечающие за позвоночник. */
-    public boolean isBoneZoneDestroyed() {
-        for (int y = 0; y < HEIGHT_Y; y++) {
-            if (!isSolid(3, y, 2) || !isSolid(4, y, 2)) {
-                return true; // Позвоночник пробит
-            }
-        }
-        return false;
-    }
-
-    /** Удаляет воксели внутри прямоугольной области (кубоида). */
-    public void removeBox(int xMin, int yMin, int zMin, int xMax, int yMax, int zMax) {
-        for (int x = xMin; x <= xMax; x++) {
-            for (int y = yMin; y <= yMax; y++) {
-                for (int z = zMin; z <= zMax; z++) {
-                    setSolid(x, y, z, false);
-                }
-            }
-        }
-    }
-
-    /**
-     * Создает сквозное цилиндрическое отверстие по оси Z (например, от пули).
-     */
-    public void applyThroughHole(float centerX, float centerY, float radius) {
-        float rSq = radius * radius;
-        for (int x = 0; x < WIDTH_X; x++) {
-            for (int y = 0; y < HEIGHT_Y; y++) {
-                float dx = (x + 0.5f) - centerX;
-                float dy = (y + 0.5f) - centerY;
-                if (dx * dx + dy * dy <= rSq) {
-                    for (int z = 0; z < DEPTH_Z; z++) {
-                        setSolid(x, y, z, false);
-                    }
-                }
-            }
-        }
-    }
-
-    /**
-     * Вырезает сферическую область повреждения (например, от взрыва или укуса).
-     */
-    public void applySphericalDamage(float centerX, float centerY, float centerZ, float radius) {
-        float rSq = radius * radius;
-        for (int x = 0; x < WIDTH_X; x++) {
-            for (int y = 0; y < HEIGHT_Y; y++) {
-                for (int z = 0; z < DEPTH_Z; z++) {
-                    float dx = (x + 0.5f) - centerX;
-                    float dy = (y + 0.5f) - centerY;
-                    float dz = (z + 0.5f) - centerZ;
-                    if (dx * dx + dy * dy + dz * dz <= rSq) {
-                        setSolid(x, y, z, false);
-                    }
-                }
-            }
-        }
     }
 
     /** Сериализует BitSet в массив long для передачи или сохранения NBT. */

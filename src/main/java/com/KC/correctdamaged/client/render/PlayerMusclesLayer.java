@@ -35,7 +35,8 @@ public class PlayerMusclesLayer extends RenderLayer<AbstractClientPlayer, Player
      * @param modelSet Набор запеченных запеченных 3D-моделей.
      * @param isSlim Флаг Slim-модели.
      */
-    public PlayerMusclesLayer(RenderLayerParent<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>> parent, EntityModelSet modelSet, boolean isSlim) {
+    public PlayerMusclesLayer(RenderLayerParent<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>> parent,
+                              EntityModelSet modelSet, boolean isSlim) {
         super(parent);
         ModelLayerLocation layerLoc = isSlim ? ClientEvents.PLAYER_MUSCLES_SLIM_LAYER : ClientEvents.PLAYER_MUSCLES_LAYER;
         this.musclesModel = new PlayerMusclesModel(modelSet.bakeLayer(layerLoc));
@@ -46,23 +47,32 @@ public class PlayerMusclesLayer extends RenderLayer<AbstractClientPlayer, Player
      * Зачем нужен: Синхронизирует позицию мышц с движениями туловища игрока и вызывает пофрагментный рендер.
      */
     @Override
-    public void render(PoseStack poseStack, MultiBufferSource buffer, int packedLight, AbstractClientPlayer player, float limbSwing, float limbSwingAmount, float partialTick, float ageInTicks, float netHeadYaw, float headPitch) {
+    public void render(PoseStack poseStack, MultiBufferSource buffer, int packedLight,
+                       AbstractClientPlayer player, float limbSwing, float limbSwingAmount,
+                       float partialTick, float ageInTicks, float netHeadYaw, float headPitch) {
         player.getCapability(LimbManager.LIMB_DATA_CAP).ifPresent(data -> {
             PlayerModel<AbstractClientPlayer> parentModel = getParentModel();
             musclesModel.setupAnim(player, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);
 
             // Рендер мышц рук
             renderArmMuscles(poseStack, buffer, packedLight, data.getRightArm(),
-                    musclesModel.rightArmShoulderMuscle, musclesModel.rightArmForearmMuscle, musclesModel.rightArmWristMuscle,
+                    musclesModel.rightArmShoulderMuscle, musclesModel.rightArmForearmMuscle,
+                    musclesModel.rightArmWristMuscle,
                     parentModel.rightArm, OFFSET_X);
 
             renderArmMuscles(poseStack, buffer, packedLight, data.getLeftArm(),
-                    musclesModel.leftArmShoulderMuscle, musclesModel.leftArmForearmMuscle, musclesModel.leftArmWristMuscle,
+                    musclesModel.leftArmShoulderMuscle, musclesModel.leftArmForearmMuscle,
+                    musclesModel.leftArmWristMuscle,
                     parentModel.leftArm, -OFFSET_X);
 
             // Рендер мышц ног
-            renderLegMuscles(poseStack, buffer, packedLight, data.getRightLeg(), musclesModel.rightThighMuscle, musclesModel.rightCalfMuscle, musclesModel.rightFootMuscle, parentModel.rightLeg);
-            renderLegMuscles(poseStack, buffer, packedLight, data.getLeftLeg(), musclesModel.leftThighMuscle, musclesModel.leftCalfMuscle, musclesModel.leftFootMuscle, parentModel.leftLeg);
+            renderLegMuscles(poseStack, buffer, packedLight, data.getRightLeg(),
+                    musclesModel.rightThighMuscle, musclesModel.rightCalfMuscle, musclesModel.rightFootMuscle,
+                    parentModel.rightLeg);
+
+            renderLegMuscles(poseStack, buffer, packedLight, data.getLeftLeg(),
+                    musclesModel.leftThighMuscle, musclesModel.leftCalfMuscle, musclesModel.leftFootMuscle,
+                    parentModel.leftLeg);
         });
     }
 
@@ -115,6 +125,7 @@ public class PlayerMusclesLayer extends RenderLayer<AbstractClientPlayer, Player
      */
     private void renderPart(PoseStack poseStack, MultiBufferSource buffer, int packedLight, ModelPart part) {
         VertexConsumer consumer = buffer.getBuffer(RenderType.entityCutoutNoCull(PlayerMusclesModel.MUSCLE));
-        part.render(poseStack, consumer, packedLight, OverlayTexture.NO_OVERLAY, 1.0f, 1.0f, 1.0f, 1.0f);
+        part.render(poseStack, consumer, packedLight, OverlayTexture.NO_OVERLAY,
+                1.0f, 1.0f, 1.0f, 1.0f);
     }
 }

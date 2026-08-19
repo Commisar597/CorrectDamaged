@@ -90,8 +90,6 @@ public class LimbManager {
         }
     }
 
-    // --- Правая рука ---
-
     public static boolean setRightArmShoulderSkin(Player player, int state) {
         return player.getCapability(LIMB_DATA_CAP).map(cap -> {
             cap.getRightArm().setShoulderSkin(state);
@@ -115,8 +113,6 @@ public class LimbManager {
             return true;
         }).orElse(false);
     }
-
-    // --- Левая рука ---
 
     public static boolean setLeftArmShoulderSkin(Player player, int state) {
         return player.getCapability(LIMB_DATA_CAP).map(cap -> {
@@ -142,8 +138,6 @@ public class LimbManager {
         }).orElse(false);
     }
 
-    // --- Правая нога ---
-
     public static boolean setRightLegThighSkin(Player player, int state) {
         return player.getCapability(LIMB_DATA_CAP).map(cap -> {
             cap.getRightLeg().setThighSkin(state);
@@ -168,8 +162,6 @@ public class LimbManager {
         }).orElse(false);
     }
 
-    // --- Левая нога ---
-
     public static boolean setLeftLegThighSkin(Player player, int state) {
         return player.getCapability(LIMB_DATA_CAP).map(cap -> {
             cap.getLeftLeg().setThighSkin(state);
@@ -193,8 +185,6 @@ public class LimbManager {
             return true;
         }).orElse(false);
     }
-
-    // --- Голова и туловище ---
 
     public static boolean setBodySkinMask(Player player, int state) {
         return player.getCapability(LIMB_DATA_CAP).map(cap -> {
@@ -236,8 +226,6 @@ public class LimbManager {
         }).orElse(false);
     }
 
-    // --- Кости конечностей ---
-
     public static boolean setBoneRightArm(Player player, int state) {
         return player.getCapability(LIMB_DATA_CAP).map(cap -> {
             cap.getRightArm().setBoneState(state);
@@ -278,8 +266,6 @@ public class LimbManager {
         }).orElse(false);
     }
 
-    // --- Обугленные кости ---
-
     public static boolean setBurntBoneRightArm(Player player, boolean burnt) {
         return player.getCapability(LIMB_DATA_CAP).map(cap -> {
             cap.getRightArm().setBurntBone(burnt);
@@ -311,8 +297,6 @@ public class LimbManager {
             return true;
         }).orElse(false);
     }
-
-    // --- Мышцы конечностей и тела ---
 
     public static boolean setMuscleBody(Player player, int state) {
         return player.getCapability(LIMB_DATA_CAP).map(cap -> {

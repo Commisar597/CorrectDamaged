@@ -74,27 +74,33 @@ public final class FreeUVCubeRenderer {
 
         // Передняя грань (Front)
         if (uv.front() != null) {
-            quad(pose, consumer, a, b, c, d, uv.front(), texWidth, texHeight, packedLight, packedOverlay, red, green, blue, alpha, 0, 0, -1);
+            quad(pose, consumer, a, b, c, d, uv.front(), texWidth, texHeight, packedLight,
+                    packedOverlay, red, green, blue, alpha, 0, 0, -1);
         }
         // Задняя грань (Back)
         if (uv.back() != null) {
-            quad(pose, consumer, f, e, h, g, uv.back(), texWidth, texHeight, packedLight, packedOverlay, red, green, blue, alpha, 0, 0, 1);
+            quad(pose, consumer, f, e, h, g, uv.back(), texWidth, texHeight, packedLight,
+                    packedOverlay, red, green, blue, alpha, 0, 0, 1);
         }
         // Левая грань (Left)
         if (uv.left() != null) {
-            quad(pose, consumer, e, a, d, h, uv.left(), texWidth, texHeight, packedLight, packedOverlay, red, green, blue, alpha, -1, 0, 0);
+            quad(pose, consumer, e, a, d, h, uv.left(), texWidth, texHeight, packedLight,
+                    packedOverlay, red, green, blue, alpha, -1, 0, 0);
         }
         // Правая грань (Right)
         if (uv.right() != null) {
-            quad(pose, consumer, b, f, g, c, uv.right(), texWidth, texHeight, packedLight, packedOverlay, red, green, blue, alpha, 1, 0, 0);
+            quad(pose, consumer, b, f, g, c, uv.right(), texWidth, texHeight, packedLight,
+                    packedOverlay, red, green, blue, alpha, 1, 0, 0);
         }
         // Верхняя грань (Top)
         if (uv.top() != null) {
-            quad(pose, consumer, e, f, b, a, uv.top(), texWidth, texHeight, packedLight, packedOverlay, red, green, blue, alpha, 0, -1, 0);
+            quad(pose, consumer, e, f, b, a, uv.top(), texWidth, texHeight, packedLight,
+                    packedOverlay, red, green, blue, alpha, 0, -1, 0);
         }
         // Нижняя грань (Bottom)
         if (uv.bottom() != null) {
-            quad(pose, consumer, d, c, g, h, uv.bottom(), texWidth, texHeight, packedLight, packedOverlay, red, green, blue, alpha, 0, 1, 0);
+            quad(pose, consumer, d, c, g, h, uv.bottom(), texWidth, texHeight, packedLight,
+                    packedOverlay, red, green, blue, alpha, 0, 1, 0);
         }
     }
 
