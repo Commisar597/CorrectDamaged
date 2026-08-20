@@ -7,7 +7,6 @@ import com.KC.correctdamaged.client.render.customRender.FreeUVCubeRenderer;
 import com.KC.correctdamaged.client.render.customRender.FreeUVCubeRenderer.FaceUV;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.OverlayTexture;
@@ -25,15 +24,10 @@ public class VoxelMusclesRenderer {
             PoseStack poseStack,
             MultiBufferSource buffer,
             int packedLight,
-            AbstractClientPlayer player,
             BodyVoxelMatrix muscleMatrix,
             BodyVoxelMatrix bodyMatrix
     ) {
         if (muscleMatrix == null || bodyMatrix == null) return;
-
-        if (!isValidInnerGridRatio(muscleMatrix, bodyMatrix)) {
-            return;
-        }
 
         VertexConsumer skinConsumer = buffer.getBuffer(RenderType.entityCutoutNoCull(MUSCLE));
 
@@ -51,8 +45,6 @@ public class VoxelMusclesRenderer {
                     int bx = x + 1;
                     int by = y + 1;
                     int bz = z + 1;
-
-                    if (!bodyMatrix.isSolidSafe(bx, by, bz)) continue;
 
                     float x0 = bx - 4.0f - smoller;
                     float x1 = x0 + 1.0f + (smoller * 2);
@@ -73,12 +65,6 @@ public class VoxelMusclesRenderer {
                 }
             }
         }
-    }
-
-    private static boolean isValidInnerGridRatio(BodyVoxelMatrix muscle, BodyVoxelMatrix body) {
-        return body.getWidthX() == muscle.getWidthX() + 2
-                && body.getHeightY() == muscle.getHeightY() + 2
-                && body.getDepthZ() == muscle.getDepthZ() + 2;
     }
 
     private static CubeUV buildMuscleUV(int x, int y, int z, BodyVoxelMatrix matrix) {

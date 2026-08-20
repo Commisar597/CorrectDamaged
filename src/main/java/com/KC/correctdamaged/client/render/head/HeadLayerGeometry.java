@@ -14,9 +14,9 @@ public class HeadLayerGeometry {
     }
 
     public static float getMuscleRadius(HeadData data) {
-        if (data.getSkinMask() == 0) {
-            return 4.0F;
-        }
+//        if (data.getSkinMask() == 0) {
+//            return 4.0F;
+//        }
         return 3.875F;
     }
 
@@ -26,12 +26,12 @@ public class HeadLayerGeometry {
     }
 
     public static float getSkullRadius(HeadData data) {
-        if (data.getSkinMask() == 0 && data.getMuscleMask() == 0) {
-            return 4.0F;
-        }
-        if (data.getSkinMask() == 0) {
-            return 3.875F;
-        }
+//        if (data.getSkinMask() == 0 && data.getMuscleMask() == 0) {
+//            return 4.0F;
+//        }
+//        if (data.getSkinMask() == 0) {
+//            return 3.875F;
+//        }
         return 3.5F;
     }
 

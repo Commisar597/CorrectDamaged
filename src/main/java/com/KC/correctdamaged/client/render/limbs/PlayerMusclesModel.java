@@ -16,6 +16,8 @@ public class PlayerMusclesModel extends PlayerModel<AbstractClientPlayer> {
     public static final ResourceLocation MUSCLE = new ResourceLocation(CorrectDamaged.MODID,
             "textures/entity/muscles_texture.png");
 
+    private static final CubeDeformation MUSCLE_DEF = new CubeDeformation(-0.01F);
+
     public final ModelPart rightFootMuscle;
     public final ModelPart rightCalfMuscle;
     public final ModelPart rightThighMuscle;
@@ -67,32 +69,32 @@ public class PlayerMusclesModel extends PlayerModel<AbstractClientPlayer> {
         PartDefinition leftArm = root.getChild("left_arm");
 
         rightLeg.addOrReplaceChild("rightThighMuscle",
-                CubeListBuilder.create().texOffs(0, 7).addBox(-1.5F, 0.0F, -1.5F, 3.0F, 6.0F, 3.0F), PartPose.ZERO);
+                CubeListBuilder.create().texOffs(0, 7).addBox(-1.5F, 0.0F, -1.5F, 3.0F, 6.0F, 3.0F, MUSCLE_DEF), PartPose.ZERO);
         rightLeg.addOrReplaceChild("rightCalfMuscle",
-                CubeListBuilder.create().texOffs(0, 0).addBox(-1.5F, 6.0F, -1.5F, 3.0F, 4.0F, 3.0F), PartPose.ZERO);
+                CubeListBuilder.create().texOffs(0, 0).addBox(-1.5F, 6.0F, -1.5F, 3.0F, 4.0F, 3.0F, MUSCLE_DEF), PartPose.ZERO);
         rightLeg.addOrReplaceChild("rightFootMuscle",
-                CubeListBuilder.create().texOffs(0, 16).addBox(-1.5F, 10.0F, -1.5F, 3.0F, 2.0F, 3.0F), PartPose.ZERO);
+                CubeListBuilder.create().texOffs(0, 16).addBox(-1.5F, 10.0F, -1.5F, 3.0F, 2.0F, 3.0F, MUSCLE_DEF), PartPose.ZERO);
 
         leftLeg.addOrReplaceChild("leftThighMuscle",
-                CubeListBuilder.create().texOffs(0, 7).addBox(-1.5F, 0.0F, -1.5F, 3.0F, 6.0F, 3.0F), PartPose.ZERO);
+                CubeListBuilder.create().texOffs(0, 7).addBox(-1.5F, 0.0F, -1.5F, 3.0F, 6.0F, 3.0F, MUSCLE_DEF), PartPose.ZERO);
         leftLeg.addOrReplaceChild("leftCalfMuscle",
-                CubeListBuilder.create().texOffs(0, 0).addBox(-1.5F, 6.0F, -1.5F, 3.0F, 4.0F, 3.0F), PartPose.ZERO);
+                CubeListBuilder.create().texOffs(0, 0).addBox(-1.5F, 6.0F, -1.5F, 3.0F, 4.0F, 3.0F, MUSCLE_DEF), PartPose.ZERO);
         leftLeg.addOrReplaceChild("leftFootMuscle",
-                CubeListBuilder.create().texOffs(0, 16).addBox(-1.5F, 10.0F, -1.5F, 3.0F, 2.0F, 3.0F), PartPose.ZERO);
+                CubeListBuilder.create().texOffs(0, 16).addBox(-1.5F, 10.0F, -1.5F, 3.0F, 2.0F, 3.0F, MUSCLE_DEF), PartPose.ZERO);
 
         rightArm.addOrReplaceChild("rightArmShoulderMuscle",
-                CubeListBuilder.create().texOffs(0, 7).addBox(-1.5F, -2.0F, -1.5F, 3.0F, 6.0F, 3.0F), PartPose.offset(-0.3F, 0.0F, 0.0F));
+                CubeListBuilder.create().texOffs(0, 7).addBox(-1.5F, -2.0F, -1.5F, 3.0F, 6.0F, 3.0F, MUSCLE_DEF), PartPose.offset(-0.3F, 0.0F, 0.0F));
         rightArm.addOrReplaceChild("rightArmForearmMuscle",
-                CubeListBuilder.create().texOffs(0, 0).addBox(-1.5F, 4.0F, -1.5F, 3.0F, 4.0F, 3.0F), PartPose.offset(-0.3F, 0.0F, 0.0F));
+                CubeListBuilder.create().texOffs(0, 0).addBox(-1.5F, 4.0F, -1.5F, 3.0F, 4.0F, 3.0F, MUSCLE_DEF), PartPose.offset(-0.3F, 0.0F, 0.0F));
         rightArm.addOrReplaceChild("rightArmWristMuscle",
-                CubeListBuilder.create().texOffs(0, 16).addBox(-1.5F, 8.0F, -1.5F, 3.0F, 2.0F, 3.0F), PartPose.offset(-0.3F, 0.0F, 0.0F));
+                CubeListBuilder.create().texOffs(0, 16).addBox(-1.5F, 8.0F, -1.5F, 3.0F, 2.0F, 3.0F, MUSCLE_DEF), PartPose.offset(-0.3F, 0.0F, 0.0F));
 
         leftArm.addOrReplaceChild("leftArmShoulderMuscle",
-                CubeListBuilder.create().texOffs(0, 7).mirror().addBox(-1.5F, -2.0F, -1.5F, 3.0F, 6.0F, 3.0F), PartPose.offset(0.3F, 0.0F, 0.0F));
+                CubeListBuilder.create().texOffs(0, 7).mirror().addBox(-1.5F, -2.0F, -1.5F, 3.0F, 6.0F, 3.0F, MUSCLE_DEF), PartPose.offset(0.3F, 0.0F, 0.0F));
         leftArm.addOrReplaceChild("leftArmForearmMuscle",
-                CubeListBuilder.create().texOffs(0, 0).mirror().addBox(-1.5F, 4.0F, -1.5F, 3.0F, 4.0F, 3.0F), PartPose.offset(0.3F, 0.0F, 0.0F));
+                CubeListBuilder.create().texOffs(0, 0).mirror().addBox(-1.5F, 4.0F, -1.5F, 3.0F, 4.0F, 3.0F, MUSCLE_DEF), PartPose.offset(0.3F, 0.0F, 0.0F));
         leftArm.addOrReplaceChild("leftArmWristMuscle",
-                CubeListBuilder.create().texOffs(0, 16).mirror().addBox(-1.5F, 8.0F, -1.5F, 3.0F, 2.0F, 3.0F), PartPose.offset(0.3F, 0.0F, 0.0F));
+                CubeListBuilder.create().texOffs(0, 16).mirror().addBox(-1.5F, 8.0F, -1.5F, 3.0F, 2.0F, 3.0F, MUSCLE_DEF), PartPose.offset(0.3F, 0.0F, 0.0F));
 
         return LayerDefinition.create(meshdefinition, 64, 64);
     }

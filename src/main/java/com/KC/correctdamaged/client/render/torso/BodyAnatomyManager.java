@@ -22,10 +22,6 @@ public class BodyAnatomyManager {
         LimbManager.get(player).ifPresent(limbData -> {
             BodyData bodyData = limbData.getBody();
 
-            if (bodyData.isBodyIntact() && bodyData.getShowSkeleton() == 0 && bodyData.getMusclesMask() == 0) {
-                return;
-            }
-
             poseStack.pushPose();
             parentModel.body.translateAndRotate(poseStack);
 
@@ -38,18 +34,23 @@ public class BodyAnatomyManager {
             BodyVoxelMatrix bodyMatrix = bodyData.getBodyVoxelMatrix();
 
             int muscleMask = bodyData.getMusclesMask();
-            if (muscleMask > 0) {
-                BodyVoxelMatrix muscleMatrix = bodyData.getMuscleVoxelMatrix();
-                if (muscleMatrix != null) {
-                    VoxelMusclesRenderer.renderVoxelMuscles(
-                            poseStack,
-                            buffer,
-                            packedLight,
-                            player,
-                            muscleMatrix,
-                            bodyMatrix
-                    );
+
+            switch (muscleMask) {
+                case 1 -> { bodyModel.renderMuscles(poseStack, buffer, packedLight);}
+                case 2 -> {
+                    BodyVoxelMatrix muscleMatrix = bodyData.getMuscleVoxelMatrix();
+
+                    if (muscleMatrix != null) {
+                        VoxelMusclesRenderer.renderVoxelMuscles(
+                                poseStack,
+                                buffer,
+                                packedLight,
+                                muscleMatrix,
+                                bodyMatrix
+                        );
+                    }
                 }
+                default -> { }
             }
 
             BodyVoxelMatrix matrix = bodyData.getBodyVoxelMatrix();

@@ -23,6 +23,8 @@ public class BodyModel extends PlayerModel<AbstractClientPlayer> {
             "textures/entity/bone_texture.png");
     public static final ResourceLocation BURNT_BONE = new ResourceLocation(CorrectDamaged.MODID,
             "textures/entity/burnt_bone_texture.png");
+    public static final ResourceLocation MUSCLE = new ResourceLocation(CorrectDamaged.MODID,
+            "textures/entity/muscles_texture.png");
 
     public final ModelPart skeleton;
     public final ModelPart bodyMuscle;
@@ -70,5 +72,10 @@ public class BodyModel extends PlayerModel<AbstractClientPlayer> {
         VertexConsumer consumer = buffer.getBuffer(RenderType.entityCutoutNoCull(tex));
         this.skeleton.render(poseStack, consumer, packedLight, OverlayTexture.NO_OVERLAY, 1.0F,
                 1.0F, 1.0F, 1.0F);
+    }
+
+    public void renderMuscles(PoseStack poseStack, MultiBufferSource buffer, int packedLight) {
+        VertexConsumer consumer = buffer.getBuffer(RenderType.entityCutoutNoCull(MUSCLE));
+        this.bodyMuscle.render(poseStack, consumer, packedLight, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
     }
 }

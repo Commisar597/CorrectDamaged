@@ -1,7 +1,6 @@
 package com.KC.correctdamaged.client.render.torso;
 
 import com.KC.correctdamaged.capability.LimbManager;
-import com.KC.correctdamaged.capability.visual.BodyData;
 import com.KC.correctdamaged.capability.visual.BodyVoxelMatrix;
 import com.KC.correctdamaged.client.render.customRender.CubeUV;
 import com.KC.correctdamaged.client.render.customRender.FreeUVCubeRenderer;

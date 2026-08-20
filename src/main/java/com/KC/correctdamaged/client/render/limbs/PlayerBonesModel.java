@@ -18,6 +18,8 @@ public class PlayerBonesModel extends PlayerModel<AbstractClientPlayer> {
     public static final ResourceLocation BURNT_BONE = new ResourceLocation(CorrectDamaged.MODID,
             "textures/entity/burnt_bone_texture.png");
 
+    private static final CubeDeformation BONE_DEF = new CubeDeformation(-0.02F);
+
     public final ModelPart rightFootBone;
     public final ModelPart rightCalfBone;
     public final ModelPart rightThighBone;
@@ -68,34 +70,33 @@ public class PlayerBonesModel extends PlayerModel<AbstractClientPlayer> {
         PartDefinition rightArm = root.getChild("right_arm");
         PartDefinition leftArm = root.getChild("left_arm");
 
-        // Кости ног (размер 2x2 пикселя)
         rightLeg.addOrReplaceChild("rightThighBone",
-                CubeListBuilder.create().texOffs(0, 6).addBox(-1.0F, 0.0F, -1.0F, 2.0F, 6.0F, 2.0F), PartPose.ZERO);
+                CubeListBuilder.create().texOffs(0, 6).addBox(-1.0F, 0.0F, -1.0F, 2.0F, 6.0F, 2.0F, BONE_DEF), PartPose.ZERO);
         rightLeg.addOrReplaceChild("rightCalfBone",
-                CubeListBuilder.create().texOffs(0, 0).addBox(-1.0F, 6.0F, -1.0F, 2.0F, 4.0F, 2.0F), PartPose.ZERO);
+                CubeListBuilder.create().texOffs(0, 0).addBox(-1.0F, 6.0F, -1.0F, 2.0F, 4.0F, 2.0F, BONE_DEF), PartPose.ZERO);
         rightLeg.addOrReplaceChild("rightFootBone",
-                CubeListBuilder.create().texOffs(0, 14).addBox(-1.0F, 10.0F, -1.0F, 2.0F, 2.0F, 2.0F), PartPose.ZERO);
+                CubeListBuilder.create().texOffs(0, 14).addBox(-1.0F, 10.0F, -1.0F, 2.0F, 2.0F, 2.0F, BONE_DEF), PartPose.ZERO);
 
         leftLeg.addOrReplaceChild("leftThighBone",
-                CubeListBuilder.create().texOffs(0, 6).addBox(-1.0F, 0.0F, -1.0F, 2.0F, 6.0F, 2.0F), PartPose.ZERO);
+                CubeListBuilder.create().texOffs(0, 6).addBox(-1.0F, 0.0F, -1.0F, 2.0F, 6.0F, 2.0F, BONE_DEF), PartPose.ZERO);
         leftLeg.addOrReplaceChild("leftCalfBone",
-                CubeListBuilder.create().texOffs(0, 0).addBox(-1.0F, 6.0F, -1.0F, 2.0F, 4.0F, 2.0F), PartPose.ZERO);
+                CubeListBuilder.create().texOffs(0, 0).addBox(-1.0F, 6.0F, -1.0F, 2.0F, 4.0F, 2.0F, BONE_DEF), PartPose.ZERO);
         leftLeg.addOrReplaceChild("leftFootBone",
-                CubeListBuilder.create().texOffs(0, 14).addBox(-1.0F, 10.0F, -1.0F, 2.0F, 2.0F, 2.0F), PartPose.ZERO);
+                CubeListBuilder.create().texOffs(0, 14).addBox(-1.0F, 10.0F, -1.0F, 2.0F, 2.0F, 2.0F, BONE_DEF), PartPose.ZERO);
 
         rightArm.addOrReplaceChild("rightArmShoulderBone",
-                CubeListBuilder.create().texOffs(0, 6).addBox(-1.0F, -2.0F, -1.0F, 2.0F, 6.0F, 2.0F), PartPose.offset(-0.1F, 0.0F, 0.0F));
+                CubeListBuilder.create().texOffs(0, 6).addBox(-1.0F, -2.0F, -1.0F, 2.0F, 6.0F, 2.0F, BONE_DEF), PartPose.offset(-0.1F, 0.0F, 0.0F));
         rightArm.addOrReplaceChild("rightArmForearmBone",
-                CubeListBuilder.create().texOffs(0, 0).addBox(-1.0F, 4.0F, -1.0F, 2.0F, 4.0F, 2.0F), PartPose.offset(-0.1F, 0.0F, 0.0F));
+                CubeListBuilder.create().texOffs(0, 0).addBox(-1.0F, 4.0F, -1.0F, 2.0F, 4.0F, 2.0F, BONE_DEF), PartPose.offset(-0.1F, 0.0F, 0.0F));
         rightArm.addOrReplaceChild("rightArmWristBone",
-                CubeListBuilder.create().texOffs(0, 14).addBox(-1.0F, 8.0F, -1.0F, 2.0F, 2.0F, 2.0F), PartPose.offset(-0.1F, 0.0F, 0.0F));
+                CubeListBuilder.create().texOffs(0, 14).addBox(-1.0F, 8.0F, -1.0F, 2.0F, 2.0F, 2.0F, BONE_DEF), PartPose.offset(-0.1F, 0.0F, 0.0F));
 
         leftArm.addOrReplaceChild("leftArmShoulderBone",
-                CubeListBuilder.create().texOffs(0, 6).mirror().addBox(-1.0F, -2.0F, -1.0F, 2.0F, 6.0F, 2.0F), PartPose.offset(0.1F, 0.0F, 0.0F));
+                CubeListBuilder.create().texOffs(0, 6).mirror().addBox(-1.0F, -2.0F, -1.0F, 2.0F, 6.0F, 2.0F, BONE_DEF), PartPose.offset(0.1F, 0.0F, 0.0F));
         leftArm.addOrReplaceChild("leftArmForearmBone",
-                CubeListBuilder.create().texOffs(0, 0).mirror().addBox(-1.0F, 4.0F, -1.0F, 2.0F, 4.0F, 2.0F), PartPose.offset(0.1F, 0.0F, 0.0F));
+                CubeListBuilder.create().texOffs(0, 0).mirror().addBox(-1.0F, 4.0F, -1.0F, 2.0F, 4.0F, 2.0F, BONE_DEF), PartPose.offset(0.1F, 0.0F, 0.0F));
         leftArm.addOrReplaceChild("leftArmWristBone",
-                CubeListBuilder.create().texOffs(0, 14).mirror().addBox(-1.0F, 8.0F, -1.0F, 2.0F, 2.0F, 2.0F), PartPose.offset(0.1F, 0.0F, 0.0F));
+                CubeListBuilder.create().texOffs(0, 14).mirror().addBox(-1.0F, 8.0F, -1.0F, 2.0F, 2.0F, 2.0F, BONE_DEF), PartPose.offset(0.1F, 0.0F, 0.0F));
 
         return LayerDefinition.create(meshdefinition, 64, 64);
     }
