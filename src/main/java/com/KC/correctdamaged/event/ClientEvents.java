@@ -75,20 +75,12 @@ public class ClientEvents {
             PlayerRenderer renderer = event.getSkin(skinName);
             if (renderer != null) {
                 boolean isSlim = "slim".equals(skinName);
-
-                // Добавление анатомических слоев тела
                 renderer.addLayer(new PlayerBonesLayer(renderer, event.getEntityModels(), isSlim));
                 renderer.addLayer(new PlayerMusclesLayer(renderer, event.getEntityModels(), isSlim));
                 renderer.addLayer(new StumpLayer(renderer));
                 renderer.addLayer(new BodyAnatomyLayer(renderer, event.getEntityModels()));
                 renderer.addLayer(new LimbDamageLayer(renderer));
-
-                // Добавление кастомных слоев головы
-                renderer.addLayer(new OctalHeadSkullLayer(renderer));
-                renderer.addLayer(new OctalHeadMusclesLayer(renderer));
-                renderer.addLayer(new OctalHeadStumpLayer(renderer));
-                renderer.addLayer(new OctalHeadDamageLayer(renderer));
-                renderer.addLayer(new OctalHatDamageLayer(renderer));
+                renderer.addLayer(new HeadAnatomyLayer(renderer));
             }
         }
     }

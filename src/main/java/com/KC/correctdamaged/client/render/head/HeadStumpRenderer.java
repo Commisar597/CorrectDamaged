@@ -1,26 +1,17 @@
 package com.KC.correctdamaged.client.render.head;
 
 import com.KC.correctdamaged.capability.visual.HeadData;
-import com.KC.correctdamaged.capability.LimbManager;
 import com.KC.correctdamaged.client.render.customRender.CubeUV;
 import com.KC.correctdamaged.client.render.customRender.FreeUVCubeRenderer;
 import com.KC.correctdamaged.client.render.octantRender.OctreeMeshSplitter;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import net.minecraft.client.model.PlayerModel;
-import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.entity.RenderLayerParent;
-import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 
-/**
- * Слой рендеринга внутренних срезов (пеньков/ран) головы.
- * Зачем нужен: Рисует внутреннюю текстуру мяса/черепа на границе отрубленных или разрушенных октантов головы.
- */
-public class OctalHeadStumpLayer extends RenderLayer<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>> {
+public class HeadStumpRenderer {
 
     private static final ResourceLocation NORMAL_STUMP = new ResourceLocation("correct_damaged",
             "textures/entity/head_stump_8x8.png");
@@ -31,59 +22,47 @@ public class OctalHeadStumpLayer extends RenderLayer<AbstractClientPlayer, Playe
     private static final ResourceLocation BURNT_SCULL_STUMP = new ResourceLocation("correct_damaged",
             "textures/entity/head_stump_8x8_burnt_bone_scull.png");
 
-    public OctalHeadStumpLayer(RenderLayerParent<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>> parent) {
-        super(parent);
-    }
+    public static void render(PoseStack poseStack, MultiBufferSource buffer, int packedLight, HeadData headData) {
+        byte skinMask = headData.getSkinMask();
+        byte muscleMask = headData.getMuscleMask();
 
-    @Override
-    public void render(
-            PoseStack poseStack, MultiBufferSource buffer, int packedLight,
-            AbstractClientPlayer player, float limbSwing, float limbSwingAmount,
-            float partialTicks, float ageInTicks, float netHeadYaw, float headPitch
-    ) {
-        LimbManager.get(player).ifPresent(limbData -> {
-            HeadData headData = limbData.getHead();
-            byte skinMask = headData.getSkinMask();
-            byte muscleMask = headData.getMuscleMask();
+        if ((skinMask & 0xFF) == 0xFF) {
+            return;
+        }
 
-            if ((skinMask & 0xFF) == 0xFF) {
-                return;
-            }
+        PoseStack.Pose pose = poseStack.last();
 
-            poseStack.pushPose();
-            getParentModel().head.translateAndRotate(poseStack);
+        ResourceLocation stumpTex;
 
-            PoseStack.Pose pose = poseStack.last();
+        boolean hasNoSkin = (skinMask == 0);
+        boolean hasNoMuscle = (muscleMask == 0);
+        boolean isSkullOnly = hasNoSkin && hasNoMuscle;
 
-            ResourceLocation stumpTex;
-            boolean isSkullOnly = (skinMask == 0 && muscleMask == 0);
-            boolean isMuscleOnly = (skinMask == 0 && (muscleMask & 0xFF) != 0);
-
-            if (isSkullOnly) {
-                stumpTex = headData.isBurntSkull() ? BURNT_SCULL_STUMP : SCULL_STUMP;
-            } else if (isMuscleOnly) {
-                stumpTex = (skinMask == 2) ? BURNT_STUMP : NORMAL_STUMP;
+        if (isSkullOnly) {
+            if (headData.isBurntSkull()) {
+                stumpTex = BURNT_SCULL_STUMP;
             } else {
-                stumpTex = (skinMask == 2) ? BURNT_STUMP : NORMAL_STUMP;
+                stumpTex = SCULL_STUMP;
             }
-
-            VertexConsumer stumpConsumer = buffer.getBuffer(RenderType.entityCutoutNoCull(stumpTex));
-
-            byte activeMask = skinMask;
-            if (skinMask == 0) {
-                activeMask = (muscleMask == 0) ? headData.getSkullMask() : muscleMask;
+        } else {
+            if (headData.isBurntSkull()) {
+                stumpTex = BURNT_STUMP;
+            } else {
+                stumpTex = NORMAL_STUMP;
             }
+        }
 
-            renderStumpOctants(pose, stumpConsumer, activeMask, headData, packedLight);
+        VertexConsumer stumpConsumer = buffer.getBuffer(RenderType.entityCutoutNoCull(stumpTex));
 
-            poseStack.popPose();
-        });
+        byte activeMask = skinMask;
+        if (skinMask == 0) {
+            activeMask = (muscleMask == 0) ? headData.getSkullMask() : muscleMask;
+        }
+
+        renderStumpOctants(pose, stumpConsumer, activeMask, headData, packedLight);
     }
 
-    /**
-     * Перебирает октанты активного слоя и рендерит внутренние спилы/срезы для отсутствующих соседей.
-     */
-    private void renderStumpOctants(
+    private static void renderStumpOctants(
             PoseStack.Pose pose, VertexConsumer consumer,
             byte activeMask, HeadData headData, int packedLight
     ) {
@@ -126,10 +105,7 @@ public class OctalHeadStumpLayer extends RenderLayer<AbstractClientPlayer, Playe
         }
     }
 
-    /**
-     * Высчитывает UV внутренних граней среза (stump) для октанта на основе отсутствия соседних октантов.
-     */
-    private CubeUV getStumpUV(byte headMask, int octantIndex, float[] b) {
+    private static CubeUV getStumpUV(byte headMask, int octantIndex, float[] b) {
         float minX = b[0], minY = b[1], minZ = b[2];
         float maxX = b[3], maxY = b[4], maxZ = b[5];
 
