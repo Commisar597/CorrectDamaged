@@ -32,7 +32,7 @@ public class HeadLayerGeometry {
 //        if (data.getSkinMask() == 0) {
 //            return 3.875F;
 //        }
-        return 3.5F;
+        return 3.79F;
     }
 
     public static float[] getSkullYBounds(HeadData data) {
