@@ -1,7 +1,7 @@
 package com.KC.correctdamaged.client.render.head;
 
 import com.KC.correctdamaged.capability.visual.HeadData;
-import com.KC.correctdamaged.client.render.PlayerMusclesModel;
+import com.KC.correctdamaged.client.render.limbs.PlayerMusclesModel;
 import com.KC.correctdamaged.client.render.customRender.CubeUV;
 import com.KC.correctdamaged.client.render.customRender.FreeUVCubeRenderer;
 import com.KC.correctdamaged.client.render.octantRender.OctantRenderHelper;

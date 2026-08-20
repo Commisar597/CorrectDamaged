@@ -1,4 +1,4 @@
-package com.KC.correctdamaged.client.render;
+package com.KC.correctdamaged.client.render.limbs;
 
 import com.KC.correctdamaged.capability.visual.ArmData;
 import com.KC.correctdamaged.capability.visual.LegData;
@@ -13,32 +13,23 @@ import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.entity.RenderLayerParent;
-import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 
-/**
- * Слой рендеринга костей игрока.
- * Зачем нужен: Выполняет рендеринг глубокого скелетного слоя при травмах или сгорании кожи/мышц.
- * Поддерживает динамическое переключение между нормальной костью и обгоревшей (isBurntBone).
- */
-public class PlayerBonesLayer extends RenderLayer<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>> {
+public class PlayerBonesRenderer {
     private final PlayerBonesModel bonesModel;
 
-    public PlayerBonesLayer(RenderLayerParent<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>> parent,
-                            EntityModelSet modelSet, boolean isSlim) {
-        super(parent);
+    public PlayerBonesRenderer(EntityModelSet modelSet, boolean isSlim) {
         ModelLayerLocation layerLoc = isSlim ? ClientEvents.PLAYER_BONES_SLIM_LAYER : ClientEvents.PLAYER_BONES_LAYER;
         this.bonesModel = new PlayerBonesModel(modelSet.bakeLayer(layerLoc));
     }
 
-    @Override
     public void render(PoseStack poseStack, MultiBufferSource buffer, int packedLight,
                        AbstractClientPlayer player, float limbSwing, float limbSwingAmount,
-                       float partialTick, float ageInTicks, float netHeadYaw, float headPitch) {
+                       float ageInTicks, float netHeadYaw, float headPitch,
+                       PlayerModel<AbstractClientPlayer> parentModel) {
         player.getCapability(LimbManager.LIMB_DATA_CAP).ifPresent(data -> {
-            PlayerModel<AbstractClientPlayer> parentModel = getParentModel();
+
             bonesModel.setupAnim(player, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);
 
             renderArmBones(poseStack, buffer, packedLight, data.getRightArm(), bonesModel.rightArmShoulderBone,
@@ -55,9 +46,6 @@ public class PlayerBonesLayer extends RenderLayer<AbstractClientPlayer, PlayerMo
         });
     }
 
-    /**
-     * Отрисовывает кости руки, проверяя флаг обугленности для выбора нужного файла текстуры.
-     */
     private void renderArmBones(
             PoseStack poseStack, MultiBufferSource buffer, int packedLight, ArmData arm,
             ModelPart shoulderPart, ModelPart forearmPart, ModelPart wristPart, ModelPart parentPart
@@ -77,9 +65,6 @@ public class PlayerBonesLayer extends RenderLayer<AbstractClientPlayer, PlayerMo
         poseStack.popPose();
     }
 
-    /**
-     * Отрисовывает кости ноги, проверяя состояние флага isBurntBone.
-     */
     private void renderLegBones(
             PoseStack poseStack, MultiBufferSource buffer, int packedLight, LegData leg,
             ModelPart thighPart, ModelPart calfPart, ModelPart footPart, ModelPart parentPart

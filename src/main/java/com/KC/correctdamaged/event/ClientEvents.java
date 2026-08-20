@@ -1,8 +1,8 @@
 package com.KC.correctdamaged.event;
 
 import com.KC.correctdamaged.CorrectDamaged;
-import com.KC.correctdamaged.client.render.*;
 import com.KC.correctdamaged.client.render.head.*;
+import com.KC.correctdamaged.client.render.limbs.*;
 import com.KC.correctdamaged.client.render.torso.BodyAnatomyLayer;
 import com.KC.correctdamaged.client.render.torso.BodyModel;
 import net.minecraft.client.model.geom.ModelLayerLocation;
@@ -29,13 +29,6 @@ public class ClientEvents {
     public static final ModelLayerLocation BODY_LAYER = new ModelLayerLocation(
             new ResourceLocation(CorrectDamaged.MODID, "body"), "main");
 
-    /**
-     * Регистрация LayerDefinition для клиентских моделей (Forge bus event).
-     * Зачем нужен: Объявляет геометрическую структуру кастомных моделей (костей, мышц, туловища)
-     * для обычных и "slim" (Alex) скинов.
-     *
-     * @param event Событие регистрации геометрии слоев рендера.
-     */
     @SubscribeEvent
     public static void onRegisterLayerDefinitions(EntityRenderersEvent.RegisterLayerDefinitions event) {
         event.registerLayerDefinition(
@@ -62,24 +55,13 @@ public class ClientEvents {
         );
     }
 
-    /**
-     * Добавление дополнительних слоев рендера (RenderLayers) к модели игрока.
-     * Зачем нужен: Накладывает кастомные видимые слои (кости, мышцы, обрубки, ранения) поверх или вместо
-     * стандартного скина Minecraft для каждого типа скина (default/slim).
-     *
-     * @param event Событие добавления слоев к сущностям.
-     */
     @SubscribeEvent
     public static void onAddLayers(EntityRenderersEvent.AddLayers event) {
         for (String skinName : event.getSkins()) {
             PlayerRenderer renderer = event.getSkin(skinName);
             if (renderer != null) {
-                boolean isSlim = "slim".equals(skinName);
-                renderer.addLayer(new PlayerBonesLayer(renderer, event.getEntityModels(), isSlim));
-                renderer.addLayer(new PlayerMusclesLayer(renderer, event.getEntityModels(), isSlim));
-                renderer.addLayer(new StumpLayer(renderer));
+                renderer.addLayer(new LimbAnatomyLayer(renderer, event.getEntityModels()));
                 renderer.addLayer(new BodyAnatomyLayer(renderer, event.getEntityModels()));
-                renderer.addLayer(new LimbDamageLayer(renderer));
                 renderer.addLayer(new HeadAnatomyLayer(renderer));
             }
         }

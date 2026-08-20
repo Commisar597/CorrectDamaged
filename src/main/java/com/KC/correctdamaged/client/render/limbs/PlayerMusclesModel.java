@@ -1,4 +1,4 @@
-package com.KC.correctdamaged.client.render;
+package com.KC.correctdamaged.client.render.limbs;
 
 import com.KC.correctdamaged.CorrectDamaged;
 import net.minecraft.client.model.PlayerModel;
@@ -12,13 +12,7 @@ import net.minecraft.client.model.geom.builders.PartDefinition;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.resources.ResourceLocation;
 
-/**
- * 3D-модель мышечного слоя игрока (руки и ноги).
- * Зачем нужен: Определяет геометрию кубов (кубоидов) мышц для бедер, голеней, стоп, плеч, предплечий и кистей,
- * подгоняя их под анатомическое строение и размеры игрока (включая поддержку Slim-модели Alex).
- */
 public class PlayerMusclesModel extends PlayerModel<AbstractClientPlayer> {
-    /** Путь к файла текстуры мышечной ткани в ресурсах мода. */
     public static final ResourceLocation MUSCLE = new ResourceLocation(CorrectDamaged.MODID,
             "textures/entity/muscles_texture.png");
 
@@ -38,13 +32,6 @@ public class PlayerMusclesModel extends PlayerModel<AbstractClientPlayer> {
     public final ModelPart leftArmForearmMuscle;
     public final ModelPart leftArmShoulderMuscle;
 
-    /**
-     * Конструктор модели мышц.
-     * Зачем нужен: Связывает локальные переменные с иерархией ModelPart, собранной движком Minecraft
-     * из LayerDefinition.
-     *
-     * @param root Корневой элемент запеченной модели.
-     */
     public PlayerMusclesModel(ModelPart root) {
         super(root, false);
 
@@ -70,14 +57,6 @@ public class PlayerMusclesModel extends PlayerModel<AbstractClientPlayer> {
         this.leftArmWristMuscle = leftArm.getChild("leftArmWristMuscle");
     }
 
-    /**
-     * Создает определение сетки (MeshDefinition) и UV-развертки для мышц.
-     * Зачем нужен: Формирует размеры кубоидов мышц (по умолчанию чуть меньше стандартных костей/кожи, 3x3 по ширине)
-     * и привязывает их к точкам трансформации суставов.
-     *
-     * @param slim Признак тонкой модели Alex (3px руки).
-     * @return Скомпонованное определение слоя LayerDefinition с UV-сеткой 64x64.
-     */
     public static LayerDefinition createBodyLayer(boolean slim) {
         MeshDefinition meshdefinition = PlayerModel.createMesh(CubeDeformation.NONE, slim);
         PartDefinition root = meshdefinition.getRoot();
@@ -118,10 +97,6 @@ public class PlayerMusclesModel extends PlayerModel<AbstractClientPlayer> {
         return LayerDefinition.create(meshdefinition, 64, 64);
     }
 
-    /**
-     * Настраивает анимацию модели.
-     * Зачем нужен: Переключает видимость частей перед обновлением углов поворота из базовой PlayerModel.
-     */
     @Override
     public void setupAnim(AbstractClientPlayer entity, float limbSwing, float limbSwingAmount,
                           float ageInTicks, float netHeadYaw, float headPitch) {
@@ -129,11 +104,6 @@ public class PlayerMusclesModel extends PlayerModel<AbstractClientPlayer> {
         setAllPartsVisible(true);
     }
 
-    /**
-     * Управляет флагом видимости (visible) всех мышечных сегментов сразу.
-     *
-     * @param visible true — сделать все сегменты видимыми, false — скрыть.
-     */
     public void setAllPartsVisible(boolean visible) {
         this.rightFootMuscle.visible = visible;
         this.rightCalfMuscle.visible = visible;
