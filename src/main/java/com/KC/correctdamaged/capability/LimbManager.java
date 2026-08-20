@@ -298,9 +298,9 @@ public class LimbManager {
         }).orElse(false);
     }
 
-    public static boolean setMuscleBody(Player player, int state) {
+    public static boolean setMuscleBody(Player player, byte state) {
         return player.getCapability(LIMB_DATA_CAP).map(cap -> {
-            cap.getBody().setMuscleBody(state);
+            cap.getBody().setMuscleOctalBody(state);
             syncIfServer(player);
             return true;
         }).orElse(false);

@@ -4,9 +4,12 @@ import com.KC.correctdamaged.capability.LimbManager;
 import com.KC.correctdamaged.capability.visual.BodyData;
 import com.KC.correctdamaged.capability.visual.BodyVoxelMatrix;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.world.entity.player.PlayerModelPart;
 
 /**
  * Менеджер отрисовки анатомии туловища.
@@ -15,9 +18,6 @@ import net.minecraft.client.renderer.MultiBufferSource;
  */
 public class BodyAnatomyManager {
 
-    /**
-     * Связывает позицию с родительской моделью игрока и поочередно рендерит открытые слои анатомии туловища.
-     */
     public static void renderBody(
             PoseStack poseStack,
             MultiBufferSource buffer,
@@ -29,30 +29,37 @@ public class BodyAnatomyManager {
         LimbManager.get(player).ifPresent(limbData -> {
             BodyData bodyData = limbData.getBody();
 
-            // Если туловище полностью целое и нет флагов показа скелета/мышц — пропуск
-            if (bodyData.isBodyIntact() && bodyData.getShowSkeleton() == 0 && bodyData.getMuscleBody() == 0) {
+            if (bodyData.isBodyIntact() && bodyData.getShowSkeleton() == 0 && bodyData.getMuscleOctantBody() == 0) {
                 return;
             }
 
             poseStack.pushPose();
             parentModel.body.translateAndRotate(poseStack);
 
-            // 1. Рендеринг скелета (при наличии повреждений или глубоком ранении)
             int showSkeleton = bodyData.getShowSkeleton();
             if (showSkeleton > 0) {
                 boolean isBurnt = bodyData.isBurntSkeleton();
                 bodyModel.renderSkeleton(poseStack, buffer, packedLight, isBurnt);
             }
 
-            // 2. Рендеринг мышц
-            if (bodyData.getMuscleBody() > 0) {
-                bodyModel.renderMuscles(poseStack, buffer, packedLight);
+            byte muscleMask = bodyData.getMuscleOctantBody();
+
+            if (bodyData.getMuscleOctantBody() > 0) {
+                bodyModel.renderOctalMuscles(poseStack, buffer, muscleMask, packedLight);
             }
 
-            // 3. Рендеринг разрушаемой воксельной сетки срезов ран
             BodyVoxelMatrix matrix = bodyData.getBodyVoxelMatrix();
             if (matrix != null && matrix.hasDamage()) {
                 VoxelBodyRenderer.renderVoxelBody(poseStack, buffer, packedLight, player, matrix);
+                VoxelDamageRenderer.renderVoxelBody(poseStack, buffer, packedLight, player, matrix);
+            }
+
+            if (player.isModelPartShown(PlayerModelPart.JACKET)) {
+                byte jacketMask = bodyData.getJacketOctantBody();
+                if (jacketMask != 0) {
+                    VertexConsumer jacketConsumer = buffer.getBuffer(RenderType.entityCutoutNoCull(player.getSkinTextureLocation()));
+                    bodyModel.renderOctalJacket(poseStack, jacketConsumer, jacketMask, packedLight);
+                }
             }
 
             poseStack.popPose();

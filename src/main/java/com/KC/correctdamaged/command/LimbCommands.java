@@ -318,7 +318,6 @@ public class LimbCommands {
                 };
             } else if ("muscle".equals(category)) {
                 changed = switch (limb) {
-                    case "body" -> LimbManager.setMuscleBody(player, state);
                     case "right_arm" -> LimbManager.setMuscleRightArm(player, state);
                     case "left_arm" -> LimbManager.setMuscleLeftArm(player, state);
                     case "right_leg" -> LimbManager.setMuscleRightLeg(player, state);

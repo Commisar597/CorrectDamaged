@@ -1,6 +1,10 @@
 package com.KC.correctdamaged.client.render.torso;
 
 import com.KC.correctdamaged.CorrectDamaged;
+import com.KC.correctdamaged.client.render.customRender.CubeUV;
+import com.KC.correctdamaged.client.render.customRender.FreeUVCubeRenderer.FaceUV;
+import com.KC.correctdamaged.client.render.octantRender.OctantRenderHelper;
+import com.KC.correctdamaged.client.render.octantRender.OctreeMeshSplitter;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.model.PlayerModel;
@@ -53,17 +57,20 @@ public class BodyModel extends PlayerModel<AbstractClientPlayer> {
 
         PartDefinition body = root.getChild("body");
 
-        // Скелет туловища (слегка уменьшен на -0.15F для размещения внутри)
         body.addOrReplaceChild("skeleton",
                 CubeListBuilder.create().texOffs(40, 0).addBox(-4.0F,
                         0.0F, -2.0F, 8.0F, 12.0F, 4.0F,
                         new CubeDeformation(-0.15F)), PartPose.ZERO);
 
-        // Мышечный корпус туловища (уменьшен на -0.125F)
         body.addOrReplaceChild("bodyMuscle",
                 CubeListBuilder.create().texOffs(40, 0).addBox(-4.0F,
                         0.0F, -2.0F, 8.0F, 12.0F, 4.0F,
                         new CubeDeformation(-0.125F)), PartPose.ZERO);
+
+        body.addOrReplaceChild("jacket",
+                CubeListBuilder.create().texOffs(40, 0).addBox(-4.0F,
+                        0.0F, -2.0F, 8.0F, 12.0F, 4.0F,
+                        new CubeDeformation(0.125F)), PartPose.ZERO);
 
         return LayerDefinition.create(meshdefinition, 64, 64);
     }
@@ -87,9 +94,71 @@ public class BodyModel extends PlayerModel<AbstractClientPlayer> {
     /**
      * Выполняет отрисовку мышечного слоя туловища.
      */
-    public void renderMuscles(PoseStack poseStack, MultiBufferSource buffer, int packedLight) {
+    public void renderOctalMuscles(PoseStack poseStack,  MultiBufferSource buffer, byte muscleMask, int packedLight) {
+        if (muscleMask == 0) return;
+
         VertexConsumer consumer = buffer.getBuffer(RenderType.entityCutoutNoCull(MUSCLE));
-        this.bodyMuscle.render(poseStack, consumer, packedLight, OverlayTexture.NO_OVERLAY, 1.0F,
-                1.0F, 1.0F, 1.0F);
+
+        poseStack.pushPose();
+        this.body.translateAndRotate(poseStack);
+
+        float def = -0.125f;
+        float x0 = -4.0f - def, y0 = 0.0f - def, z0 = -2.0f - def;
+        float x1 =  4.0f + def, y1 = 12.0f + def, z1 =  2.0f + def;
+
+        for (int i = 0; i < 8; i++) {
+            if ((muscleMask & (1 << i)) == 0) continue;
+
+            float[] bounds = OctreeMeshSplitter.getOctantBounds(x0, y0, z0, x1, y1, z1, i);
+            CubeUV octantUV = OctreeMeshSplitter.getOctantUV(new CubeUV(
+                    FaceUV.of(20F, 20F, 28F, 32F),
+                    FaceUV.of(32F, 20F, 40F, 32F),
+                    FaceUV.of(16F, 20F, 20F, 32F),
+                    FaceUV.of(28F, 20F, 32F, 32F),
+                    FaceUV.of(20F, 16F, 28F, 20F),
+                    FaceUV.of(28F, 16F, 36F, 20F)
+            ), i);
+
+            OctantRenderHelper.renderOctant(
+                    poseStack.last(), consumer,
+                    muscleMask, i, bounds,
+                    octantUV, packedLight, OverlayTexture.NO_OVERLAY, 64, 64
+            );
+        }
+
+        poseStack.popPose();
+    }
+
+    public void renderOctalJacket(PoseStack poseStack, VertexConsumer consumer, byte jacketMask, int packedLight) {
+        if (jacketMask == 0) return;
+
+        poseStack.pushPose();
+        this.body.translateAndRotate(poseStack);
+
+        float extra = 0.25f;
+        float x0 = -4.0f - extra, y0 = 0.0f - extra, z0 = -2.0f - extra;
+        float x1 =  4.0f + extra, y1 = 12.0f + extra, z1 =  2.0f + extra;
+
+        for (int i = 0; i < 8; i++) {
+            if ((jacketMask & (1 << i)) == 0) continue;
+
+            float[] bounds = OctreeMeshSplitter.getOctantBounds(x0, y0, z0, x1, y1, z1, i);
+            CubeUV octantUV = OctreeMeshSplitter.getOctantUV(new CubeUV(
+                    FaceUV.of(20F, 36F, 28F, 48F),
+                    FaceUV.of(32F, 36F, 40F, 48F),
+                    FaceUV.of(16F, 36F, 20F, 48F),
+                    FaceUV.of(28F, 36F, 32F, 48F),
+                    FaceUV.of(20F, 32F, 28F, 36F),
+                    FaceUV.of(28F, 32F, 36F, 36F)
+            ), i);
+
+            OctantRenderHelper.renderOctant(
+                    poseStack.last(), consumer,
+                    jacketMask, i, bounds,
+                    octantUV, packedLight, OverlayTexture.NO_OVERLAY, 64, 64
+            );
+        }
+
+        poseStack.popPose();
     }
 }

@@ -12,10 +12,13 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 
-public class VoxelBodyRenderer {
+public class VoxelDamageRenderer {
 
-    private static final int SKIN_TEX_W = 64;
-    private static final int SKIN_TEX_H = 64;
+    private static final ResourceLocation FLESH_TEXTURE =
+            new ResourceLocation("correct_damaged", "textures/entity/flesh_atlas.png");
+
+    private static final int FLESH_TEX_W = 32;
+    private static final int FLESH_TEX_H = 32;
 
     public static void renderVoxelBody(
             PoseStack poseStack,
@@ -24,7 +27,7 @@ public class VoxelBodyRenderer {
             AbstractClientPlayer player,
             BodyVoxelMatrix matrix
     ) {
-        VertexConsumer skinConsumer = buffer.getBuffer(RenderType.entityCutoutNoCull(player.getSkinTextureLocation()));
+        VertexConsumer fleshConsumer = buffer.getBuffer(RenderType.entityCutoutNoCull(FLESH_TEXTURE));
 
         PoseStack.Pose pose = poseStack.last();
         int overlay = OverlayTexture.NO_OVERLAY;
@@ -46,16 +49,16 @@ public class VoxelBodyRenderer {
 
                     boolean borderToDamage = hasDamagedNeighbor(matrix, x, y, z);
 
-                    if (!borderToDamage) {
-                        CubeUV skinUV = buildSkinUV(x, y, z);
-                        if (hasAnyFace(skinUV)) {
+                    if (borderToDamage) {
+                        CubeUV fleshUV = buildFleshUV(matrix, x, y, z);
+                        if (hasAnyFace(fleshUV)) {
                             FreeUVCubeRenderer.renderBox(
-                                    pose, skinConsumer,
+                                    pose, fleshConsumer,
                                     x0, y0, z0, x1, y1, z1,
-                                    SKIN_TEX_W, SKIN_TEX_H,
+                                    FLESH_TEX_W, FLESH_TEX_H,
                                     packedLight, overlay,
                                     1.0F, 1.0F, 1.0F, 1.0F,
-                                    skinUV
+                                    fleshUV
                             );
                         }
                     }
@@ -64,7 +67,7 @@ public class VoxelBodyRenderer {
         }
     }
 
-    private static CubeUV buildSkinUV(int x, int y, int z) {
+    private static CubeUV buildFleshUV(BodyVoxelMatrix matrix, int x, int y, int z) {
         FaceUV front = null;
         FaceUV back = null;
         FaceUV left = null;
@@ -72,43 +75,62 @@ public class VoxelBodyRenderer {
         FaceUV top = null;
         FaceUV bottom = null;
 
-        if (!BodyVoxelMatrix.isInBounds(x, y, z - 1)) {
-            int uStart = 20 + x;
-            int vStart = 20 + y;
-            front = FaceUV.of(uStart, vStart, uStart + 1, vStart + 1);
+        boolean isSurface = isSurfaceVoxel(x, y, z);
+        FaceUV fleshTexture;
+        if (isSurface) {
+            fleshTexture = getTopRightQuadrantUV(x, y, z);
+        } else {
+            fleshTexture = getDeepFleshUV(x, y, z);
         }
 
-        if (!BodyVoxelMatrix.isInBounds(x, y, z + 1)) {
-            int uStart = 32 + (7 - x);
-            int vStart = 20 + y;
-            back = FaceUV.of(uStart, vStart, uStart + 1, vStart + 1);
+        if (!BodyVoxelMatrix.isInBounds(x, y, z - 1) || !matrix.isSolid(x, y, z - 1)) {
+            front = fleshTexture;
         }
 
-        if (!BodyVoxelMatrix.isInBounds(x - 1, y, z)) {
-            int uStart = 16 + z;
-            int vStart = 20 + y;
-            left = FaceUV.of(uStart, vStart, uStart + 1, vStart + 1);
+        if (!BodyVoxelMatrix.isInBounds(x, y, z + 1) || !matrix.isSolid(x, y, z + 1)) {
+            back = fleshTexture;
         }
 
-        if (!BodyVoxelMatrix.isInBounds(x + 1, y, z)) {
-            int uStart = 28 + (3 - z);
-            int vStart = 20 + y;
-            right = FaceUV.of(uStart, vStart, uStart + 1, vStart + 1);
+        if (!BodyVoxelMatrix.isInBounds(x - 1, y, z) || !matrix.isSolid(x - 1, y, z)) {
+            left = fleshTexture;
         }
 
-        if (!BodyVoxelMatrix.isInBounds(x, y - 1, z)) {
-            int uStart = 20 + x;
-            int vStart = 16 + z;
-            top = FaceUV.of(uStart, vStart, uStart + 1, vStart + 1);
+        if (!BodyVoxelMatrix.isInBounds(x + 1, y, z) || !matrix.isSolid(x + 1, y, z)) {
+            right = fleshTexture;
         }
 
-        if (!BodyVoxelMatrix.isInBounds(x, y + 1, z)) {
-            int uStart = 28 + x;
-            int vStart = 16 + z;
-            bottom = FaceUV.of(uStart, vStart, uStart + 1, vStart + 1);
+        if (!BodyVoxelMatrix.isInBounds(x, y - 1, z) || !matrix.isSolid(x, y - 1, z)) {
+            top = fleshTexture;
+        }
+
+        if (!BodyVoxelMatrix.isInBounds(x, y + 1, z) || !matrix.isSolid(x, y + 1, z)) {
+            bottom = fleshTexture;
+        }
+
+        if (BodyVoxelMatrix.isInBounds(x, y + 1, z) && !matrix.isSolid(x, y + 1, z)) {
+            bottom = fleshTexture;
         }
 
         return new CubeUV(front, back, left, right, top, bottom);
+    }
+
+    private static FaceUV getTopRightQuadrantUV(int x, int y, int z) {
+        int uOffset = (x * 31 + y * 17 + z) & 15;
+        int vOffset = (x * 13 + y * 7 + z * 31) & 15;
+        return FaceUV.of(uOffset, vOffset, uOffset + 1, vOffset + 1);
+    }
+
+    private static FaceUV getDeepFleshUV(int x, int y, int z) {
+        int uOffset = ((x * 31 + y * 17 + z) & 15) + 16;
+        int vOffset = ((x * 13 - y * 7 + z * 31) & 15) + 16;
+
+        return FaceUV.of(uOffset, vOffset, uOffset + 1, vOffset + 1);
+    }
+
+    private static boolean isSurfaceVoxel(int x, int y, int z) {
+        return x == 0 || x == BodyVoxelMatrix.WIDTH_X - 1 ||
+                y == 0 || y == BodyVoxelMatrix.HEIGHT_Y - 1 ||
+                z == 0 || z == BodyVoxelMatrix.DEPTH_Z - 1;
     }
 
     private static boolean hasDamagedNeighbor(BodyVoxelMatrix matrix, int x, int y, int z) {
