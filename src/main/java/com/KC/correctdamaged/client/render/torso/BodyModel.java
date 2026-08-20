@@ -46,7 +46,7 @@ public class BodyModel extends PlayerModel<AbstractClientPlayer> {
         body.addOrReplaceChild("skeleton",
                 CubeListBuilder.create().texOffs(40, 0).addBox(-4.0F,
                         0.0F, -2.0F, 8.0F, 12.0F, 4.0F,
-                        new CubeDeformation(-0.15F)), PartPose.ZERO);
+                        new CubeDeformation(-0.21F)), PartPose.ZERO);
 
         body.addOrReplaceChild("bodyMuscle",
                 CubeListBuilder.create().texOffs(40, 0).addBox(-4.0F,
