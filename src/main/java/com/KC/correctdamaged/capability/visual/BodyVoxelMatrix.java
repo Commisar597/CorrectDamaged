@@ -2,46 +2,60 @@ package com.KC.correctdamaged.capability.visual;
 
 import java.util.BitSet;
 
-/**
- * Трёхмерная сетка вокселей (8x12x4), представляющая объёмное тело (туловище) игрока.
- * Используется для процедурного вырезания отверстий, ранений и сквозных повреждений.
- */
 public class BodyVoxelMatrix {
 
-    public static final int WIDTH_X = 8;
-    public static final int HEIGHT_Y = 12;
-    public static final int DEPTH_Z = 4;
-    public static final int TOTAL_VOXELS = WIDTH_X * HEIGHT_Y * DEPTH_Z; // 384 вокселя
+    public final int widthX;
+    public final int heightY;
+    public final int depthZ;
+    public final int totalVoxels;
 
-    /** Битовое хранилище цельности вокселей (true = воксель цел, false = разрушен/вырезан). */
     private final BitSet voxels;
 
-    public BodyVoxelMatrix() {
-        this.voxels = new BitSet(TOTAL_VOXELS);
+    public BodyVoxelMatrix(int widthX, int heightY, int depthZ) {
+        this.widthX = widthX;
+        this.heightY = heightY;
+        this.depthZ = depthZ;
+        this.totalVoxels = widthX * heightY * depthZ;
+        this.voxels = new BitSet(totalVoxels);
         fillAll();
     }
 
-    /** Проверяет, цела ли матрица полностью. */
+    public BodyVoxelMatrix() {
+        this(8, 12, 4);
+    }
+
+    public int getWidthX() {
+        return widthX;
+    }
+
+    public int getHeightY() {
+        return heightY;
+    }
+
+    public int getDepthZ() {
+        return depthZ;
+    }
+
+    public int getTotalVoxels() {
+        return totalVoxels;
+    }
+
     public boolean isFullyIntact() {
-        return voxels.cardinality() == TOTAL_VOXELS;
+        return voxels.cardinality() == totalVoxels;
     }
 
-    /** Проверяет, есть ли хотя бы одно повреждение. */
     public boolean hasDamage() {
-        return voxels.cardinality() < TOTAL_VOXELS;
+        return voxels.cardinality() < totalVoxels;
     }
 
-    /** Вычисляет плоский индекс 1D-массива из 3D-координат. */
-    public static int getIndex(int x, int y, int z) {
-        return x + (y * WIDTH_X) + (z * WIDTH_X * HEIGHT_Y);
+    public int getIndex(int x, int y, int z) {
+        return x + (y * widthX) + (z * widthX * heightY);
     }
 
-    /** Проверяет, находятся ли координаты в пределах матрицы. */
-    public static boolean isInBounds(int x, int y, int z) {
-        return x >= 0 && x < WIDTH_X && y >= 0 && y < HEIGHT_Y && z >= 0 && z < DEPTH_Z;
+    public boolean isInBounds(int x, int y, int z) {
+        return x >= 0 && x < widthX && y >= 0 && y < heightY && z >= 0 && z < depthZ;
     }
 
-    /** Возвращает статус вокселя (true — цел, false — разрушен). */
     public boolean isSolid(int x, int y, int z) {
         if (!isInBounds(x, y, z)) {
             return false;
@@ -49,7 +63,6 @@ public class BodyVoxelMatrix {
         return voxels.get(getIndex(x, y, z));
     }
 
-    /** Безопасная версия получения состояния вокселя с проверкой границ. */
     public boolean isSolidSafe(int x, int y, int z) {
         if (!isInBounds(x, y, z)) {
             return false;
@@ -57,31 +70,26 @@ public class BodyVoxelMatrix {
         return voxels.get(getIndex(x, y, z));
     }
 
-    /** Устанавливает состояние вокселя. */
     public void setSolid(int x, int y, int z, boolean solid) {
         if (isInBounds(x, y, z)) {
             voxels.set(getIndex(x, y, z), solid);
         }
     }
 
-    /** Заполняет весь объем (полное восстановление). */
     public void fillAll() {
-        voxels.set(0, TOTAL_VOXELS, true);
+        voxels.set(0, totalVoxels, true);
     }
 
-    /** Сериализует BitSet в массив long для передачи или сохранения NBT. */
     public long[] toLongArray() {
         return voxels.toLongArray();
     }
 
-    /** Десериализует состояние из массива long. */
     public void fromLongArray(long[] data) {
         voxels.clear();
         BitSet loaded = BitSet.valueOf(data);
         voxels.or(loaded);
     }
 
-    /** Сбрасывает матрицу в полностью целое состояние. */
     public void reset() {
         fillAll();
     }

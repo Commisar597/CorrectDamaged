@@ -32,9 +32,9 @@ public class VoxelDamageRenderer {
         PoseStack.Pose pose = poseStack.last();
         int overlay = OverlayTexture.NO_OVERLAY;
 
-        for (int x = 0; x < BodyVoxelMatrix.WIDTH_X; x++) {
-            for (int y = 0; y < BodyVoxelMatrix.HEIGHT_Y; y++) {
-                for (int z = 0; z < BodyVoxelMatrix.DEPTH_Z; z++) {
+        for (int x = 0; x < matrix.getWidthX(); x++) {
+            for (int y = 0; y < matrix.getHeightY(); y++) {
+                for (int z = 0; z < matrix.getDepthZ(); z++) {
 
                     if (!matrix.isSolid(x, y, z)) continue;
 
@@ -75,7 +75,7 @@ public class VoxelDamageRenderer {
         FaceUV top = null;
         FaceUV bottom = null;
 
-        boolean isSurface = isSurfaceVoxel(x, y, z);
+        boolean isSurface = isSurfaceVoxel(x, y, z, matrix);
         FaceUV fleshTexture;
         if (isSurface) {
             fleshTexture = getTopRightQuadrantUV(x, y, z);
@@ -83,31 +83,31 @@ public class VoxelDamageRenderer {
             fleshTexture = getDeepFleshUV(x, y, z);
         }
 
-        if (!BodyVoxelMatrix.isInBounds(x, y, z - 1) || !matrix.isSolid(x, y, z - 1)) {
+        if (!matrix.isInBounds(x, y, z - 1) || !matrix.isSolid(x, y, z - 1)) {
             front = fleshTexture;
         }
 
-        if (!BodyVoxelMatrix.isInBounds(x, y, z + 1) || !matrix.isSolid(x, y, z + 1)) {
+        if (!matrix.isInBounds(x, y, z + 1) || !matrix.isSolid(x, y, z + 1)) {
             back = fleshTexture;
         }
 
-        if (!BodyVoxelMatrix.isInBounds(x - 1, y, z) || !matrix.isSolid(x - 1, y, z)) {
+        if (!matrix.isInBounds(x - 1, y, z) || !matrix.isSolid(x - 1, y, z)) {
             left = fleshTexture;
         }
 
-        if (!BodyVoxelMatrix.isInBounds(x + 1, y, z) || !matrix.isSolid(x + 1, y, z)) {
+        if (!matrix.isInBounds(x + 1, y, z) || !matrix.isSolid(x + 1, y, z)) {
             right = fleshTexture;
         }
 
-        if (!BodyVoxelMatrix.isInBounds(x, y - 1, z) || !matrix.isSolid(x, y - 1, z)) {
+        if (!matrix.isInBounds(x, y - 1, z) || !matrix.isSolid(x, y - 1, z)) {
             top = fleshTexture;
         }
 
-        if (!BodyVoxelMatrix.isInBounds(x, y + 1, z) || !matrix.isSolid(x, y + 1, z)) {
+        if (!matrix.isInBounds(x, y + 1, z) || !matrix.isSolid(x, y + 1, z)) {
             bottom = fleshTexture;
         }
 
-        if (BodyVoxelMatrix.isInBounds(x, y + 1, z) && !matrix.isSolid(x, y + 1, z)) {
+        if (matrix.isInBounds(x, y + 1, z) && !matrix.isSolid(x, y + 1, z)) {
             bottom = fleshTexture;
         }
 
@@ -127,19 +127,19 @@ public class VoxelDamageRenderer {
         return FaceUV.of(uOffset, vOffset, uOffset + 1, vOffset + 1);
     }
 
-    private static boolean isSurfaceVoxel(int x, int y, int z) {
-        return x == 0 || x == BodyVoxelMatrix.WIDTH_X - 1 ||
-                y == 0 || y == BodyVoxelMatrix.HEIGHT_Y - 1 ||
-                z == 0 || z == BodyVoxelMatrix.DEPTH_Z - 1;
+    private static boolean isSurfaceVoxel(int x, int y, int z, BodyVoxelMatrix matrix) {
+        return x == 0 || x == matrix.getWidthX() - 1 ||
+                y == 0 || y == matrix.getHeightY() - 1 ||
+                z == 0 || z == matrix.getDepthZ() - 1;
     }
 
     private static boolean hasDamagedNeighbor(BodyVoxelMatrix matrix, int x, int y, int z) {
-        if (BodyVoxelMatrix.isInBounds(x, y, z - 1) && !matrix.isSolid(x, y, z - 1)) return true;
-        if (BodyVoxelMatrix.isInBounds(x, y, z + 1) && !matrix.isSolid(x, y, z + 1)) return true;
-        if (BodyVoxelMatrix.isInBounds(x - 1, y, z) && !matrix.isSolid(x - 1, y, z)) return true;
-        if (BodyVoxelMatrix.isInBounds(x + 1, y, z) && !matrix.isSolid(x + 1, y, z)) return true;
-        if (BodyVoxelMatrix.isInBounds(x, y - 1, z) && !matrix.isSolid(x, y - 1, z)) return true;
-        if (BodyVoxelMatrix.isInBounds(x, y + 1, z) && !matrix.isSolid(x, y + 1, z)) return true;
+        if (matrix.isInBounds(x, y, z - 1) && !matrix.isSolid(x, y, z - 1)) return true;
+        if (matrix.isInBounds(x, y, z + 1) && !matrix.isSolid(x, y, z + 1)) return true;
+        if (matrix.isInBounds(x - 1, y, z) && !matrix.isSolid(x - 1, y, z)) return true;
+        if (matrix.isInBounds(x + 1, y, z) && !matrix.isSolid(x + 1, y, z)) return true;
+        if (matrix.isInBounds(x, y - 1, z) && !matrix.isSolid(x, y - 1, z)) return true;
+        if (matrix.isInBounds(x, y + 1, z) && !matrix.isSolid(x, y + 1, z)) return true;
 
         return false;
     }

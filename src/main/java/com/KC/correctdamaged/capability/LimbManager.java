@@ -17,21 +17,12 @@ import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
-/**
- * Менеджер управления Капабилити (Capability) повреждений и визуального состояния конечностей игрока.
- * Обрабатывает Forge-события прикрепления, синхронизации и переноса данных при смерти/возрождении.
- */
 @Mod.EventBusSubscriber(modid = CorrectDamaged.MODID)
 public class LimbManager {
 
-    /** Объект Capability для доступа к данным конечностей (LimbData). */
     public static final Capability<LimbData> LIMB_DATA_CAP = CapabilityManager.get(new CapabilityToken<>() {});
-    /** Уникальный идентификатор регистратора Capability. */
     public static final ResourceLocation CAP_ID = new ResourceLocation(CorrectDamaged.MODID, "limb_data");
 
-    /**
-     * Прикрепляет Капабилити к сущностям игроков при их спавне/создании.
-     */
     @SubscribeEvent
     public static void onAttachCapabilities(AttachCapabilitiesEvent<Entity> event) {
         if (event.getObject() instanceof Player player) {
@@ -41,15 +32,11 @@ public class LimbManager {
         }
     }
 
-    /**
-     * Переносит данные конечностей при клонировании игрока (например, после смерти или при переходе из Энда/Незера).
-     */
     @SubscribeEvent
     public static void onPlayerCloned(PlayerEvent.Clone event) {
         Player oldPlayer = event.getOriginal();
         Player newPlayer = event.getEntity();
 
-        // Временно восстанавливаем капабилити старого игрока для копирования
         oldPlayer.reviveCaps();
         oldPlayer.getCapability(LIMB_DATA_CAP).ifPresent(oldCap -> {
             newPlayer.getCapability(LIMB_DATA_CAP).ifPresent(newCap -> {
@@ -63,9 +50,6 @@ public class LimbManager {
         }
     }
 
-    /**
-     * Синхронизирует данные конечностей с клиентом при входе игрока на сервер.
-     */
     @SubscribeEvent
     public static void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
         if (event.getEntity() instanceof ServerPlayer serverPlayer) {
@@ -73,9 +57,6 @@ public class LimbManager {
         }
     }
 
-    /**
-     * Синхронизирует данные игрока с другими наблюдающими за ним игроками (трекинг).
-     */
     @SubscribeEvent
     public static void onStartTracking(PlayerEvent.StartTracking event) {
         if (event.getTarget() instanceof ServerPlayer targetPlayer && event.getEntity() instanceof ServerPlayer observer) {
@@ -83,7 +64,6 @@ public class LimbManager {
         }
     }
 
-    /** Вспомогательный метод для отправки пакета синхронизации на клиенты, если код выполняется на сервере. */
     private static void syncIfServer(Player player) {
         if (!player.level().isClientSide && player instanceof ServerPlayer serverPlayer) {
             PacketHandler.syncToTrackingAndSelf(serverPlayer);
@@ -298,14 +278,6 @@ public class LimbManager {
         }).orElse(false);
     }
 
-    public static boolean setMuscleBody(Player player, byte state) {
-        return player.getCapability(LIMB_DATA_CAP).map(cap -> {
-            cap.getBody().setMuscleOctalBody(state);
-            syncIfServer(player);
-            return true;
-        }).orElse(false);
-    }
-
     public static boolean setMuscleRightArm(Player player, int state) {
         return player.getCapability(LIMB_DATA_CAP).map(cap -> {
             cap.getRightArm().setMuscleState(state);
@@ -353,6 +325,14 @@ public class LimbManager {
     public static boolean applyBodyVoxelPreset(Player player, String preset) {
         return player.getCapability(LIMB_DATA_CAP).map(cap -> {
             cap.getBody().getBodyVoxelMatrix().applyPreset(preset);
+            syncIfServer(player);
+            return true;
+        }).orElse(false);
+    }
+
+    public static boolean setMuscleBody(Player player, int state) {
+        return player.getCapability(LIMB_DATA_CAP).map(cap -> {
+            cap.getBody().setMusclesMask(state);
             syncIfServer(player);
             return true;
         }).orElse(false);

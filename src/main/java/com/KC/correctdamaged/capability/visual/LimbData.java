@@ -6,10 +6,6 @@ import net.minecraftforge.common.util.INBTSerializable;
 import static com.KC.correctdamaged.capability.visual.LimbSide.LEFT;
 import static com.KC.correctdamaged.capability.visual.LimbSide.RIGHT;
 
-/**
- * Главный класс-хранилище всех визуальных данных повреждений игрока.
- * Объединяет данные обеих рук, ног, головы и туловища, а также поддерживает сериализацию в NBT.
- */
 public class LimbData implements INBTSerializable<CompoundTag> {
 
     private final ArmData rightArm = new ArmData(RIGHT);

@@ -6,64 +6,62 @@ import net.minecraftforge.common.util.INBTSerializable;
 public class BodyData implements INBTSerializable<CompoundTag> {
 
     private final BodyVoxelMatrix bodyVoxelMatrix = new BodyVoxelMatrix();
+    private final BodyVoxelMatrix musclesOctalBody = new BodyVoxelMatrix(6, 10, 2);
+    private final BodyVoxelMatrix jacketVoxelMatrix = new BodyVoxelMatrix(4, 6, 2);
 
     private int skinMask = 1;
-    private int muscleOctalBody = 0;
-    private int jacketOctalBody = 0x0FFF;
+    private int musclesMask = 0;
+    private int jacketMask = 1;
     private int showSkeleton = 0;
     private boolean burntSkeleton = false;
 
     public void copyFrom(BodyData source) {
         this.skinMask = source.skinMask;
-        this.muscleOctalBody = source.muscleOctalBody;
-        this.jacketOctalBody = source.jacketOctalBody;
+        this.musclesMask = source.musclesMask;
+        this.jacketMask = source.jacketMask;
         this.showSkeleton = source.showSkeleton;
         this.burntSkeleton = source.burntSkeleton;
         this.bodyVoxelMatrix.fromLongArray(source.bodyVoxelMatrix.toLongArray());
+        this.musclesOctalBody.fromLongArray(source.musclesOctalBody.toLongArray());
+        this.jacketVoxelMatrix.fromLongArray(source.jacketVoxelMatrix.toLongArray());
     }
 
     @Override
     public CompoundTag serializeNBT() {
         CompoundTag tag = new CompoundTag();
         tag.putInt("SkinMask", skinMask);
-        tag.putInt("MuscleBody", muscleOctalBody);
-        tag.putInt("JacketBody", jacketOctalBody);
+        tag.putInt("MusclesMask", musclesMask);
+        tag.putInt("JacketMask", jacketMask);
         tag.putInt("ShowSkeleton", showSkeleton);
         tag.putBoolean("BurntSkeleton", burntSkeleton);
         tag.putLongArray("BodyVoxels", bodyVoxelMatrix.toLongArray());
+        tag.putLongArray("MusclesVoxels", musclesOctalBody.toLongArray());
+        tag.putLongArray("JacketVoxels", jacketVoxelMatrix.toLongArray());
         return tag;
     }
 
     @Override
     public void deserializeNBT(CompoundTag tag) {
         if (tag.contains("SkinMask")) skinMask = tag.getInt("SkinMask");
-        if (tag.contains("MuscleBody")) muscleOctalBody = tag.getByte("MuscleBody");
-        if (tag.contains("JacketBody")) jacketOctalBody = tag.getByte("JacketBody");
+        if (tag.contains("MusclesMask")) musclesMask = tag.getInt("MusclesMask");
+        if (tag.contains("JacketMask")) jacketMask = tag.getInt("JacketMask");
         if (tag.contains("ShowSkeleton")) showSkeleton = tag.getInt("ShowSkeleton");
         if (tag.contains("BurntSkeleton")) burntSkeleton = tag.getBoolean("BurntSkeleton");
-        if (tag.contains("BodyVoxels")) {
-            bodyVoxelMatrix.fromLongArray(tag.getLongArray("BodyVoxels"));
-        }
+        if (tag.contains("BodyVoxels")) bodyVoxelMatrix.fromLongArray(tag.getLongArray("BodyVoxels"));
+        if (tag.contains("MusclesVoxels")) musclesOctalBody.fromLongArray(tag.getLongArray("MusclesVoxels"));
+        if (tag.contains("JacketVoxels")) jacketVoxelMatrix.fromLongArray(tag.getLongArray("JacketVoxels"));
     }
 
     public void setSkinMask(int skinMask) {
         this.skinMask = skinMask;
     }
 
-    public void setMuscleOctalBody(byte muscleOctalBody) {
-        this.muscleOctalBody = muscleOctalBody;
+    public void setMusclesMask(int musclesMask) {
+        this.musclesMask = musclesMask;
     }
 
-    public int getMuscleOctantBody() {
-        return muscleOctalBody;
-    }
-
-    public void setJacketOctalBody(byte jacketOctalBody) {
-        this.jacketOctalBody = jacketOctalBody;
-    }
-
-    public int getJacketOctantBody() {
-        return jacketOctalBody;
+    public void setJacketMask(int jacketMask) {
+        this.jacketMask = jacketMask;
     }
 
     public int getShowSkeleton() {
@@ -88,5 +86,21 @@ public class BodyData implements INBTSerializable<CompoundTag> {
 
     public BodyVoxelMatrix getBodyVoxelMatrix() {
         return this.bodyVoxelMatrix;
+    }
+
+    public BodyVoxelMatrix getJacketVoxelMatrix() {
+        return this.jacketVoxelMatrix;
+    }
+
+    public BodyVoxelMatrix getMuscleVoxelMatrix() {
+        return this.musclesOctalBody;
+    }
+
+    public int getMusclesMask() {
+        return musclesMask;
+    }
+
+    public int getJacketMask() {
+        return jacketMask;
     }
 }

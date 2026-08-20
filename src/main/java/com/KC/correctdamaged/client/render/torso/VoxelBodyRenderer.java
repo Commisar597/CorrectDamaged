@@ -10,7 +10,6 @@ import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.resources.ResourceLocation;
 
 public class VoxelBodyRenderer {
 
@@ -29,9 +28,9 @@ public class VoxelBodyRenderer {
         PoseStack.Pose pose = poseStack.last();
         int overlay = OverlayTexture.NO_OVERLAY;
 
-        for (int x = 0; x < BodyVoxelMatrix.WIDTH_X; x++) {
-            for (int y = 0; y < BodyVoxelMatrix.HEIGHT_Y; y++) {
-                for (int z = 0; z < BodyVoxelMatrix.DEPTH_Z; z++) {
+        for (int x = 0; x < matrix.getWidthX(); x++) {
+            for (int y = 0; y < matrix.getHeightY(); y++) {
+                for (int z = 0; z < matrix.getDepthZ(); z++) {
 
                     if (!matrix.isSolid(x, y, z)) continue;
 
@@ -47,7 +46,7 @@ public class VoxelBodyRenderer {
                     boolean borderToDamage = hasDamagedNeighbor(matrix, x, y, z);
 
                     if (!borderToDamage) {
-                        CubeUV skinUV = buildSkinUV(x, y, z);
+                        CubeUV skinUV = buildSkinUV(x, y, z, matrix);
                         if (hasAnyFace(skinUV)) {
                             FreeUVCubeRenderer.renderBox(
                                     pose, skinConsumer,
@@ -64,7 +63,7 @@ public class VoxelBodyRenderer {
         }
     }
 
-    private static CubeUV buildSkinUV(int x, int y, int z) {
+    private static CubeUV buildSkinUV(int x, int y, int z, BodyVoxelMatrix matrix) {
         FaceUV front = null;
         FaceUV back = null;
         FaceUV left = null;
@@ -72,37 +71,37 @@ public class VoxelBodyRenderer {
         FaceUV top = null;
         FaceUV bottom = null;
 
-        if (!BodyVoxelMatrix.isInBounds(x, y, z - 1)) {
+        if (!matrix.isInBounds(x, y, z - 1)) {
             int uStart = 20 + x;
             int vStart = 20 + y;
             front = FaceUV.of(uStart, vStart, uStart + 1, vStart + 1);
         }
 
-        if (!BodyVoxelMatrix.isInBounds(x, y, z + 1)) {
+        if (!matrix.isInBounds(x, y, z + 1)) {
             int uStart = 32 + (7 - x);
             int vStart = 20 + y;
             back = FaceUV.of(uStart, vStart, uStart + 1, vStart + 1);
         }
 
-        if (!BodyVoxelMatrix.isInBounds(x - 1, y, z)) {
+        if (!matrix.isInBounds(x - 1, y, z)) {
             int uStart = 16 + z;
             int vStart = 20 + y;
             left = FaceUV.of(uStart, vStart, uStart + 1, vStart + 1);
         }
 
-        if (!BodyVoxelMatrix.isInBounds(x + 1, y, z)) {
+        if (!matrix.isInBounds(x + 1, y, z)) {
             int uStart = 28 + (3 - z);
             int vStart = 20 + y;
             right = FaceUV.of(uStart, vStart, uStart + 1, vStart + 1);
         }
 
-        if (!BodyVoxelMatrix.isInBounds(x, y - 1, z)) {
+        if (!matrix.isInBounds(x, y - 1, z)) {
             int uStart = 20 + x;
             int vStart = 16 + z;
             top = FaceUV.of(uStart, vStart, uStart + 1, vStart + 1);
         }
 
-        if (!BodyVoxelMatrix.isInBounds(x, y + 1, z)) {
+        if (!matrix.isInBounds(x, y + 1, z)) {
             int uStart = 28 + x;
             int vStart = 16 + z;
             bottom = FaceUV.of(uStart, vStart, uStart + 1, vStart + 1);
@@ -112,12 +111,12 @@ public class VoxelBodyRenderer {
     }
 
     private static boolean hasDamagedNeighbor(BodyVoxelMatrix matrix, int x, int y, int z) {
-        if (BodyVoxelMatrix.isInBounds(x, y, z - 1) && !matrix.isSolid(x, y, z - 1)) return true;
-        if (BodyVoxelMatrix.isInBounds(x, y, z + 1) && !matrix.isSolid(x, y, z + 1)) return true;
-        if (BodyVoxelMatrix.isInBounds(x - 1, y, z) && !matrix.isSolid(x - 1, y, z)) return true;
-        if (BodyVoxelMatrix.isInBounds(x + 1, y, z) && !matrix.isSolid(x + 1, y, z)) return true;
-        if (BodyVoxelMatrix.isInBounds(x, y - 1, z) && !matrix.isSolid(x, y - 1, z)) return true;
-        if (BodyVoxelMatrix.isInBounds(x, y + 1, z) && !matrix.isSolid(x, y + 1, z)) return true;
+        if (matrix.isInBounds(x, y, z - 1) && !matrix.isSolid(x, y, z - 1)) return true;
+        if (matrix.isInBounds(x, y, z + 1) && !matrix.isSolid(x, y, z + 1)) return true;
+        if (matrix.isInBounds(x - 1, y, z) && !matrix.isSolid(x - 1, y, z)) return true;
+        if (matrix.isInBounds(x + 1, y, z) && !matrix.isSolid(x + 1, y, z)) return true;
+        if (matrix.isInBounds(x, y - 1, z) && !matrix.isSolid(x, y - 1, z)) return true;
+        if (matrix.isInBounds(x, y + 1, z) && !matrix.isSolid(x, y + 1, z)) return true;
 
         return false;
     }

@@ -24,7 +24,7 @@ public class BodyAnatomyManager {
         LimbManager.get(player).ifPresent(limbData -> {
             BodyData bodyData = limbData.getBody();
 
-            if (bodyData.isBodyIntact() && bodyData.getShowSkeleton() == 0 && bodyData.getMuscleOctantBody() == 0) {
+            if (bodyData.isBodyIntact() && bodyData.getShowSkeleton() == 0 && bodyData.getMusclesMask() == 0) {
                 return;
             }
 
@@ -37,10 +37,21 @@ public class BodyAnatomyManager {
                 bodyModel.renderSkeleton(poseStack, buffer, packedLight, isBurnt);
             }
 
-            int muscleMask = bodyData.getMuscleOctantBody();
+            BodyVoxelMatrix bodyMatrix = bodyData.getBodyVoxelMatrix();
 
-            if (bodyData.getMuscleOctantBody() > 0) {
-                bodyModel.renderOctalMuscles(poseStack, buffer, muscleMask, packedLight);
+            int muscleMask = bodyData.getMusclesMask();
+            if (muscleMask > 0) {
+                BodyVoxelMatrix muscleMatrix = bodyData.getMuscleVoxelMatrix();
+                if (muscleMatrix != null) {
+                    VoxelMusclesRenderer.renderVoxelMuscles(
+                            poseStack,
+                            buffer,
+                            packedLight,
+                            player,
+                            muscleMatrix,
+                            bodyMatrix
+                    );
+                }
             }
 
             BodyVoxelMatrix matrix = bodyData.getBodyVoxelMatrix();
@@ -50,10 +61,19 @@ public class BodyAnatomyManager {
             }
 
             if (player.isModelPartShown(PlayerModelPart.JACKET)) {
-                int jacketMask = bodyData.getJacketOctantBody();
+                int jacketMask = bodyData.getJacketMask();
                 if (jacketMask != 0) {
-                    VertexConsumer jacketConsumer = buffer.getBuffer(RenderType.entityCutoutNoCull(player.getSkinTextureLocation()));
-                    bodyModel.renderOctalJacket(poseStack, jacketConsumer, jacketMask, packedLight);
+                    BodyVoxelMatrix jacketMatrix = bodyData.getJacketVoxelMatrix();
+                    if (jacketMatrix != null) {
+                        VoxelJacketRenderer.renderVoxelJacket(
+                                poseStack,
+                                buffer,
+                                packedLight,
+                                player,
+                                jacketMatrix,
+                                bodyMatrix
+                        );
+                    }
                 }
             }
 
