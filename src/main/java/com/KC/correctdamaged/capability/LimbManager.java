@@ -338,9 +338,6 @@ public class LimbManager {
         }).orElse(false);
     }
 
-    /**
-     * Получить LazyOptional с {@link LimbData} для указанного игрока.
-     */
     public static LazyOptional<LimbData> get(Player player) {
         return player.getCapability(LIMB_DATA_CAP);
     }
@@ -353,9 +350,6 @@ public class LimbManager {
         }).orElse(false);
     }
 
-    /**
-     * Применяет пресет повреждений к воксельной матрице туловища игрока.
-     */
     public static boolean applyBodyVoxelPreset(Player player, String preset) {
         return player.getCapability(LIMB_DATA_CAP).map(cap -> {
             cap.getBody().getBodyVoxelMatrix().applyPreset(preset);

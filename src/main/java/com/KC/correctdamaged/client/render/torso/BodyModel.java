@@ -4,7 +4,8 @@ import com.KC.correctdamaged.CorrectDamaged;
 import com.KC.correctdamaged.client.render.customRender.CubeUV;
 import com.KC.correctdamaged.client.render.customRender.FreeUVCubeRenderer.FaceUV;
 import com.KC.correctdamaged.client.render.octantRender.OctantRenderHelper;
-import com.KC.correctdamaged.client.render.octantRender.OctreeMeshSplitter;
+import com.KC.correctdamaged.client.render.torso.TorsoGridRenderHelper;
+import com.KC.correctdamaged.client.render.octantRender.psevdo.TorsoGridSplitter;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.model.PlayerModel;
@@ -21,11 +22,6 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 
-/**
- * 3D-модель внутреннего анатомического строения туловища (скелет и мышцы).
- * Зачем нужен: Хранит геометрию грудной клетки/позвоночника (skeleton) и глубокого мышечного корсета (bodyMuscle)
- * с деформациями масштаба для предотвращения Z-fighting с кожей игрока.
- */
 public class BodyModel extends PlayerModel<AbstractClientPlayer> {
 
     public static final ResourceLocation BONE = new ResourceLocation(CorrectDamaged.MODID,
@@ -38,9 +34,6 @@ public class BodyModel extends PlayerModel<AbstractClientPlayer> {
     public final ModelPart skeleton;
     public final ModelPart bodyMuscle;
 
-    /**
-     * Конструктор модели анатомии туловища.
-     */
     public BodyModel(ModelPart root) {
         super(root, false);
         ModelPart body = root.getChild("body");
@@ -48,9 +41,7 @@ public class BodyModel extends PlayerModel<AbstractClientPlayer> {
         this.bodyMuscle = body.getChild("bodyMuscle");
     }
 
-    /**
-     * Создает базовую геометрию и разметку слоя для скелета и мышц туловища.
-     */
+
     public static LayerDefinition createBodyLayer() {
         MeshDefinition meshdefinition = PlayerModel.createMesh(CubeDeformation.NONE, false);
         PartDefinition root = meshdefinition.getRoot();
@@ -81,9 +72,6 @@ public class BodyModel extends PlayerModel<AbstractClientPlayer> {
         super.setupAnim(entity, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);
     }
 
-    /**
-     * Выполняет отрисовку скелета туловища с учётом флага обугленности костей.
-     */
     public void renderSkeleton(PoseStack poseStack, MultiBufferSource buffer, int packedLight, boolean isBurnt) {
         ResourceLocation tex = isBurnt ? BURNT_BONE : BONE;
         VertexConsumer consumer = buffer.getBuffer(RenderType.entityCutoutNoCull(tex));
@@ -91,10 +79,8 @@ public class BodyModel extends PlayerModel<AbstractClientPlayer> {
                 1.0F, 1.0F, 1.0F);
     }
 
-    /**
-     * Выполняет отрисовку мышечного слоя туловища.
-     */
-    public void renderOctalMuscles(PoseStack poseStack,  MultiBufferSource buffer, byte muscleMask, int packedLight) {
+
+    public void renderOctalMuscles(PoseStack poseStack, MultiBufferSource buffer, int muscleMask, int packedLight) {
         if (muscleMask == 0) return;
 
         VertexConsumer consumer = buffer.getBuffer(RenderType.entityCutoutNoCull(MUSCLE));
@@ -106,11 +92,11 @@ public class BodyModel extends PlayerModel<AbstractClientPlayer> {
         float x0 = -4.0f - def, y0 = 0.0f - def, z0 = -2.0f - def;
         float x1 =  4.0f + def, y1 = 12.0f + def, z1 =  2.0f + def;
 
-        for (int i = 0; i < 8; i++) {
+        for (int i = 0; i < TorsoGridSplitter.TOTAL_BLOCKS; i++) {
             if ((muscleMask & (1 << i)) == 0) continue;
 
-            float[] bounds = OctreeMeshSplitter.getOctantBounds(x0, y0, z0, x1, y1, z1, i);
-            CubeUV octantUV = OctreeMeshSplitter.getOctantUV(new CubeUV(
+            float[] bounds = TorsoGridSplitter.getBlockBounds(x0, y0, z0, x1, y1, z1, i);
+            CubeUV blockUV = TorsoGridSplitter.getBlockUV(new CubeUV(
                     FaceUV.of(20F, 20F, 28F, 32F),
                     FaceUV.of(32F, 20F, 40F, 32F),
                     FaceUV.of(16F, 20F, 20F, 32F),
@@ -119,17 +105,17 @@ public class BodyModel extends PlayerModel<AbstractClientPlayer> {
                     FaceUV.of(28F, 16F, 36F, 20F)
             ), i);
 
-            OctantRenderHelper.renderOctant(
+            TorsoGridRenderHelper.renderSegmentBlock(
                     poseStack.last(), consumer,
                     muscleMask, i, bounds,
-                    octantUV, packedLight, OverlayTexture.NO_OVERLAY, 64, 64
+                    blockUV, packedLight, OverlayTexture.NO_OVERLAY, 64, 64
             );
         }
 
         poseStack.popPose();
     }
 
-    public void renderOctalJacket(PoseStack poseStack, VertexConsumer consumer, byte jacketMask, int packedLight) {
+    public void renderOctalJacket(PoseStack poseStack, VertexConsumer consumer, int jacketMask, int packedLight) {
         if (jacketMask == 0) return;
 
         poseStack.pushPose();
@@ -139,11 +125,11 @@ public class BodyModel extends PlayerModel<AbstractClientPlayer> {
         float x0 = -4.0f - extra, y0 = 0.0f - extra, z0 = -2.0f - extra;
         float x1 =  4.0f + extra, y1 = 12.0f + extra, z1 =  2.0f + extra;
 
-        for (int i = 0; i < 8; i++) {
+        for (int i = 0; i < TorsoGridSplitter.TOTAL_BLOCKS; i++) {
             if ((jacketMask & (1 << i)) == 0) continue;
 
-            float[] bounds = OctreeMeshSplitter.getOctantBounds(x0, y0, z0, x1, y1, z1, i);
-            CubeUV octantUV = OctreeMeshSplitter.getOctantUV(new CubeUV(
+            float[] bounds = TorsoGridSplitter.getBlockBounds(x0, y0, z0, x1, y1, z1, i);
+            CubeUV blockUV = TorsoGridSplitter.getBlockUV(new CubeUV(
                     FaceUV.of(20F, 36F, 28F, 48F),
                     FaceUV.of(32F, 36F, 40F, 48F),
                     FaceUV.of(16F, 36F, 20F, 48F),
@@ -152,10 +138,10 @@ public class BodyModel extends PlayerModel<AbstractClientPlayer> {
                     FaceUV.of(28F, 32F, 36F, 36F)
             ), i);
 
-            OctantRenderHelper.renderOctant(
+            TorsoGridRenderHelper.renderSegmentBlock(
                     poseStack.last(), consumer,
                     jacketMask, i, bounds,
-                    octantUV, packedLight, OverlayTexture.NO_OVERLAY, 64, 64
+                    blockUV, packedLight, OverlayTexture.NO_OVERLAY, 64, 64
             );
         }
 

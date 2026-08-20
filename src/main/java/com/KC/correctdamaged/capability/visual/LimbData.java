@@ -3,22 +3,22 @@ package com.KC.correctdamaged.capability.visual;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraftforge.common.util.INBTSerializable;
 
+import static com.KC.correctdamaged.capability.visual.LimbSide.LEFT;
+import static com.KC.correctdamaged.capability.visual.LimbSide.RIGHT;
+
 /**
  * Главный класс-хранилище всех визуальных данных повреждений игрока.
  * Объединяет данные обеих рук, ног, головы и туловища, а также поддерживает сериализацию в NBT.
  */
 public class LimbData implements INBTSerializable<CompoundTag> {
 
-    private final ArmData rightArm = new ArmData(LimbSide.RIGHT);
-    private final ArmData leftArm = new ArmData(LimbSide.LEFT);
-    private final LegData rightLeg = new LegData(LimbSide.RIGHT);
-    private final LegData leftLeg = new LegData(LimbSide.LEFT);
+    private final ArmData rightArm = new ArmData(RIGHT);
+    private final ArmData leftArm = new ArmData(LEFT);
+    private final LegData rightLeg = new LegData(RIGHT);
+    private final LegData leftLeg = new LegData(LEFT);
     private final HeadData head = new HeadData();
     private final BodyData body = new BodyData();
 
-    /**
-     * Копирует состояние из другого экземпляра {@link LimbData}.
-     */
     public void copyFrom(LimbData source) {
         this.rightArm.copyFrom(source.rightArm);
         this.leftArm.copyFrom(source.leftArm);

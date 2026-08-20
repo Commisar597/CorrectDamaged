@@ -11,11 +11,6 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.world.entity.player.PlayerModelPart;
 
-/**
- * Менеджер отрисовки анатомии туловища.
- * Зачем нужен: Координирует последовательность рендеринга внутренних слоев туловища
- * (костей, мышц и разрушаемой воксельной матрицы) на основе флагов из `BodyData`.
- */
 public class BodyAnatomyManager {
 
     public static void renderBody(
@@ -42,7 +37,7 @@ public class BodyAnatomyManager {
                 bodyModel.renderSkeleton(poseStack, buffer, packedLight, isBurnt);
             }
 
-            byte muscleMask = bodyData.getMuscleOctantBody();
+            int muscleMask = bodyData.getMuscleOctantBody();
 
             if (bodyData.getMuscleOctantBody() > 0) {
                 bodyModel.renderOctalMuscles(poseStack, buffer, muscleMask, packedLight);
@@ -55,7 +50,7 @@ public class BodyAnatomyManager {
             }
 
             if (player.isModelPartShown(PlayerModelPart.JACKET)) {
-                byte jacketMask = bodyData.getJacketOctantBody();
+                int jacketMask = bodyData.getJacketOctantBody();
                 if (jacketMask != 0) {
                     VertexConsumer jacketConsumer = buffer.getBuffer(RenderType.entityCutoutNoCull(player.getSkinTextureLocation()));
                     bodyModel.renderOctalJacket(poseStack, jacketConsumer, jacketMask, packedLight);

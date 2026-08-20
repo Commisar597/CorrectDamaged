@@ -8,8 +8,8 @@ public class BodyData implements INBTSerializable<CompoundTag> {
     private final BodyVoxelMatrix bodyVoxelMatrix = new BodyVoxelMatrix();
 
     private int skinMask = 1;
-    private byte muscleOctalBody = (byte) 0;
-    private byte jacketOctalBody = (byte) 0xFF;
+    private int muscleOctalBody = 0;
+    private int jacketOctalBody = 0x0FFF;
     private int showSkeleton = 0;
     private boolean burntSkeleton = false;
 
@@ -27,7 +27,7 @@ public class BodyData implements INBTSerializable<CompoundTag> {
         CompoundTag tag = new CompoundTag();
         tag.putInt("SkinMask", skinMask);
         tag.putInt("MuscleBody", muscleOctalBody);
-        tag.putByte("JacketBody", jacketOctalBody);
+        tag.putInt("JacketBody", jacketOctalBody);
         tag.putInt("ShowSkeleton", showSkeleton);
         tag.putBoolean("BurntSkeleton", burntSkeleton);
         tag.putLongArray("BodyVoxels", bodyVoxelMatrix.toLongArray());
@@ -54,7 +54,7 @@ public class BodyData implements INBTSerializable<CompoundTag> {
         this.muscleOctalBody = muscleOctalBody;
     }
 
-    public byte getMuscleOctantBody() {
+    public int getMuscleOctantBody() {
         return muscleOctalBody;
     }
 
@@ -62,7 +62,7 @@ public class BodyData implements INBTSerializable<CompoundTag> {
         this.jacketOctalBody = jacketOctalBody;
     }
 
-    public byte getJacketOctantBody() {
+    public int getJacketOctantBody() {
         return jacketOctalBody;
     }
 
