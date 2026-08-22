@@ -1,13 +1,14 @@
 package com.KC.correctdamaged.capability.visual;
 
+import com.KC.correctdamaged.logic.damage.preset.DamagePreset;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraftforge.common.util.INBTSerializable;
 
 public class BodyData implements INBTSerializable<CompoundTag> {
 
     private final BodyVoxelMatrix bodyVoxelMatrix = new BodyVoxelMatrix();
-    private final BodyVoxelMatrix musclesOctalBody = new BodyVoxelMatrix(6, 10, 2);
-    private final BodyVoxelMatrix jacketVoxelMatrix = new BodyVoxelMatrix(4, 6, 2);
+    private final BodyVoxelMatrix musclesOctalBody = new BodyVoxelMatrix(6, 10, 2, DamagePreset.TargetLayer.BODY_MUSCLE);
+    private final BodyVoxelMatrix jacketVoxelMatrix = new BodyVoxelMatrix(4, 6, 2, DamagePreset.TargetLayer.GENERIC);
     private final OrgansData organsData = new OrgansData();
 
     private int organsVisible = 0;

@@ -1,0 +1,21 @@
+{
+  "name": "Heavy Outer Cut",
+  "targetLayer": "BODY_OUTER",
+  "removedVoxels": [
+    {
+      "x": 1,
+      "y": 0,
+      "z": 6
+    },
+    {
+      "x": 2,
+      "y": 0,
+      "z": 6
+    },
+    {
+      "x": 3,
+      "y": 0,
+      "z": 6
+    }
+  ]
+}

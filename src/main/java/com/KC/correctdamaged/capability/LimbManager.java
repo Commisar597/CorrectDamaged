@@ -324,7 +324,7 @@ public class LimbManager {
 
     public static boolean applyBodyVoxelPreset(Player player, String preset) {
         return player.getCapability(LIMB_DATA_CAP).map(cap -> {
-            cap.getBody().getBodyVoxelMatrix().applyPreset(preset);
+            cap.getBody().getBodyVoxelMatrix().applyVoxelPreset(preset);
             syncIfServer(player);
             return true;
         }).orElse(false);

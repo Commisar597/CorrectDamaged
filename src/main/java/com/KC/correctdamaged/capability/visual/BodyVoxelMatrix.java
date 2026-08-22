@@ -1,5 +1,8 @@
 package com.KC.correctdamaged.capability.visual;
 
+import com.KC.correctdamaged.logic.damage.preset.DamagePreset;
+import com.KC.correctdamaged.logic.damage.preset.DamagePresetManager;
+
 import java.util.BitSet;
 
 public class BodyVoxelMatrix {
@@ -8,20 +11,26 @@ public class BodyVoxelMatrix {
     public final int heightY;
     public final int depthZ;
     public final int totalVoxels;
+    private final DamagePreset.TargetLayer layerType;
 
     private final BitSet voxels;
 
-    public BodyVoxelMatrix(int widthX, int heightY, int depthZ) {
+    public BodyVoxelMatrix(int widthX, int heightY, int depthZ, DamagePreset.TargetLayer layerType) {
         this.widthX = widthX;
         this.heightY = heightY;
         this.depthZ = depthZ;
+        this.layerType = layerType;
         this.totalVoxels = widthX * heightY * depthZ;
         this.voxels = new BitSet(totalVoxels);
         fillAll();
     }
 
     public BodyVoxelMatrix() {
-        this(8, 12, 4);
+        this(8, 12, 4, DamagePreset.TargetLayer.BODY_OUTER);
+    }
+
+    public DamagePreset.TargetLayer getLayerType() {
+        return layerType;
     }
 
     public int getWidthX() {
@@ -94,37 +103,25 @@ public class BodyVoxelMatrix {
         fillAll();
     }
 
-    public void applyPreset(String presetName) {
-        switch (presetName.toLowerCase()) {
-            case "bullet_center" -> {
-                reset();
-                setSolid(3, 4, 1, false);
-                setSolid(4, 4, 1, false);
-                setSolid(3, 5, 1, false);
-                setSolid(4, 5, 1, false);
-                setSolid(3, 4, 2, false);
-                setSolid(4, 4, 2, false);
-                setSolid(3, 5, 2, false);
-                setSolid(4, 5, 2, false);
-            }
-            case "slash_diagonal" -> {
-                reset();
-                for (int i = 0; i < 6; i++) {
-                    setSolid(i + 1, i + 2, 0, false);
-                    setSolid(i + 1, i + 2, 1, false);
-                }
-            }
-            case "heavy_blast" -> {
-                reset();
-                for (int x = 0; x < 4; x++) {
-                    for (int y = 2; y < 10; y++) {
-                        for (int z = 0; z < 4; z++) {
-                            setSolid(x, y, z, false);
-                        }
-                    }
-                }
-            }
-            case "reset" -> reset();
+    public boolean applyVoxelPreset(String presetName) {
+        if ("reset".equalsIgnoreCase(presetName)) {
+            reset();
+            return true;
         }
+
+        DamagePreset preset = DamagePresetManager.getPreset(presetName);
+        if (preset == null) {
+            return false;
+        }
+
+        if (preset.getTargetLayer() != DamagePreset.TargetLayer.GENERIC && preset.getTargetLayer() != this.layerType) {
+            return false;
+        }
+
+        reset();
+        for (DamagePreset.VoxelCoord coord : preset.getRemovedVoxels()) {
+            setSolid(coord.x, coord.y, coord.z, false);
+        }
+        return true;
     }
 }

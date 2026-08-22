@@ -1,13 +1,19 @@
 package com.KC.correctdamaged.command;
 
 import com.KC.correctdamaged.capability.LimbManager;
+import com.KC.correctdamaged.logic.damage.preset.DamagePresetManager;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
+import com.mojang.brigadier.arguments.StringArgumentType;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
+import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class LimbCommands {
 
@@ -69,14 +75,14 @@ public class LimbCommands {
                         .then(Commands.literal("damage")
                                 .then(Commands.literal("voxel")
                                         .then(Commands.literal("body")
-                                                .then(Commands.literal("bullet_center")
-                                                        .executes(ctx -> applyVoxelPreset(ctx.getSource(), "bullet_center")))
-                                                .then(Commands.literal("slash_diagonal")
-                                                        .executes(ctx -> applyVoxelPreset(ctx.getSource(), "slash_diagonal")))
-                                                .then(Commands.literal("heavy_blast")
-                                                        .executes(ctx -> applyVoxelPreset(ctx.getSource(), "heavy_blast")))
-                                                .then(Commands.literal("reset")
-                                                        .executes(ctx -> applyVoxelPreset(ctx.getSource(), "reset"))))))
+                                                .then(Commands.argument("preset", StringArgumentType.word())
+                                                        .suggests((ctx, builder) -> {
+                                                            List<String> names = new ArrayList<>(DamagePresetManager.getAllPresets().keySet());
+                                                            names.add("reset");
+                                                            return SharedSuggestionProvider.suggest(names, builder);
+                                                        })
+                                                        .executes(ctx -> applyVoxelPreset(ctx.getSource(),
+                                                                StringArgumentType.getString(ctx, "preset")))))))
 
                         .then(Commands.literal("show")
                                 .then(Commands.literal("organs")
