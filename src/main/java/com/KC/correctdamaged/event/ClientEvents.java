@@ -5,6 +5,7 @@ import com.KC.correctdamaged.client.render.head.*;
 import com.KC.correctdamaged.client.render.limbs.*;
 import com.KC.correctdamaged.client.render.torso.BodyAnatomyLayer;
 import com.KC.correctdamaged.client.render.torso.BodyModel;
+import com.KC.correctdamaged.client.render.torso.organs.PlayerOrgansModel;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import net.minecraft.resources.ResourceLocation;
@@ -29,6 +30,9 @@ public class ClientEvents {
     public static final ModelLayerLocation BODY_LAYER = new ModelLayerLocation(
             new ResourceLocation(CorrectDamaged.MODID, "body"), "main");
 
+    public static final ModelLayerLocation ORGANS_LAYER = new ModelLayerLocation(
+            new ResourceLocation(CorrectDamaged.MODID, "organs"), "main");
+
     @SubscribeEvent
     public static void onRegisterLayerDefinitions(EntityRenderersEvent.RegisterLayerDefinitions event) {
         event.registerLayerDefinition(
@@ -52,6 +56,11 @@ public class ClientEvents {
         event.registerLayerDefinition(
                 BODY_LAYER,
                 BodyModel::createBodyLayer
+        );
+
+        event.registerLayerDefinition(
+                ORGANS_LAYER,
+                PlayerOrgansModel::createBodyLayer
         );
     }
 

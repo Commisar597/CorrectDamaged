@@ -94,11 +94,6 @@ public class BodyVoxelMatrix {
         fillAll();
     }
 
-    /**
-     * Применяет готовую конфигурацию (пресет) ранений.
-     *
-     * @param presetName Название пресета ("bullet_center", "slash_diagonal", "heavy_blast", "reset").
-     */
     public void applyPreset(String presetName) {
         switch (presetName.toLowerCase()) {
             case "bullet_center" -> {

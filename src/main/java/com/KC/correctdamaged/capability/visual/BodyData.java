@@ -8,7 +8,9 @@ public class BodyData implements INBTSerializable<CompoundTag> {
     private final BodyVoxelMatrix bodyVoxelMatrix = new BodyVoxelMatrix();
     private final BodyVoxelMatrix musclesOctalBody = new BodyVoxelMatrix(6, 10, 2);
     private final BodyVoxelMatrix jacketVoxelMatrix = new BodyVoxelMatrix(4, 6, 2);
+    private final OrgansData organsData = new OrgansData();
 
+    private int organsVisible = 0;
     private int skinMask = 1;
     private int musclesMask = 0;
     private int jacketMask = 1;
@@ -21,6 +23,9 @@ public class BodyData implements INBTSerializable<CompoundTag> {
         this.jacketMask = source.jacketMask;
         this.showSkeleton = source.showSkeleton;
         this.burntSkeleton = source.burntSkeleton;
+        this.organsVisible = source.organsVisible;
+        this.organsData.copyFrom(source.organsData);
+
         this.bodyVoxelMatrix.fromLongArray(source.bodyVoxelMatrix.toLongArray());
         this.musclesOctalBody.fromLongArray(source.musclesOctalBody.toLongArray());
         this.jacketVoxelMatrix.fromLongArray(source.jacketVoxelMatrix.toLongArray());
@@ -34,6 +39,9 @@ public class BodyData implements INBTSerializable<CompoundTag> {
         tag.putInt("JacketMask", jacketMask);
         tag.putInt("ShowSkeleton", showSkeleton);
         tag.putBoolean("BurntSkeleton", burntSkeleton);
+        tag.putInt("OrgansVisible", organsVisible);
+        tag.put("OrgansData", organsData.serializeNBT());
+
         tag.putLongArray("BodyVoxels", bodyVoxelMatrix.toLongArray());
         tag.putLongArray("MusclesVoxels", musclesOctalBody.toLongArray());
         tag.putLongArray("JacketVoxels", jacketVoxelMatrix.toLongArray());
@@ -47,9 +55,24 @@ public class BodyData implements INBTSerializable<CompoundTag> {
         if (tag.contains("JacketMask")) jacketMask = tag.getInt("JacketMask");
         if (tag.contains("ShowSkeleton")) showSkeleton = tag.getInt("ShowSkeleton");
         if (tag.contains("BurntSkeleton")) burntSkeleton = tag.getBoolean("BurntSkeleton");
+        if (tag.contains("OrgansVisible")) organsVisible = tag.getInt("OrgansVisible");
+        if (tag.contains("OrgansData")) organsData.deserializeNBT(tag.getCompound("OrgansData"));
+
         if (tag.contains("BodyVoxels")) bodyVoxelMatrix.fromLongArray(tag.getLongArray("BodyVoxels"));
         if (tag.contains("MusclesVoxels")) musclesOctalBody.fromLongArray(tag.getLongArray("MusclesVoxels"));
         if (tag.contains("JacketVoxels")) jacketVoxelMatrix.fromLongArray(tag.getLongArray("JacketVoxels"));
+    }
+
+    public OrgansData getOrgansData() {
+        return organsData;
+    }
+
+    public int getOrgansVisible() {
+        return organsVisible;
+    }
+
+    public void setOrgansVisible(int organsVisible) {
+        this.organsVisible = organsVisible;
     }
 
     public void setSkinMask(int skinMask) {

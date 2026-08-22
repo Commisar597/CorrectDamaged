@@ -79,6 +79,26 @@ public class LimbCommands {
                                                         .executes(ctx -> applyVoxelPreset(ctx.getSource(), "reset"))))))
 
                         .then(Commands.literal("show")
+                                .then(Commands.literal("organs")
+                                        .then(Commands.literal("visible")
+                                                .then(Commands.argument("state", IntegerArgumentType.integer(0, 1))
+                                                        .executes(ctx -> applyOrgansVisible(ctx.getSource(), IntegerArgumentType.getInteger(ctx, "state")))))
+                                        .then(Commands.literal("heart")
+                                                .then(Commands.argument("state", IntegerArgumentType.integer(0, 1))
+                                                        .executes(ctx -> applyOrganState(ctx.getSource(), "heart", IntegerArgumentType.getInteger(ctx, "state")))))
+                                        .then(Commands.literal("left_lung")
+                                                .then(Commands.argument("state", IntegerArgumentType.integer(0, 1))
+                                                        .executes(ctx -> applyOrganState(ctx.getSource(), "left_lung", IntegerArgumentType.getInteger(ctx, "state")))))
+                                        .then(Commands.literal("right_lung")
+                                                .then(Commands.argument("state", IntegerArgumentType.integer(0, 1))
+                                                        .executes(ctx -> applyOrganState(ctx.getSource(), "right_lung", IntegerArgumentType.getInteger(ctx, "state")))))
+                                        .then(Commands.literal("liver")
+                                                .then(Commands.argument("state", IntegerArgumentType.integer(0, 1))
+                                                        .executes(ctx -> applyOrganState(ctx.getSource(), "liver", IntegerArgumentType.getInteger(ctx, "state")))))
+                                        .then(Commands.literal("git")
+                                                .then(Commands.argument("state", IntegerArgumentType.integer(0, 1))
+                                                        .executes(ctx -> applyOrganState(ctx.getSource(), "git", IntegerArgumentType.getInteger(ctx, "state"))))))
+
                                 .then(Commands.literal("head")
                                         .then(Commands.literal("skin")
                                                 .then(Commands.argument("mask", IntegerArgumentType.integer(0, 255))
@@ -144,6 +164,49 @@ public class LimbCommands {
                                                 .then(Commands.argument("state", IntegerArgumentType.integer(0, 3))
                                                         .executes(ctx -> applyBoneOrMuscle(ctx.getSource(), "muscle", "left_leg", IntegerArgumentType.getInteger(ctx, "state")))))))
         );
+    }
+
+    private static int applyOrgansVisible(CommandSourceStack source, int state) {
+        try {
+            ServerPlayer player = source.getPlayerOrException();
+            boolean changed = LimbManager.setOrgansVisible(player, state);
+
+            if (!changed) {
+                source.sendFailure(Component.literal("Capability is unavailable."));
+                return 0;
+            }
+
+            source.sendSuccess(() -> Component.literal("Organs visibility -> " + state), true);
+            return 1;
+        } catch (Exception e) {
+            source.sendFailure(Component.literal("Command execution error: " + e.getMessage()));
+            return 0;
+        }
+    }
+
+    private static int applyOrganState(CommandSourceStack source, String organ, int state) {
+        try {
+            ServerPlayer player = source.getPlayerOrException();
+            boolean changed = switch (organ) {
+                case "heart" -> LimbManager.setOrganHeart(player, state);
+                case "left_lung" -> LimbManager.setOrganLeftLung(player, state);
+                case "right_lung" -> LimbManager.setOrganRightLung(player, state);
+                case "liver" -> LimbManager.setOrganLiver(player, state);
+                case "git" -> LimbManager.setOrganGit(player, state);
+                default -> false;
+            };
+
+            if (!changed) {
+                source.sendFailure(Component.literal("Capability is unavailable."));
+                return 0;
+            }
+
+            source.sendSuccess(() -> Component.literal("Organ " + organ + " state -> " + state), true);
+            return 1;
+        } catch (Exception e) {
+            source.sendFailure(Component.literal("Command execution error: " + e.getMessage()));
+            return 0;
+        }
     }
 
     private static int applyVoxelPreset(CommandSourceStack source, String preset) {

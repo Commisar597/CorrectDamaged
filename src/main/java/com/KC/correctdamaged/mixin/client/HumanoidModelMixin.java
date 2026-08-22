@@ -89,12 +89,6 @@ public abstract class HumanoidModelMixin<T extends LivingEntity> {
 
                 playerModel.jacket.visible = isFullBody;
                 playerModel.jacket.skipDraw = !isFullBody;
-
-                if (!isFullBody) {
-                    if (bodyData.getMusclesMask() == 0) {
-                        bodyData.setMusclesMask(1);
-                    }
-                }
             }
         });
     }

@@ -3,6 +3,7 @@ package com.KC.correctdamaged.client.render.torso;
 import com.KC.correctdamaged.capability.LimbManager;
 import com.KC.correctdamaged.capability.visual.BodyData;
 import com.KC.correctdamaged.capability.visual.BodyVoxelMatrix;
+import com.KC.correctdamaged.client.render.torso.organs.PlayerOrgansModel;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.player.AbstractClientPlayer;
@@ -17,66 +18,58 @@ public class BodyAnatomyManager {
             int packedLight,
             AbstractClientPlayer player,
             PlayerModel<AbstractClientPlayer> parentModel,
-            BodyModel bodyModel
+            BodyModel bodyModel,
+            PlayerOrgansModel organsModel
     ) {
-        LimbManager.get(player).ifPresent(limbData -> {
-            BodyData bodyData = limbData.getBody();
+        var capOpt = LimbManager.get(player).resolve();
+        if (capOpt.isEmpty()) return;
 
-            poseStack.pushPose();
-            parentModel.body.translateAndRotate(poseStack);
+        BodyData bodyData = capOpt.get().getBody();
 
-            int showSkeleton = bodyData.getShowSkeleton();
-            if (showSkeleton > 0) {
-                boolean isBurnt = bodyData.isBurntSkeleton();
-                bodyModel.renderSkeleton(poseStack, buffer, packedLight, isBurnt);
+        poseStack.pushPose();
+        parentModel.body.translateAndRotate(poseStack);
+
+        int showSkeleton = bodyData.getShowSkeleton();
+        if (showSkeleton > 0) {
+            boolean isBurnt = bodyData.isBurntSkeleton();
+            bodyModel.renderSkeleton(poseStack, buffer, packedLight, isBurnt);
+        }
+
+        BodyVoxelMatrix bodyMatrix = bodyData.getBodyVoxelMatrix();
+        int muscleMask = bodyData.getMusclesMask();
+
+        if (muscleMask == 1) {
+            bodyModel.renderMuscles(poseStack, buffer, packedLight);
+        } else if (muscleMask == 2) {
+            BodyVoxelMatrix muscleMatrix = bodyData.getMuscleVoxelMatrix();
+            if (muscleMatrix != null) {
+                VoxelMusclesRenderer.renderVoxelMuscles(
+                        poseStack, buffer, packedLight, muscleMatrix, bodyMatrix
+                );
             }
+        }
 
-            BodyVoxelMatrix bodyMatrix = bodyData.getBodyVoxelMatrix();
+        if (bodyData.getOrgansVisible() == 1 && bodyData.getOrgansData() != null) {
+            organsModel.renderOrgans(poseStack, buffer, packedLight, bodyData.getOrgansData());
+        }
 
-            int muscleMask = bodyData.getMusclesMask();
+        if (bodyMatrix != null && bodyMatrix.hasDamage()) {
+            VoxelBodyRenderer.renderVoxelBody(poseStack, buffer, packedLight, player, bodyMatrix);
+            VoxelDamageRenderer.renderVoxelBody(poseStack, buffer, packedLight, player, bodyMatrix);
+        }
 
-            switch (muscleMask) {
-                case 1 -> { bodyModel.renderMuscles(poseStack, buffer, packedLight);}
-                case 2 -> {
-                    BodyVoxelMatrix muscleMatrix = bodyData.getMuscleVoxelMatrix();
-
-                    if (muscleMatrix != null) {
-                        VoxelMusclesRenderer.renderVoxelMuscles(
-                                poseStack,
-                                buffer,
-                                packedLight,
-                                muscleMatrix,
-                                bodyMatrix
-                        );
-                    }
-                }
-                default -> { }
-            }
-
-            BodyVoxelMatrix matrix = bodyData.getBodyVoxelMatrix();
-            if (matrix != null && matrix.hasDamage()) {
-                VoxelBodyRenderer.renderVoxelBody(poseStack, buffer, packedLight, player, matrix);
-                VoxelDamageRenderer.renderVoxelBody(poseStack, buffer, packedLight, player, matrix);
-            }
-
-            if (player.isModelPartShown(PlayerModelPart.JACKET)) {
-                int jacketMask = bodyData.getJacketMask();
-                if (jacketMask != 0) {
-                    BodyVoxelMatrix jacketMatrix = bodyData.getJacketVoxelMatrix();
-                    if (jacketMatrix != null) {
-                        VoxelJacketRenderer.renderVoxelJacket(
-                                poseStack,
-                                buffer,
-                                packedLight,
-                                player,
-                                jacketMatrix,
-                                bodyMatrix
-                        );
-                    }
+        if (player.isModelPartShown(PlayerModelPart.JACKET)) {
+            int jacketMask = bodyData.getJacketMask();
+            if (jacketMask != 0) {
+                BodyVoxelMatrix jacketMatrix = bodyData.getJacketVoxelMatrix();
+                if (jacketMatrix != null) {
+                    VoxelJacketRenderer.renderVoxelJacket(
+                            poseStack, buffer, packedLight, player, jacketMatrix, bodyMatrix
+                    );
                 }
             }
+        }
 
-            poseStack.popPose();
-        });
+        poseStack.popPose();
     }
 }

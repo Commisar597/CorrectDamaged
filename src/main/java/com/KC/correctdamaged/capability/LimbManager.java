@@ -337,4 +337,67 @@ public class LimbManager {
             return true;
         }).orElse(false);
     }
+
+    public static boolean setOrgansVisible(Player player, int state) {
+        return player.getCapability(LIMB_DATA_CAP).map(cap -> {
+            cap.getBody().setOrgansVisible(state);
+            syncIfServer(player);
+            return true;
+        }).orElse(false);
+    }
+
+    public static boolean setOrganHeart(Player player, int state) {
+        return player.getCapability(LIMB_DATA_CAP).map(cap -> {
+            if (cap.getBody().getOrgansData() != null) {
+                cap.getBody().getOrgansData().setHeart(state);
+                syncIfServer(player);
+                return true;
+            }
+            return false;
+        }).orElse(false);
+    }
+
+    public static boolean setOrganLeftLung(Player player, int state) {
+        return player.getCapability(LIMB_DATA_CAP).map(cap -> {
+            if (cap.getBody().getOrgansData() != null) {
+                cap.getBody().getOrgansData().setLeft_lung(state);
+                syncIfServer(player);
+                return true;
+            }
+            return false;
+        }).orElse(false);
+    }
+
+    public static boolean setOrganRightLung(Player player, int state) {
+        return player.getCapability(LIMB_DATA_CAP).map(cap -> {
+            if (cap.getBody().getOrgansData() != null) {
+                cap.getBody().getOrgansData().setRight_lung(state);
+                syncIfServer(player);
+                return true;
+            }
+            return false;
+        }).orElse(false);
+    }
+
+    public static boolean setOrganLiver(Player player, int state) {
+        return player.getCapability(LIMB_DATA_CAP).map(cap -> {
+            if (cap.getBody().getOrgansData() != null) {
+                cap.getBody().getOrgansData().setLiver(state);
+                syncIfServer(player);
+                return true;
+            }
+            return false;
+        }).orElse(false);
+    }
+
+    public static boolean setOrganGit(Player player, int state) {
+        return player.getCapability(LIMB_DATA_CAP).map(cap -> {
+            if (cap.getBody().getOrgansData() != null) {
+                cap.getBody().getOrgansData().setG_i_t(state);
+                syncIfServer(player);
+                return true;
+            }
+            return false;
+        }).orElse(false);
+    }
 }
